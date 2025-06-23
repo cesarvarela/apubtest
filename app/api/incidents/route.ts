@@ -4,6 +4,16 @@ import { Incident } from "@/db/schema";
 import { schemasGenerator, validator } from "@/lib/validation";
 import { v4 as uuid } from "uuid";
 
+export async function GET() {
+    try {
+        const incidents = await db.select().from(Incident).orderBy(Incident.createdAt);
+        return Response.json(incidents);
+    } catch (error) {
+        console.error("Error fetching incidents:", error);
+        return Response.json({ error: "Failed to fetch incidents" }, { status: 500 });
+    }
+}
+
 export async function POST(req: NextRequest) {
 
     const body = await req.json();
@@ -20,7 +30,7 @@ export async function POST(req: NextRequest) {
 
         console.error("Validation error:", error);
 
-        return Response.json({ error: error.message }, { status: 400 });
+        return Response.json({ error: error instanceof Error ? error.message : "Validation failed" }, { status: 400 });
     }
 
     await db.insert(Incident).values({
