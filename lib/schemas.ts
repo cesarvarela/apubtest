@@ -1,8 +1,15 @@
 import { SchemaObject } from "ajv";
+import { db } from "../db";
+import { Schema } from "../db/schema";
+import { eq, and } from "drizzle-orm";
 
 export class SchemaGenerator {
 
-    constructor(public coreDomain: string, public localDomain: string, public namespace: string) {
+    constructor(
+        public coreDomain: string, 
+        public localDomain: string, 
+        public namespace: string
+    ) {
         const missing: string[] = [];
         if (!coreDomain) missing.push('coreDomain');
         if (!localDomain) missing.push('localDomain');
@@ -34,7 +41,26 @@ export class SchemaGenerator {
     }
 
     async getCoreContext(): Promise<SchemaObject> {
+        try {
+            const result = await db
+                .select()
+                .from(Schema)
+                .where(and(
+                    eq(Schema.type, 'context'),
+                    eq(Schema.namespace, 'core'),
+                    eq(Schema.version, 'v1'),
+                    eq(Schema.isActive, true)
+                ))
+                .limit(1);
 
+            if (result.length > 0) {
+                return result[0].content as SchemaObject;
+            }
+        } catch (error) {
+            console.warn('Failed to load core context from database, using fallback:', error);
+        }
+
+        // Fallback if not found in database
         return {
             "@context": {
                 "@vocab": `${this.coreVocabUrl}#`,
@@ -46,7 +72,26 @@ export class SchemaGenerator {
     }
 
     async getCoreSchema(): Promise<SchemaObject> {
+        try {
+            const result = await db
+                .select()
+                .from(Schema)
+                .where(and(
+                    eq(Schema.type, 'schema'),
+                    eq(Schema.namespace, 'core'),
+                    eq(Schema.version, 'v1'),
+                    eq(Schema.isActive, true)
+                ))
+                .limit(1);
 
+            if (result.length > 0) {
+                return result[0].content as SchemaObject;
+            }
+        } catch (error) {
+            console.warn('Failed to load core schema from database, using fallback:', error);
+        }
+
+        // Fallback if not found in database
         return {
             $id: this.coreSchemaUrl,
             type: "object",
@@ -60,10 +105,29 @@ export class SchemaGenerator {
     }
 
     async getLocalContext(): Promise<SchemaObject> {
+        try {
+            const result = await db
+                .select()
+                .from(Schema)
+                .where(and(
+                    eq(Schema.type, 'context'),
+                    eq(Schema.namespace, this.namespace),
+                    eq(Schema.version, 'v1'),
+                    eq(Schema.isActive, true)
+                ))
+                .limit(1);
 
+            if (result.length > 0) {
+                return result[0].content as SchemaObject;
+            }
+        } catch (error) {
+            console.warn('Failed to load local context from database, using fallback:', error);
+        }
+
+        // Fallback if not found in database
         return {
             "@context": [
-                this.coreContextUrl, // icnlude the core context
+                this.coreContextUrl, // include the core context
                 {
                     "schema": "http://schema.org/", // use definition from schema.org
                     "title": "schema:headline",
@@ -77,7 +141,26 @@ export class SchemaGenerator {
     }
 
     async getLocalSchema(): Promise<SchemaObject> {
+        try {
+            const result = await db
+                .select()
+                .from(Schema)
+                .where(and(
+                    eq(Schema.type, 'schema'),
+                    eq(Schema.namespace, this.namespace),
+                    eq(Schema.version, 'v1'),
+                    eq(Schema.isActive, true)
+                ))
+                .limit(1);
 
+            if (result.length > 0) {
+                return result[0].content as SchemaObject;
+            }
+        } catch (error) {
+            console.warn('Failed to load local schema from database, using fallback:', error);
+        }
+
+        // Fallback if not found in database
         return {
             $id: this.localSchemaUrl,
             definitions: {

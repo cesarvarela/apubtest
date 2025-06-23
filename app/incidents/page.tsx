@@ -1,5 +1,5 @@
 import { schemasGenerator } from '@/lib/validation';
-import { mergeSchemas } from '@/lib/utils';
+import { mergeSchemas } from '@/lib/helpers';
 import IncidentForm from './IncidentForm';
 
 export default async function IncidentPage() {

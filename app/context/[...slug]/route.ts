@@ -9,7 +9,10 @@ export async function GET(
   const [filename] = slug;
 
   if (filename === "core-v1.jsonld") {
-    return NextResponse.json(schemasGenerator.getCoreContext(), {
+
+    const context = await schemasGenerator.getCoreContext();
+
+    return NextResponse.json(context, {
       headers: {
         "Content-Type": "application/ld+json",
         "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400"

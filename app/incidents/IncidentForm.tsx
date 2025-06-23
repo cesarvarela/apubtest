@@ -6,19 +6,36 @@ import { Theme as ShadcnTheme } from '@rjsf/shadcn';
 import { Button } from '@mui/material';
 import { v4 as uuid } from 'uuid';
 import validator from '@rjsf/validator-ajv8';
-import { generateHiddenAtFieldsUiSchema } from '@/lib/utils';
+import { generateHiddenAtFieldsUiSchema } from '@/lib/helpers';
 
 const Form = withTheme(ShadcnTheme);
 
 interface IncidentFormProps {
     schema: any;
+    initialData?: any;
+    onSubmit?: (data: any) => Promise<void>;
+    onCancel?: () => void;
+    submitButtonText?: string;
+    mode?: 'create' | 'edit';
 }
 
-export default function IncidentForm({ schema }: IncidentFormProps) {
+export default function IncidentForm({ 
+    schema, 
+    initialData, 
+    onSubmit, 
+    onCancel, 
+    submitButtonText = 'Submit',
+    mode = 'create'
+}: IncidentFormProps) {
 
     const generatedId = `${process.env.NEXT_PUBLIC_LOCAL_DOMAIN}/incidents/${uuid()}`;
 
-    const [data, setData] = useState<any>({ [`@id`]: generatedId });
+    const [data, setData] = useState<any>(() => {
+        if (mode === 'edit' && initialData) {
+            return initialData;
+        }
+        return { [`@id`]: generatedId };
+    });
 
     const handleChange = useCallback(
         (event: any) => setData(event.formData),
@@ -26,18 +43,22 @@ export default function IncidentForm({ schema }: IncidentFormProps) {
     );
 
     const handleSubmit = async ({ formData }: any) => {
-        const response = await fetch('/api/incidents', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
+        if (onSubmit) {
+            await onSubmit(formData);
+        } else {
+            // Default behavior for create mode
+            const response = await fetch('/api/incidents', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
 
-        if (response.ok) {
-            alert('Incident submitted successfully');
-        }
-        else {
-            const error = await response.text();
-            alert(`Submission failed: ${error}`);
+            if (response.ok) {
+                alert('Incident submitted successfully');
+            } else {
+                const error = await response.text();
+                alert(`Submission failed: ${error}`);
+            }
         }
     };
 
@@ -57,9 +78,20 @@ export default function IncidentForm({ schema }: IncidentFormProps) {
                 onChange={handleChange}
                 onSubmit={handleSubmit}
             >
-                <Button type="submit" variant="contained">
-                    Submit
-                </Button>
+                <div className="flex justify-end space-x-2 mt-4">
+                    {onCancel && (
+                        <Button 
+                            type="button" 
+                            variant="outlined" 
+                            onClick={onCancel}
+                        >
+                            Cancel
+                        </Button>
+                    )}
+                    <Button type="submit" variant="contained">
+                        {submitButtonText}
+                    </Button>
+                </div>
             </Form>
         </div>
     );
