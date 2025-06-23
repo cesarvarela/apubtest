@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "PORT=300$NODE_INDEX dotenv -e .env.local.$NODE_INDEX -- next dev --turbopack",
-    "build": "next build",
+    "build": "dotenv -e .env.local.$NODE_INDEX -- next build",
     "start": "PORT=300$NODE_INDEX dotenv -e .env.local.$NODE_INDEX -- next start",
     "lint": "next lint",
     "db:generate": "dotenv -e .env.local.$NODE_INDEX -- drizzle-kit generate",
