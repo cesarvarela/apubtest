@@ -1,6 +1,6 @@
 import Ajv, { type SchemaObject } from "ajv";
 import addFormats from "ajv-formats";
-import { SchemaGenerator, SchemaNotFoundError } from "./schemas";
+import { SchemaGenerator } from "./schemas";
 
 export class Validator {
 
@@ -19,11 +19,9 @@ export class Validator {
         }
 
         try {
-            // Register core schema
             const coreSchema = await schemaGenerator.getCoreSchema();
             this.registerSchema(schemaGenerator.coreContextUrl, coreSchema);
 
-            // Register local schema if it exists
             if (await schemaGenerator.hasLocalSchema()) {
                 const localSchema = await schemaGenerator.getLocalSchema();
                 this.registerSchema(schemaGenerator.localContextUrl, localSchema);
@@ -52,7 +50,7 @@ export class Validator {
     }
 
     validateIncident(payload: any) {
-        // Ensure validator is initialized
+
         if (!this.initialized) {
             throw new Error('Validator not initialized. Call initialize() first.');
         }
@@ -77,12 +75,3 @@ export class Validator {
         return valid;
     }
 }
-
-export const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!, process.env.LOCAL_DOMAIN!, process.env.NAMESPACE!);
-
-export const validator = new Validator();
-
-// Initialize the validator with schemas
-validator.initialize(schemasGenerator).catch(error => {
-    console.error('Failed to initialize validator on startup:', error);
-});

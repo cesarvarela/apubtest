@@ -1,5 +1,4 @@
-import { schemasGenerator } from '@/lib/validation';
-import { SchemaNotFoundError } from '@/lib/schemas';
+import { SchemaGenerator, SchemaNotFoundError } from '@/lib/schemas';
 import LocalSchemaEditor from './LocalSchemaEditor';
 import LocalContextEditor from './LocalContextEditor';
 import CoreSchemaView from './CoreSchemaView';
@@ -11,6 +10,8 @@ export default async function SchemaManagementPage() {
     let coreContext = null;
     let localSchema = null;
     let localContext = null;
+
+    const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!,process.env.LOCAL_DOMAIN!,process.env.NAMESPACE!);
 
     try {
         coreSchema = await schemasGenerator.getCoreSchema();

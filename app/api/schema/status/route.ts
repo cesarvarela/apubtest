@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { schemasGenerator } from '@/lib/validation';
-import { SchemaNotFoundError } from '@/lib/schemas';
+import { SchemaGenerator, SchemaNotFoundError } from '@/lib/schemas';
 
 export async function GET(request: NextRequest) {
     try {
+        const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!, process.env.LOCAL_DOMAIN!, process.env.NAMESPACE!);
+
         const [hasLocal, hasCore] = await Promise.all([
             schemasGenerator.hasLocalSchema(),
             schemasGenerator.hasCoreSchema()
         ]);
 
-        // Try to load schemas to check if they're valid
         let coreSchemaValid = false;
         let localSchemaValid = false;
         let coreError = null;
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
                 localError = 'Invalid local schema';
             }
         }
-        
+
         return NextResponse.json({
             schemas: {
                 core: {
