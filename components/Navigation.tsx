@@ -14,7 +14,7 @@ const Navigation = () => {
     { href: "/peers", label: "Peers" },
     { href: "/pulls", label: "Pulls" },
     { href: "/schema/manage", label: "Schema" },
-    { href: "/vocab/core", label: "Vocabulary" },
+    { href: "/vocab", label: "Vocabulary" },
   ];
 
   const isActiveLink = (href: string) => {
