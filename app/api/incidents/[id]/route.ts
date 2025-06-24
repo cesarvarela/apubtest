@@ -16,15 +16,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         const { id } = await params;
         const idParam = decodeURIComponent(id);
 
-        // Try to find by database ID first
         let incidents = await db.select().from(Incident).where(eq(Incident.id, idParam));
 
-        // If not found by database ID, try by URI (exact match)
         if (incidents.length === 0) {
             incidents = await db.select().from(Incident).where(eq(Incident.uri, idParam));
         }
 
-        // If still not found, try to find by URI that ends with the ID (common case)
         if (incidents.length === 0) {
             incidents = await db.select().from(Incident).where(sql`${Incident.uri} LIKE '%/' || ${idParam}`);
         }
