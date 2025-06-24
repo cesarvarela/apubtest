@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { SchemaObject } from 'ajv';
+import { Button } from '@/components/ui/button';
+import { RotateCcw, Save, Database } from 'lucide-react';
 import SchemaPreview from './SchemaPreview';
 
 interface LocalSchemaEditorProps {
@@ -38,7 +40,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
 
     // Only pre-populate if there's an existing schema
     const initialSchemaText = initialSchema ? JSON.stringify(initialSchema, null, 2) : '';
-    
+
     const [schema, setSchema] = useState<string>(initialSchemaText);
     const [isValid, setIsValid] = useState(!!initialSchema);
     const [validationError, setValidationError] = useState<string>('');
@@ -131,8 +133,27 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to save schema');
+
+                let errorMessage = 'Failed to save schema';
+
+                try {
+                    const error = await response.json();
+                    errorMessage = error.message || error.error || errorMessage;
+                }
+                catch (parseError) {
+
+                    try {
+                        const errorText = await response.text();
+
+                        errorMessage = errorText || `HTTP ${response.status}: ${response.statusText}`;
+                    }
+                    catch (textError) {
+
+                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    }
+                }
+
+                throw new Error(errorMessage);
             }
 
             const result = await response.json();
@@ -141,9 +162,13 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
             setTimeout(() => {
                 window.location.reload();
             }, 2000);
-        } catch (error) {
+        }
+        catch (error) {
+        
             setSaveMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        } finally {
+        }
+        finally {
+        
             setIsSaving(false);
         }
     };
@@ -161,22 +186,28 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Local Schema Editor</h3>
+                <div className="flex items-center space-x-2">
+                    <Database className="h-5 w-5" />
+                    <h3 className="text-lg font-semibold">Local Schema Editor</h3>
+                </div>
                 <div className="flex gap-2">
-                    <button
+                    <Button
                         onClick={handleReset}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                        variant="outline"
+                        size="sm"
                         disabled={isSaving}
                     >
+                        <RotateCcw className="h-4 w-4 mr-2" />
                         Reset
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={handleSave}
                         disabled={!isValid || isSaving || !schema.trim()}
-                        className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        size="sm"
                     >
+                        <Save className="h-4 w-4 mr-2" />
                         {isSaving ? 'Saving...' : (hasExistingSchema ? 'Update Schema' : 'Create Schema')}
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -285,7 +316,7 @@ Example structure:
                                                     {key}
                                                 </span>
                                                 <span className="text-gray-700 text-sm">
-                                                    {typeof value === 'object' && value !== null && 'type' in value 
+                                                    {typeof value === 'object' && value !== null && 'type' in value
                                                         ? `${value.type}${(value as any).$ref ? ` (ref: ${(value as any).$ref})` : ''}`
                                                         : JSON.stringify(value)}
                                                 </span>

@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { RotateCcw, Save, FileCode } from 'lucide-react';
 
 interface LocalContextEditorProps {
     initialContext: any | null;
@@ -102,8 +104,20 @@ export default function LocalContextEditor({ initialContext, namespace, hasExist
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to save context');
+                let errorMessage = 'Failed to save context';
+                try {
+                    const error = await response.json();
+                    errorMessage = error.message || error.error || errorMessage;
+                } catch (parseError) {
+                    // If response is not JSON, try to get text
+                    try {
+                        const errorText = await response.text();
+                        errorMessage = errorText || `HTTP ${response.status}: ${response.statusText}`;
+                    } catch (textError) {
+                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    }
+                }
+                throw new Error(errorMessage);
             }
 
             const result = await response.json();
@@ -132,22 +146,28 @@ export default function LocalContextEditor({ initialContext, namespace, hasExist
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Local Context Editor</h3>
+                <div className="flex items-center space-x-2">
+                    <FileCode className="h-5 w-5" />
+                    <h3 className="text-lg font-semibold">Local Context Editor</h3>
+                </div>
                 <div className="flex gap-2">
-                    <button
+                    <Button
                         onClick={handleReset}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                        variant="outline"
+                        size="sm"
                         disabled={isSaving}
                     >
+                        <RotateCcw className="h-4 w-4 mr-2" />
                         Reset
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={handleSave}
                         disabled={!isValid || isSaving || !context.trim()}
-                        className="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        size="sm"
                     >
+                        <Save className="h-4 w-4 mr-2" />
                         {isSaving ? 'Saving...' : (hasExistingContext ? 'Update Context' : 'Create Context')}
-                    </button>
+                    </Button>
                 </div>
             </div>
 
