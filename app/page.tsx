@@ -22,6 +22,9 @@ export default function Home() {
         <Link href="/pulls">
           Pulls
         </Link>
+        <Link href="/schema/manage">
+          Schema Management
+        </Link>
         <Link href="/vocab/core">
           Vocabulary
         </Link>

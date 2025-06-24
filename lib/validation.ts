@@ -1,15 +1,40 @@
 import Ajv, { type SchemaObject } from "ajv";
 import addFormats from "ajv-formats";
-import { SchemaGenerator } from "./schemas";
+import { SchemaGenerator, SchemaNotFoundError } from "./schemas";
 
 export class Validator {
 
     private ajv: Ajv;
     private registry: Record<string, string> = {};
+    private initialized = false;
 
     constructor() {
         this.ajv = new Ajv({ allErrors: true, strict: false });
         addFormats(this.ajv);
+    }
+
+    async initialize(schemaGenerator: SchemaGenerator) {
+        if (this.initialized) {
+            return;
+        }
+
+        try {
+            // Register core schema
+            const coreSchema = await schemaGenerator.getCoreSchema();
+            this.registerSchema(schemaGenerator.coreContextUrl, coreSchema);
+
+            // Register local schema if it exists
+            if (await schemaGenerator.hasLocalSchema()) {
+                const localSchema = await schemaGenerator.getLocalSchema();
+                this.registerSchema(schemaGenerator.localContextUrl, localSchema);
+            }
+
+            this.initialized = true;
+            console.log('Validator initialized with schemas');
+        } catch (error) {
+            console.error('Failed to initialize validator:', error);
+            throw error;
+        }
     }
 
     registerSchema(contextUrl: string, jsonSchema: SchemaObject) {
@@ -27,6 +52,10 @@ export class Validator {
     }
 
     validateIncident(payload: any) {
+        // Ensure validator is initialized
+        if (!this.initialized) {
+            throw new Error('Validator not initialized. Call initialize() first.');
+        }
 
         if (!payload["@context"] || !this.registry[payload["@context"]]) {
             throw new Error(`No schema registered for context: ${payload["@context"]}`);
@@ -53,5 +82,7 @@ export const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!, pr
 
 export const validator = new Validator();
 
-validator.registerSchema(schemasGenerator.coreContextUrl, await schemasGenerator.getCoreSchema());
-validator.registerSchema(schemasGenerator.localContextUrl, await schemasGenerator.getLocalSchema());
+// Initialize the validator with schemas
+validator.initialize(schemasGenerator).catch(error => {
+    console.error('Failed to initialize validator on startup:', error);
+});

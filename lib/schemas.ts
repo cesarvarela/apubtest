@@ -2,12 +2,26 @@ import { SchemaObject } from "ajv";
 import { db } from "../db";
 import { Schema } from "../db/schema";
 import { eq, and } from "drizzle-orm";
+import { readFileSync } from "fs";
+import { join } from "path";
+
+export class SchemaNotFoundError extends Error {
+    constructor(
+        public schemaType: 'core' | 'local',
+        public contentType: 'schema' | 'context',
+        public namespace?: string
+    ) {
+        const namespaceText = namespace ? ` for namespace "${namespace}"` : '';
+        super(`${schemaType} ${contentType}${namespaceText} not found in database. Please configure it at /schema/manage`);
+        this.name = 'SchemaNotFoundError';
+    }
+}
 
 export class SchemaGenerator {
 
     constructor(
-        public coreDomain: string, 
-        public localDomain: string, 
+        public coreDomain: string,
+        public localDomain: string,
         public namespace: string
     ) {
         const missing: string[] = [];
@@ -29,11 +43,11 @@ export class SchemaGenerator {
     }
 
     get coreContextUrl(): string {
-        return `${this.coreDomain}/context/core-v1.jsonld`;
+        return `${this.coreDomain}/schemas/core-context.jsonld`;
     }
 
     get coreSchemaUrl(): string {
-        return `${this.coreDomain}/schema/core-v1.json`;
+        return `${this.coreDomain}/schemas/core-schema.json`;
     }
 
     get coreVocabUrl(): string {
@@ -56,18 +70,29 @@ export class SchemaGenerator {
             if (result.length > 0) {
                 return result[0].content as SchemaObject;
             }
-        } catch (error) {
-            console.warn('Failed to load core context from database, using fallback:', error);
-        }
 
-        // Fallback if not found in database
-        return {
-            "@context": {
-                "@vocab": `${this.coreVocabUrl}#`,
-                "@protected": true,
-                "@id": "@id",
-                "@type": "@type",
-            },
+            // If not found in database, load from file and insert
+            console.log('Core context not found in database, loading from file...');
+            const filePath = join(process.cwd(), 'schemas', 'core-context.jsonld');
+            const fileContent = readFileSync(filePath, 'utf-8');
+            const contextObject = JSON.parse(fileContent) as SchemaObject;
+
+            // Insert into database
+            await db.insert(Schema).values({
+                type: 'context',
+                namespace: 'core',
+                version: 'v1',
+                uri: this.coreContextUrl,
+                content: contextObject,
+                isActive: true
+            });
+
+            console.log('Core context loaded and cached in database');
+            return contextObject;
+
+        } catch (error) {
+            console.error('Database error while loading core context:', error);
+            throw new SchemaNotFoundError('core', 'context');
         }
     }
 
@@ -87,20 +112,29 @@ export class SchemaGenerator {
             if (result.length > 0) {
                 return result[0].content as SchemaObject;
             }
-        } catch (error) {
-            console.warn('Failed to load core schema from database, using fallback:', error);
-        }
 
-        // Fallback if not found in database
-        return {
-            $id: this.coreSchemaUrl,
-            type: "object",
-            required: ["@id", "@type"],
-            properties: {
-                "@id": { type: "string", format: "uri" },
-                "@type": { const: "Incident" },
-            },
-            additionalProperties: true,
+            // If not found in database, load from file and insert
+            console.log('Core schema not found in database, loading from file...');
+            const filePath = join(process.cwd(), 'schemas', 'core-schema.json');
+            const fileContent = readFileSync(filePath, 'utf-8');
+            const schemaObject = JSON.parse(fileContent) as SchemaObject;
+
+            // Insert into database
+            await db.insert(Schema).values({
+                type: 'schema',
+                namespace: 'core',
+                version: 'v1',
+                uri: this.coreSchemaUrl,
+                content: schemaObject,
+                isActive: true
+            });
+
+            console.log('Core schema loaded and cached in database');
+            return schemaObject;
+
+        } catch (error) {
+            console.error('Database error while loading core schema:', error);
+            throw new SchemaNotFoundError('core', 'schema');
         }
     }
 
@@ -121,23 +155,12 @@ export class SchemaGenerator {
                 return result[0].content as SchemaObject;
             }
         } catch (error) {
-            console.warn('Failed to load local context from database, using fallback:', error);
+            console.error('Database error while loading local context:', error);
+            throw new SchemaNotFoundError('local', 'context', this.namespace);
         }
 
-        // Fallback if not found in database
-        return {
-            "@context": [
-                this.coreContextUrl, // include the core context
-                {
-                    "schema": "http://schema.org/", // use definition from schema.org
-                    "title": "schema:headline",
-                    "reports": {
-                        "@id": "schema:citation",
-                        "@container": "@set",
-                    }
-                }
-            ]
-        }
+        // No fallback - throw error if not found
+        throw new SchemaNotFoundError('local', 'context', this.namespace);
     }
 
     async getLocalSchema(): Promise<SchemaObject> {
@@ -148,7 +171,7 @@ export class SchemaGenerator {
                 .where(and(
                     eq(Schema.type, 'schema'),
                     eq(Schema.namespace, this.namespace),
-                    eq(Schema.version, 'v1'),
+                    eq(Schema.version, 'v1'), // TODO: handle versioning properly
                     eq(Schema.isActive, true)
                 ))
                 .limit(1);
@@ -157,39 +180,51 @@ export class SchemaGenerator {
                 return result[0].content as SchemaObject;
             }
         } catch (error) {
-            console.warn('Failed to load local schema from database, using fallback:', error);
+            console.error('Database error while loading local schema:', error);
+            throw new SchemaNotFoundError('local', 'schema', this.namespace);
         }
 
-        // Fallback if not found in database
-        return {
-            $id: this.localSchemaUrl,
-            definitions: {
-                reportArray: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        required: ["@type", "url", "headline"],
-                        properties: {
-                            "@type": { const: "Article" },
-                            url: { type: "string", format: "uri" },
-                            headline: { type: "string" }
-                        },
-                        additionalProperties: true,
-                    }
-                }
-            },
-            allOf: [
-                { $ref: this.coreSchemaUrl },
-                {
-                    type: "object",
-                    properties: {
-                        title: { type: "string", minLength: 5 },
-                        reports: { $ref: "#/definitions/reportArray" }
-                    },
-                    additionalProperties: true
-                }
-            ]
+        // No fallback - throw error if not found
+        throw new SchemaNotFoundError('local', 'schema', this.namespace);
+    }
+
+    async hasLocalSchema(): Promise<boolean> {
+        try {
+            const result = await db
+                .select({ id: Schema.id })
+                .from(Schema)
+                .where(and(
+                    eq(Schema.type, 'schema'),
+                    eq(Schema.namespace, this.namespace),
+                    eq(Schema.version, 'v1'),
+                    eq(Schema.isActive, true)
+                ))
+                .limit(1);
+
+            return result.length > 0;
+        } catch (error) {
+            console.warn('Failed to check local schema existence:', error);
+            return false;
         }
     }
 
+    async hasCoreSchema(): Promise<boolean> {
+        try {
+            const result = await db
+                .select({ id: Schema.id })
+                .from(Schema)
+                .where(and(
+                    eq(Schema.type, 'schema'),
+                    eq(Schema.namespace, 'core'),
+                    eq(Schema.version, 'v1'),
+                    eq(Schema.isActive, true)
+                ))
+                .limit(1);
+
+            return result.length > 0;
+        } catch (error) {
+            console.warn('Failed to check core schema existence:', error);
+            return false;
+        }
+    }
 }

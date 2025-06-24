@@ -9,7 +9,6 @@ export default async function IncidentPage() {
         schemasGenerator.getLocalSchema(),
     ]);
 
-    // Merge core and local schemas into a single properties object (flatten allOf)
     const mergedSchema = mergeSchemas(core, local);
 
     return (
