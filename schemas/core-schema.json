@@ -1,6 +1,7 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-schema.json",
     "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "required": [
         "@id",
         "@type"
@@ -15,4 +16,4 @@
         }
     },
     "additionalProperties": true
-} 
+}
