@@ -9,23 +9,33 @@ interface LocalContextEditorProps {
 }
 
 export default function LocalContextEditor({ initialContext, namespace, hasExistingContext }: LocalContextEditorProps) {
-    const defaultContext = initialContext || {
+    const defaultContextTemplate = {
         "@context": [
-            "http://localhost:3000/context/core-v1.jsonld",
+            "https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-context.jsonld",
             {
                 "schema": "http://schema.org/"
             }
         ]
     };
     
-    const [context, setContext] = useState<string>(JSON.stringify(defaultContext, null, 2));
-    const [isValid, setIsValid] = useState(true);
+    // Only pre-populate if there's an existing context
+    const initialContextText = initialContext ? JSON.stringify(initialContext, null, 2) : '';
+    
+    const [context, setContext] = useState<string>(initialContextText);
+    const [isValid, setIsValid] = useState(!!initialContext);
     const [validationError, setValidationError] = useState<string>('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState<string>('');
-    const [parsedContext, setParsedContext] = useState<any | null>(defaultContext);
+    const [parsedContext, setParsedContext] = useState<any | null>(initialContext);
 
     const validateContext = (contextText: string): boolean => {
+        // Allow empty context text (will show placeholder)
+        if (!contextText.trim()) {
+            setValidationError('');
+            setParsedContext(null);
+            return false;
+        }
+
         try {
             const parsed = JSON.parse(contextText);
 
@@ -40,8 +50,8 @@ export default function LocalContextEditor({ initialContext, namespace, hasExist
                 }
                 
                 const coreReference = parsed['@context'][0];
-                if (typeof coreReference !== 'string' || !coreReference.includes('core-v1.jsonld')) {
-                    throw new Error('First element of @context array must be a reference to the core context (e.g., "http://localhost:3000/context/core-v1.jsonld")');
+                if (typeof coreReference !== 'string' || !coreReference.includes('core-context.jsonld')) {
+                    throw new Error('First element of @context array must be a reference to the core context (e.g., "https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-context.jsonld")');
                 }
 
                 const localMappings = parsed['@context'][1];
@@ -70,8 +80,8 @@ export default function LocalContextEditor({ initialContext, namespace, hasExist
     };
 
     const handleSave = async () => {
-        if (!isValid) {
-            setSaveMessage('Cannot save invalid context');
+        if (!isValid || !context.trim()) {
+            setSaveMessage('Cannot save invalid or empty context');
             return;
         }
 
@@ -110,9 +120,9 @@ export default function LocalContextEditor({ initialContext, namespace, hasExist
     };
 
     const handleReset = () => {
-        const contextText = JSON.stringify(defaultContext, null, 2);
+        const contextText = JSON.stringify(defaultContextTemplate, null, 2);
         setContext(contextText);
-        setParsedContext(defaultContext);
+        setParsedContext(defaultContextTemplate);
 
         setIsValid(true);
         setValidationError('');
@@ -133,7 +143,7 @@ export default function LocalContextEditor({ initialContext, namespace, hasExist
                     </button>
                     <button
                         onClick={handleSave}
-                        disabled={!isValid || isSaving}
+                        disabled={!isValid || isSaving || !context.trim()}
                         className="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSaving ? 'Saving...' : (hasExistingContext ? 'Update Context' : 'Create Context')}
@@ -176,7 +186,7 @@ export default function LocalContextEditor({ initialContext, namespace, hasExist
 Example structure:
 {
   "@context": [
-    "http://localhost:3000/context/core-v1.jsonld",
+    "https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-context.jsonld",
     {
       "title": "schema:headline",
       "author": "schema:author",
@@ -193,7 +203,7 @@ Example structure:
                 <h4 className="font-medium text-gray-900">Context Guidelines:</h4>
                 <ul className="list-disc list-inside space-y-1 ml-4">
                     <li>The context must have a <code className="bg-gray-100 px-1 rounded">@context</code> property that is an array</li>
-                    <li>First element must reference the core context: <code className="bg-gray-100 px-1 rounded text-xs">"http://localhost:3000/context/core-v1.jsonld"</code></li>
+                    <li>First element must reference the core context: <code className="bg-gray-100 px-1 rounded text-xs">https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-context.jsonld</code></li>
                     <li>Second element must be an object containing local semantic mappings</li>
                     <li>Use schema.org vocabulary where possible (e.g., <code className="bg-gray-100 px-1 rounded">"schema:headline"</code>)</li>
                     <li>Define container types for arrays using <code className="bg-gray-100 px-1 rounded">@container</code></li>

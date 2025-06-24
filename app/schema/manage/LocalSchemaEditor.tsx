@@ -11,12 +11,12 @@ interface LocalSchemaEditorProps {
 }
 
 export default function LocalSchemaEditor({ initialSchema, namespace, hasExistingSchema }: LocalSchemaEditorProps) {
-    const defaultSchema = initialSchema || {
+    const defaultSchemaTemplate = {
         "$id": `http://localhost:3002/schema/${namespace}-v1.json`,
         "type": "object",
         "allOf": [
             {
-                "$ref": "http://localhost:3000/schema/core-v1.json"
+                "$ref": "https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-schema.json"
             },
             {
                 "type": "object",
@@ -36,14 +36,24 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
         ]
     };
 
-    const [schema, setSchema] = useState<string>(JSON.stringify(defaultSchema, null, 2));
-    const [isValid, setIsValid] = useState(true);
+    // Only pre-populate if there's an existing schema
+    const initialSchemaText = initialSchema ? JSON.stringify(initialSchema, null, 2) : '';
+    
+    const [schema, setSchema] = useState<string>(initialSchemaText);
+    const [isValid, setIsValid] = useState(!!initialSchema);
     const [validationError, setValidationError] = useState<string>('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState<string>('');
-    const [parsedSchema, setParsedSchema] = useState<SchemaObject | null>(defaultSchema);
+    const [parsedSchema, setParsedSchema] = useState<SchemaObject | null>(initialSchema);
 
     const validateSchema = (schemaText: string): boolean => {
+        // Allow empty schema text (will show placeholder)
+        if (!schemaText.trim()) {
+            setValidationError('');
+            setParsedSchema(null);
+            return false;
+        }
+
         try {
             const parsed = JSON.parse(schemaText);
 
@@ -61,8 +71,8 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
 
             // Check first element is a reference to core schema
             const coreRef = parsed.allOf[0];
-            if (!coreRef.$ref || !coreRef.$ref.includes('core-v1.json')) {
-                throw new Error('First element of allOf must be a $ref to the core schema (e.g., "http://localhost:3000/schema/core-v1.json")');
+            if (!coreRef.$ref || !coreRef.$ref.includes('core-schema.json')) {
+                throw new Error('First element of allOf must be a $ref to the core schema (e.g., "https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-schema.json")');
             }
 
             // Check second element has local schema properties
@@ -99,8 +109,8 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
     };
 
     const handleSave = async () => {
-        if (!isValid) {
-            setSaveMessage('Cannot save invalid schema');
+        if (!isValid || !schema.trim()) {
+            setSaveMessage('Cannot save invalid or empty schema');
             return;
         }
 
@@ -139,9 +149,9 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
     };
 
     const handleReset = () => {
-        const schemaText = JSON.stringify(defaultSchema, null, 2);
+        const schemaText = JSON.stringify(defaultSchemaTemplate, null, 2);
         setSchema(schemaText);
-        setParsedSchema(defaultSchema);
+        setParsedSchema(defaultSchemaTemplate);
 
         setIsValid(true);
         setValidationError('');
@@ -162,7 +172,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
                     </button>
                     <button
                         onClick={handleSave}
-                        disabled={!isValid || isSaving}
+                        disabled={!isValid || isSaving || !schema.trim()}
                         className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSaving ? 'Saving...' : (hasExistingSchema ? 'Update Schema' : 'Create Schema')}
@@ -208,7 +218,7 @@ Example structure:
   "type": "object",
   "allOf": [
     {
-      "$ref": "http://localhost:3000/schema/core-v1.json"
+      "$ref": "https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-schema.json"
     },
     {
       "type": "object",
@@ -233,6 +243,7 @@ Example structure:
                 <ul className="list-disc list-inside space-y-1 ml-4">
                     <li>The schema must have a <code className="bg-gray-100 px-1 rounded">$id</code> property with your namespace URL</li>
                     <li>Must use <code className="bg-gray-100 px-1 rounded">allOf</code> array with core schema <code className="bg-gray-100 px-1 rounded">$ref</code> as first element</li>
+                    <li>The core schema reference must point to: <code className="bg-gray-100 px-1 rounded text-xs">https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-schema.json</code></li>
                     <li>Second element defines local properties with <code className="bg-gray-100 px-1 rounded">type: "object"</code></li>
                     <li>Include <code className="bg-gray-100 px-1 rounded">required</code> array for mandatory fields</li>
                     <li>Use <code className="bg-gray-100 px-1 rounded">definitions</code> section for reusable schemas (referenced via <code className="bg-gray-100 px-1 rounded">#/definitions/</code>)</li>
