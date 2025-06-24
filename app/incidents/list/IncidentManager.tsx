@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import IncidentForm from '../IncidentForm';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -11,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Edit, Eye } from 'lucide-react';
 
 interface IncidentRecord {
   id: string;
@@ -28,6 +31,9 @@ export default function IncidentManager() {
   const [editData, setEditData] = useState<string>('');
   const [saving, setSaving] = useState<boolean>(false);
   const [schema, setSchema] = useState<any>(null);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Helper function to extract incident ID from URI
   const getIncidentIdFromUri = (uri: string): string => {
@@ -35,7 +41,6 @@ export default function IncidentManager() {
     return parts[parts.length - 1];
   };
 
-  // Load incidents
   useEffect(() => {
     fetch('/api/incidents')
       .then((res) => res.json())
@@ -43,7 +48,6 @@ export default function IncidentManager() {
       .catch(() => alert('Failed to load incidents'));
   }, []);
 
-  // Load schema
   useEffect(() => {
     fetch('/api/schema')
       .then((res) => res.json())
@@ -51,7 +55,6 @@ export default function IncidentManager() {
       .catch(() => alert('Failed to load schema'));
   }, []);
 
-  // Group by sourceNode
   useEffect(() => {
     const g: Record<string, IncidentRecord[]> = {};
     incidents.forEach((inc) => {
@@ -65,18 +68,43 @@ export default function IncidentManager() {
   const startEdit = (inc: IncidentRecord) => {
     setEditing(inc);
     setEditData(JSON.stringify(inc.data, null, 2));
-    setEditMode('form'); // Default to form mode
+    setEditMode('form');
+    setIsEditDialogOpen(true);
   };
 
   const cancelEdit = () => {
     setEditing(null);
     setEditData('');
     setEditMode('form');
+    setIsEditDialogOpen(false);
+  };
+
+  const handleCreateSubmit = async (formData: any) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/incidents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        const newIncident = await res.json();
+        setIncidents((prev) => [...prev, newIncident]);
+        setIsCreateDialogOpen(false);
+      } else {
+        const err = await res.json();
+        alert(`Creation failed: ${err.error}`);
+      }
+    } catch (error) {
+      alert('Creation failed: Network error');
+    }
+    setIsLoading(false);
   };
 
   const handleFormSubmit = async (formData: any) => {
     if (!editing) return;
-    
+
     setSaving(true);
     try {
       const res = await fetch(`/api/incidents/${editing.id}`, {
@@ -84,7 +112,7 @@ export default function IncidentManager() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      
+
       if (res.ok) {
         const updated = await res.json();
         setIncidents((prev) => prev.map((i) => (i.id === editing.id ? { ...i, data: updated } : i)));
@@ -101,7 +129,7 @@ export default function IncidentManager() {
 
   const saveJsonEdit = async () => {
     if (!editing) return;
-    
+
     let json;
     try {
       json = JSON.parse(editData);
@@ -109,7 +137,7 @@ export default function IncidentManager() {
       alert('Invalid JSON');
       return;
     }
-    
+
     setSaving(true);
     try {
       const res = await fetch(`/api/incidents/${editing.id}`, {
@@ -117,7 +145,7 @@ export default function IncidentManager() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(json),
       });
-      
+
       if (res.ok) {
         const updated = await res.json();
         setIncidents((prev) => prev.map((i) => (i.id === editing.id ? { ...i, data: updated } : i)));
@@ -134,31 +162,35 @@ export default function IncidentManager() {
 
   return (
     <div className="space-y-6">
-      {/* Edit Modal */}
-      {editing && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-4/5 max-h-[90vh] overflow-auto">
-            <div className="sticky top-0 bg-white border-b p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Edit Incident</h2>
-                <div className="flex space-x-2">
-                  <button
-                    className={`px-3 py-1 rounded ${editMode === 'form' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                    onClick={() => setEditMode('form')}
-                  >
-                    Form Edit
-                  </button>
-                  <button
-                    className={`px-3 py-1 rounded ${editMode === 'json' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                    onClick={() => setEditMode('json')}
-                  >
-                    JSON Edit
-                  </button>
-                </div>
-              </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Incident</DialogTitle>
+            <DialogDescription>
+              Modify the incident details below
+            </DialogDescription>
+            <div className="flex space-x-2 mt-4">
+              <Button
+                variant={editMode === 'form' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setEditMode('form')}
+              >
+                Form Edit
+              </Button>
+              <Button
+                variant={editMode === 'json' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setEditMode('json')}
+              >
+                JSON Edit
+              </Button>
             </div>
-            
-            <div className="p-4">
+          </DialogHeader>
+
+          {editing && (
+            <div>
               {editMode === 'form' && schema ? (
                 <IncidentForm
                   schema={schema}
@@ -169,97 +201,109 @@ export default function IncidentManager() {
                   mode="edit"
                 />
               ) : editMode === 'json' ? (
-                <div>
+                <div className="space-y-4">
                   <textarea
-                    className="w-full h-64 border p-2 mb-2 font-mono text-sm"
+                    className="w-full h-64 border p-2 font-mono text-sm rounded-md"
                     value={editData}
                     onChange={(e) => setEditData(e.target.value)}
                   />
                   <div className="flex justify-end space-x-2">
-                    <button
-                      className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                    <Button
+                      variant="outline"
                       onClick={cancelEdit}
                       disabled={saving}
                     >
                       Cancel
-                    </button>
-                    <button
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    </Button>
+                    <Button
                       onClick={saveJsonEdit}
                       disabled={saving}
                     >
                       {saving ? 'Saving...' : 'Save Changes'}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ) : (
                 <div className="p-4 text-center">Loading schema...</div>
               )}
             </div>
-          </div>
-        </div>
-      )}
+          )}
+        </DialogContent>
+      </Dialog>
 
-      {/* Incidents Table */}
-      {(Object.entries(grouped) as [string, IncidentRecord[]][]).map(([source, items]) => (
-        <div key={source} className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">
-            {source === 'local' ? 'Local Incidents' : source}
-          </h2>
-          <div className="bg-white shadow rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>URI</TableHead>
-                  <TableHead>Created At</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map((inc) => {
-                  const incidentId = getIncidentIdFromUri(inc.uri);
-                  const title = inc.data?.title || 'No title';
-                  return (
-                    <TableRow key={inc.id}>
-                      <TableCell>
-                        <Link 
-                          href={`/incidents/${incidentId}`}
-                          className="text-blue-600 hover:text-blue-800 hover:underline text-sm break-all"
-                        >
-                          {inc.uri}
-                        </Link>
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-900">
-                        {new Date(inc.createdAt).toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-900">
-                        <div className="max-w-xs truncate" title={title}>
-                          {title}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm space-x-3">
-                        <Link 
-                          href={`/incidents/${incidentId}`}
-                          className="text-blue-600 hover:text-blue-800 font-medium"
-                        >
-                          View
-                        </Link>
-                        <button 
-                          className="text-green-600 hover:text-green-800 font-medium" 
-                          onClick={() => startEdit(inc)}
-                        >
-                          Edit
-                        </button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+      {Object.keys(grouped).length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">
+          <p>No incidents found. Create your first incident to get started.</p>
         </div>
-      ))}
+      ) : (
+        (Object.entries(grouped) as [string, IncidentRecord[]][]).map(([source, items]) => (
+          <div key={source} className="space-y-4">
+            <h3 className="text-lg font-medium">
+              {source === 'local' ? 'Local Incidents' : source}
+            </h3>
+            <div className="border rounded-lg">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>URI</TableHead>
+                    <TableHead>Created At</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {items.map((inc) => {
+                    const incidentId = getIncidentIdFromUri(inc.uri);
+                    const title = inc.data?.title || 'No title';
+                    return (
+                      <TableRow key={inc.id}>
+                        <TableCell className="font-mono text-sm">
+                          <Link
+                            href={`/incidents/${incidentId}`}
+                            className="text-blue-600 hover:text-blue-800 hover:underline break-all"
+                          >
+                            {inc.uri}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {new Date(inc.createdAt).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          <div className="max-w-xs truncate" title={title}>
+                            {title}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              asChild
+                            >
+                              <Link href={`/incidents/${incidentId}`}>
+                                <Eye className="h-4 w-4 mr-1" />
+                                View
+                              </Link>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => startEdit(inc)}
+                            >
+                              <Edit className="h-4 w-4 mr-1" />
+                              Edit
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        ))
+      )}
     </div>
   );
 }

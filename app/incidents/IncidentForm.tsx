@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { withTheme } from '@rjsf/core';
 import { Theme as ShadcnTheme } from '@rjsf/shadcn';
-import { Button } from '@mui/material';
+import { Button } from '@/components/ui/button';
 import { v4 as uuid } from 'uuid';
 import validator from '@rjsf/validator-ajv8';
 import { generateHiddenAtFieldsUiSchema } from '@/lib/helpers';
@@ -82,13 +82,13 @@ export default function IncidentForm({
                     {onCancel && (
                         <Button 
                             type="button" 
-                            variant="outlined" 
+                            variant="outline" 
                             onClick={onCancel}
                         >
                             Cancel
                         </Button>
                     )}
-                    <Button type="submit" variant="contained">
+                    <Button type="submit" variant="default">
                         {submitButtonText}
                     </Button>
                 </div>
