@@ -1,10 +1,11 @@
-import { SchemaGenerator, SchemaNotFoundError } from '@/lib/schemas';
+import { SchemaNotFoundError } from '@/lib/schemas';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileCode, Database } from 'lucide-react';
 import LocalSchemaEditor from './LocalSchemaEditor';
 import LocalContextEditor from './LocalContextEditor';
 import CoreSchemaView from './CoreSchemaView';
 import CoreContextView from './CoreContextView';
+import { getGeneratorValidator } from '@/lib/getGeneratorValidator';
 
 export default async function SchemaManagementPage() {
 
@@ -13,7 +14,7 @@ export default async function SchemaManagementPage() {
     let localSchema = null;
     let localContext = null;
 
-    const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!,process.env.LOCAL_DOMAIN!,process.env.NAMESPACE!);
+    const [schemasGenerator] = await getGeneratorValidator();
 
     try {
         coreSchema = await schemasGenerator.getCoreSchema();
@@ -68,16 +69,6 @@ export default async function SchemaManagementPage() {
 
                 {/* Local Schema and Context - Editable */}
                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                            <Database className="h-5 w-5" />
-                            <span>Local Schema & Context</span>
-                        </CardTitle>
-                        <CardDescription>
-                            Edit your local schema and context definitions for namespace:{' '}
-                            <code className="bg-muted px-1 rounded text-sm">{schemasGenerator.namespace}</code>
-                        </CardDescription>
-                    </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                             <LocalSchemaEditor

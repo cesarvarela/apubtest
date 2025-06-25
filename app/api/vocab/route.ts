@@ -1,4 +1,4 @@
-import { SchemaGenerator } from '@/lib/schemas';
+import { getGeneratorValidator } from '@/lib/getGeneratorValidator';
 import { NextResponse } from 'next/server';
 
 interface PropertyInfo {
@@ -29,7 +29,7 @@ interface VocabData {
 
 function extractPropertiesFromSchema(schema: any, contextMappings: Record<string, any> = {}): PropertyInfo[] {
     const properties: PropertyInfo[] = [];
-    
+
     if (!schema || typeof schema !== 'object') {
         return properties;
     }
@@ -81,7 +81,7 @@ function extractPropertiesFromSchema(schema: any, contextMappings: Record<string
 
 function extractContextMappings(context: any): Record<string, any> {
     const mappings: Record<string, any> = {};
-    
+
     if (!context || typeof context !== 'object') {
         return mappings;
     }
@@ -106,18 +106,8 @@ function extractContextMappings(context: any): Record<string, any> {
 
 export async function GET() {
     try {
-        if (!process.env.CORE_DOMAIN || !process.env.LOCAL_DOMAIN || !process.env.NAMESPACE) {
-            return NextResponse.json(
-                { error: 'Missing required environment variables' },
-                { status: 500 }
-            );
-        }
 
-        const schemasGenerator = new SchemaGenerator(
-            process.env.CORE_DOMAIN,
-            process.env.LOCAL_DOMAIN,
-            process.env.NAMESPACE
-        );
+        const [schemasGenerator] = await getGeneratorValidator();
 
         const [localSchema, localContext] = await Promise.all([
             schemasGenerator.getLocalSchema().catch(() => null),
@@ -126,10 +116,10 @@ export async function GET() {
 
         if (!localSchema || !localContext) {
             return NextResponse.json(
-                { 
+                {
                     error: 'Local schema or context not found',
                     hasSchema: !!localSchema,
-                    hasContext: !!localContext 
+                    hasContext: !!localContext
                 },
                 { status: 404 }
             );
