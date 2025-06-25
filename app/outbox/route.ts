@@ -1,13 +1,13 @@
 import { db } from "@/db";
 import { Incident } from "@/db/schema";
-import { SchemaGenerator } from "@/lib/schemas";
+import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
 import { eq, desc } from "drizzle-orm";
 
 export async function GET(request: Request) {
 
     const page = Number(new URL(request.url).searchParams.get("page") ?? 0);
     const pageSize = 50;
-    const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!, process.env.LOCAL_DOMAIN!, process.env.NAMESPACE!);
+    const [schemasGenerator] = await getGeneratorValidator();
 
     const incidents = await db
         .select()

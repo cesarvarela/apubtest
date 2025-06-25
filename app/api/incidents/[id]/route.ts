@@ -2,16 +2,12 @@ import { NextRequest } from "next/server";
 import { db } from "@/db";
 import { Incident } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
-import { Validator } from "@/lib/validation";
-import { SchemaGenerator } from "@/lib/schemas";
+import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
 
-        const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!, process.env.LOCAL_DOMAIN!, process.env.NAMESPACE!);
-        const validator = new Validator();
-
-        await validator.initialize(schemasGenerator);
+        const [schemasGenerator, validator] = await getGeneratorValidator();
 
         const { id } = await params;
         const idParam = decodeURIComponent(id);
@@ -45,11 +41,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         const { id } = await params;
         const idParam = decodeURIComponent(id);
 
-        const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!, process.env.LOCAL_DOMAIN!, process.env.NAMESPACE!);
-        const validator = new Validator();  
-
-        await validator.initialize(schemasGenerator);
-
+        const [schemasGenerator, validator] = await getGeneratorValidator();
 
         let existingIncidents = await db.select().from(Incident).where(eq(Incident.id, idParam));
 

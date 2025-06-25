@@ -1,4 +1,4 @@
-import { SchemaGenerator } from "@/lib/schemas";
+import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -7,7 +7,8 @@ export async function GET(
 ) {
   const { slug } = await params;
   const [filename] = slug;
-  const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!, process.env.LOCAL_DOMAIN!, process.env.NAMESPACE!);
+  const [schemasGenerator] = await getGeneratorValidator();
+
 
   if (filename === "core-v1.jsonld") {
 
@@ -26,7 +27,7 @@ export async function GET(
   if (match) {
 
     const namespaceParam = match[1];
-    
+
     if (namespaceParam === process.env.NAMESPACE) {
 
       const context = await schemasGenerator.getLocalContext();

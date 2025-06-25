@@ -1,12 +1,11 @@
 import { NextRequest } from "next/server";
 import { db } from "@/db";
 import { Incident } from "@/db/schema";
-import { Validator } from "@/lib/validation";
 import { v4 as uuid } from "uuid";
-import { SchemaGenerator } from "@/lib/schemas";
+import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
 
 export async function GET() {
-    
+
     try {
         const incidents = await db.select().from(Incident).orderBy(Incident.createdAt);
         return Response.json(incidents);
@@ -21,10 +20,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!, process.env.LOCAL_DOMAIN!, process.env.NAMESPACE!);
-    const validator = new Validator();
-
-    await validator.initialize(schemasGenerator);
+    const [schemasGenerator, validator] = await getGeneratorValidator();
 
     body["@id"] ??= `${process.env.LOCAL_DOMAIN}/incidents/${uuid()}`;
     body["@context"] ??= schemasGenerator.localContextUrl;

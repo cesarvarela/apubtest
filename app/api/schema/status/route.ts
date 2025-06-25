@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SchemaGenerator, SchemaNotFoundError } from '@/lib/schemas';
+import { SchemaNotFoundError } from '@/lib/schemas';
+import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
 
 export async function GET(request: NextRequest) {
     try {
-        const schemasGenerator = new SchemaGenerator(process.env.CORE_DOMAIN!, process.env.LOCAL_DOMAIN!, process.env.NAMESPACE!);
+        const [schemasGenerator] = await getGeneratorValidator();
 
         const [hasLocal, hasCore] = await Promise.all([
             schemasGenerator.hasLocalSchema(),
