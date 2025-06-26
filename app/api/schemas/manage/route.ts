@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from 'next/cache';
-import { SchemaGenerator } from '@/lib/schemas';
+import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
 
 export async function POST(request: NextRequest) {
     try {
@@ -20,14 +20,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Create SchemaGenerator instance for the given namespace
-        const coreDomain = process.env.CORE_DOMAIN || 'https://github.com/ul-dsri/semantic-incident-db-prototype';
-        const localDomain = process.env.LOCAL_DOMAIN || 'http://localhost:3000';
-        
-        const schemaGenerator = new SchemaGenerator(coreDomain, localDomain, namespace);
+        const [schemaGenerator] = await getGeneratorValidator();
 
         try {
-            // Save using centralized schema management
             const result = await schemaGenerator.save(type, namespace, schema);
 
             // Invalidate the schema management page cache
@@ -75,11 +70,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        // Create SchemaGenerator instance for the given namespace
-        const coreDomain = process.env.CORE_DOMAIN || 'https://github.com/ul-dsri/semantic-incident-db-prototype';
-        const localDomain = process.env.LOCAL_DOMAIN || 'http://localhost:3000';
-        
-        const schemaGenerator = new SchemaGenerator(coreDomain, localDomain, namespace);
+        const [schemaGenerator] = await getGeneratorValidator();
 
         try {
             const schema = await schemaGenerator.get(type, namespace);
@@ -132,11 +123,7 @@ export async function DELETE(request: NextRequest) {
             );
         }
 
-        // Create SchemaGenerator instance for the given namespace
-        const coreDomain = process.env.CORE_DOMAIN || 'https://github.com/ul-dsri/semantic-incident-db-prototype';
-        const localDomain = process.env.LOCAL_DOMAIN || 'http://localhost:3000';
-        
-        const schemaGenerator = new SchemaGenerator(coreDomain, localDomain, namespace);
+        const [schemaGenerator] = await getGeneratorValidator();
 
         try {
             const result = await schemaGenerator.delete(type, namespace);

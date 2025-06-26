@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SchemaGenerator } from '@/lib/schemas';
+import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
 
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const namespace = searchParams.get('namespace') || process.env.NEXT_PUBLIC_NAMESPACE!;
 
-        // Create SchemaGenerator instance
-        const coreDomain = process.env.CORE_DOMAIN || 'https://github.com/ul-dsri/semantic-incident-db-prototype';
-        const localDomain = process.env.LOCAL_DOMAIN || 'http://localhost:3000';
-        
-        const schemaGenerator = new SchemaGenerator(coreDomain, localDomain, namespace);
+        const [schemaGenerator] = await getGeneratorValidator();
 
         try {
             const context = await schemaGenerator.get('context', namespace);

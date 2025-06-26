@@ -19,14 +19,14 @@ export async function GET(request: Request) {
 
     return Response.json({
         "@context": "https://www.w3.org/ns/activitystreams",
-        id: `${process.env.LOCAL_DOMAIN}/outbox?page=${page}`,
+        id: `${process.env.NEXT_PUBLIC_LOCAL_DOMAIN}/outbox?page=${page}`,
         type: "OrderedCollectionPage",
         next: incidents.length === pageSize ? `${process.env.DOMAIN}/outbox?page=${page + 1}` : undefined,
         orderedItems: incidents.map((incident) => ({
             "@context": ["https://www.w3.org/ns/activitystreams", schemasGenerator.coreContextUrl],
             id: `${incident.uri}#create`,
             type: "Create",
-            actor: `${process.env.LOCAL_DOMAIN}/actor`,
+            actor: `${process.env.NEXT_PUBLIC_LOCAL_DOMAIN}/actor`,
             object: incident.data,
         })),
     });

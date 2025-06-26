@@ -4,9 +4,9 @@ import { Validator } from "./validation";
 export async function getGeneratorValidator(): Promise<[SchemaGenerator, Validator]> {
 
     const schemasGenerator = new SchemaGenerator(
-        process.env.CORE_DOMAIN!,
-        process.env.LOCAL_DOMAIN!,
-        process.env.NAMESPACE!
+        process.env.NEXT_PUBLIC_CORE_DOMAIN!,
+        process.env.NEXT_PUBLIC_LOCAL_DOMAIN!,
+        process.env.NEXT_PUBLIC_NAMESPACE!
     );
     const validator = new Validator();
 

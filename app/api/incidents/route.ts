@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     const [schemasGenerator, validator] = await getGeneratorValidator();
 
-    body["@id"] ??= `${process.env.LOCAL_DOMAIN}/incidents/${uuid()}`;
+    body["@id"] ??= `${process.env.NEXT_PUBLIC_LOCAL_DOMAIN}/incidents/${uuid()}`;
     body["@context"] ??= schemasGenerator.localContextUrl;
     body["@type"] = "Incident";
 

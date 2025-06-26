@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SchemaGenerator } from '@/lib/schemas';
 import { mergeSchemas } from '@/lib/helpers';
+import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
 
 export async function GET(request: NextRequest) {
     try {
@@ -8,15 +8,11 @@ export async function GET(request: NextRequest) {
         const namespace = searchParams.get('namespace') || process.env.NEXT_PUBLIC_NAMESPACE!;
         const merged = searchParams.get('merged') === 'true';
 
-        // Create SchemaGenerator instance
-        const coreDomain = process.env.CORE_DOMAIN || 'https://github.com/ul-dsri/semantic-incident-db-prototype';
-        const localDomain = process.env.LOCAL_DOMAIN || 'http://localhost:3000';
-        
-        const schemaGenerator = new SchemaGenerator(coreDomain, localDomain, namespace);
+        const [schemaGenerator] = await getGeneratorValidator();
 
         try {
             if (merged && namespace !== 'core') {
-                // Return merged schema (core + local)
+
                 const [coreSchema, localSchema] = await Promise.all([
                     schemaGenerator.get('validation', 'core'),
                     schemaGenerator.get('validation', namespace)
@@ -25,7 +21,7 @@ export async function GET(request: NextRequest) {
                 const mergedSchema = mergeSchemas(coreSchema, localSchema);
                 return NextResponse.json(mergedSchema);
             } else {
-                // Return single schema
+
                 const schema = await schemaGenerator.get('validation', namespace);
                 const metadata = await schemaGenerator.getMetadata('validation', namespace);
 

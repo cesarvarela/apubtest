@@ -28,7 +28,7 @@ export async function GET(
 
     const namespaceParam = match[1];
 
-    if (namespaceParam === process.env.NAMESPACE) {
+    if (namespaceParam === process.env.NEXT_PUBLIC_NAMESPACE) {
 
       const schema = await schemasGenerator.getLocalSchema();
 
