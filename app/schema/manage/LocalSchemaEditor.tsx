@@ -120,7 +120,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
         setSaveMessage('');
 
         try {
-            const response = await fetch('/api/schema/manage', {
+            const response = await fetch('/api/schemas/manage', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

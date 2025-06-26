@@ -78,7 +78,7 @@ export default function LocalVocabPage() {
     useEffect(() => {
         async function fetchVocabData() {
             try {
-                const response = await fetch('/api/vocab');
+                const response = await fetch('/api/schemas/vocab');
                 if (!response.ok) {
                     throw new Error(`Failed to fetch vocabulary data: ${response.statusText}`);
                 }

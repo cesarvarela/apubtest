@@ -36,7 +36,6 @@ export class Validator {
     }
 
     registerSchema(contextUrl: string, jsonSchema: SchemaObject) {
-
         if (this.registry[contextUrl]) {
             throw new Error(`Schema already registered for context: ${contextUrl}`);
         }
@@ -47,6 +46,9 @@ export class Validator {
 
         this.registry[contextUrl] = jsonSchema.$id;
         this.ajv.addSchema(jsonSchema, jsonSchema.$id);
+        
+        // Mark as initialized since schemas are being manually registered
+        this.initialized = true;
     }
 
     validateIncident(payload: any) {

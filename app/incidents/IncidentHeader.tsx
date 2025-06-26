@@ -12,7 +12,9 @@ export default function IncidentHeader() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    fetch('/api/schema')
+    // Get namespace from environment or default to 'local' 
+    const namespace = process.env.NEXT_PUBLIC_NAMESPACE || 'local';
+    fetch(`/api/schemas/validation?namespace=${namespace}&merged=true`)
       .then((res) => res.json())
       .then((data) => setSchema(data))
       .catch(() => alert('Failed to load schema'));

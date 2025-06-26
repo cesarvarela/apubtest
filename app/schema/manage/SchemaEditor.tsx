@@ -57,7 +57,7 @@ export default function SchemaEditor({ initialSchema, namespace, hasExistingSche
         setSaveMessage('');
 
         try {
-            const response = await fetch('/api/schema/manage', {
+            const response = await fetch('/api/schemas/manage', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

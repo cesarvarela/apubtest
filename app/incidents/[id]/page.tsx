@@ -80,7 +80,8 @@ export default function IncidentPage({ params }: { params: Promise<{ id: string 
 
   // Load schema for form editing
   useEffect(() => {
-    fetch('/api/schema')
+    const namespace = process.env.NEXT_PUBLIC_NAMESPACE || 'local';
+    fetch(`/api/schemas/validation?namespace=${namespace}&merged=true`)
       .then((res) => res.json())
       .then((schemaData) => setSchema(schemaData))
       .catch((err) => console.error('Failed to load schema:', err));

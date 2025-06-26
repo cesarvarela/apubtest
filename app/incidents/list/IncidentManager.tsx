@@ -49,7 +49,8 @@ export default function IncidentManager() {
   }, []);
 
   useEffect(() => {
-    fetch('/api/schema')
+    const namespace = process.env.NEXT_PUBLIC_NAMESPACE || 'local';
+    fetch(`/api/schemas/validation?namespace=${namespace}&merged=true`)
       .then((res) => res.json())
       .then((data) => setSchema(data))
       .catch(() => alert('Failed to load schema'));
