@@ -4,8 +4,13 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-start p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <div className="w-full flex justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          <h2 className="text-lg font-semibold">Welcome to DSRI Prototypes APub Test</h2>
+        <div className="w-full flex justify-center">
+          <div className="text-center">
+            <h2 className="text-lg font-semibold">Welcome to Semantic Incident Sharing</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              Current namespace: {process.env.NEXT_PUBLIC_NAMESPACE || 'default'}
+            </p>
+          </div>
         </div>
       </div>
 

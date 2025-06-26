@@ -30,7 +30,12 @@ const Navigation = () => {
               href="/" 
               className="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              DSRI APub Test
+              <div>
+                <div>Semantic Incident Sharing</div>
+                <div className="text-xs font-normal text-gray-500 dark:text-gray-400">
+                  namespace: {process.env.NEXT_PUBLIC_NAMESPACE || 'default'}
+                </div>
+              </div>
             </Link>
           </div>
           
