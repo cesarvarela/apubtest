@@ -84,6 +84,17 @@ Each node will:
 - Run on port `300${NODE_INDEX}` (3001 for NODE_INDEX=1, 3002 for NODE_INDEX=2, etc.)
 - Connect to the database using the `DATABASE_URL` from its environment file
 
+### Example Schemas
+
+The `schemas/` folder contains example schema files that demonstrate how to define and structure schemas for the application:
+
+- `core-schema.json` - Core schema definition
+- `core-context.jsonld` - Core JSON-LD context
+- `local-schema-example.json` - Example local schema extending the core schema
+- `local-context-example.jsonld` - Example local JSON-LD context
+
+These files serve as templates and references for creating your own schemas within the semantic incident database system.
+
 ### Available Scripts
 
 For a complete list of available scripts and their functionality, check the `package.json` file:
