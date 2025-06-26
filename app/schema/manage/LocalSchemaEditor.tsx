@@ -112,7 +112,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
 
     const handleSave = async () => {
         if (!isValid || !schema.trim()) {
-            setSaveMessage('Cannot save invalid or empty schema');
+            setSaveMessage('Cannot save invalid or empty validation schema');
             return;
         }
 
@@ -128,7 +128,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
                 body: JSON.stringify({
                     namespace,
                     schema: JSON.parse(schema),
-                    type: 'schema'
+                    type: 'validation'
                 }),
             });
 
@@ -157,7 +157,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
             }
 
             const result = await response.json();
-            setSaveMessage('Schema saved successfully!');
+            setSaveMessage('Validation schema saved successfully!');
 
             setTimeout(() => {
                 window.location.reload();
@@ -188,7 +188,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
             <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2">
                     <Database className="h-5 w-5" />
-                    <h3 className="text-lg font-semibold">Local Schema Editor</h3>
+                    <h3 className="text-lg font-semibold">Local Validation Schema Editor</h3>
                 </div>
                 <div className="flex gap-2">
                     <Button
@@ -206,7 +206,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
                         size="sm"
                     >
                         <Save className="h-4 w-4 mr-2" />
-                        {isSaving ? 'Saving...' : (hasExistingSchema ? 'Update Schema' : 'Create Schema')}
+                        {isSaving ? 'Saving...' : (hasExistingSchema ? 'Update Validation Schema' : 'Create Validation Schema')}
                     </Button>
                 </div>
             </div>
@@ -230,9 +230,9 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
 
             <div className="border rounded-lg overflow-hidden">
                 <div className="bg-gray-50 px-4 py-2 border-b">
-                    <h4 className="font-medium text-gray-900">JSON Schema Definition</h4>
+                    <h4 className="font-medium text-gray-900">JSON Validation Schema Definition</h4>
                     <p className="text-sm text-gray-600 mt-1">
-                        Edit the local schema for namespace: <code className="bg-gray-100 px-1 rounded">{namespace}</code>
+                        Edit the local validation schema for namespace: <code className="bg-gray-100 px-1 rounded">{namespace}</code>. This schema is used to validate incident data for your namespace.
                     </p>
                 </div>
                 <div className="relative">
@@ -270,8 +270,9 @@ Example structure:
             </div>
 
             <div className="text-sm text-gray-600 space-y-2">
-                <h4 className="font-medium text-gray-900">Schema Guidelines:</h4>
+                <h4 className="font-medium text-gray-900">Validation Schema Guidelines:</h4>
                 <ul className="list-disc list-inside space-y-1 ml-4">
+                    <li>This schema defines validation rules for incident data in your namespace</li>
                     <li>The schema must have a <code className="bg-gray-100 px-1 rounded">$id</code> property with your namespace URL</li>
                     <li>Must use <code className="bg-gray-100 px-1 rounded">allOf</code> array with core schema <code className="bg-gray-100 px-1 rounded">$ref</code> as first element</li>
                     <li>The core schema reference must point to: <code className="bg-gray-100 px-1 rounded text-xs">https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-schema.json</code></li>
