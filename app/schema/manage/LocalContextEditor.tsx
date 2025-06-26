@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Save, FileCode } from 'lucide-react';
+import { RotateCcw, Save, FileCode, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface LocalContextEditorProps {
     initialContext: any | null;
@@ -29,6 +29,8 @@ export default function LocalContextEditor({ initialContext, namespace, hasExist
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState<string>('');
     const [parsedContext, setParsedContext] = useState<any | null>(initialContext);
+    const [isPreviewCollapsed, setIsPreviewCollapsed] = useState(false);
+    const [showAllMappings, setShowAllMappings] = useState(false);
 
     const validateContext = (contextText: string): boolean => {
         // Allow empty context text (will show placeholder)
@@ -233,36 +235,77 @@ Example structure:
 
             {/* Context Analysis */}
             {parsedContext && parsedContext['@context'] && Array.isArray(parsedContext['@context']) && (
-                <div className="space-y-4">
-                    {/* Core Context Reference */}
-                    <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-gray-50 px-4 py-2 border-b">
-                            <h4 className="font-medium text-gray-900">Core Context Reference</h4>
-                        </div>
+                <div className="border rounded-lg overflow-hidden">
+                    <button
+                        onClick={() => setIsPreviewCollapsed(!isPreviewCollapsed)}
+                        className="w-full bg-green-50 px-4 py-2 border-b flex items-center justify-between hover:bg-green-100 transition-colors"
+                    >
+                        <h4 className="font-medium text-gray-900">Context Preview & Analysis</h4>
+                        {isPreviewCollapsed ? (
+                            <ChevronDown className="h-4 w-4 text-gray-600" />
+                        ) : (
+                            <ChevronUp className="h-4 w-4 text-gray-600" />
+                        )}
+                    </button>
+                    {!isPreviewCollapsed && (
                         <div className="p-4">
-                            <span className="bg-gray-100 text-gray-700 px-3 py-2 rounded font-mono text-sm">
-                                {parsedContext['@context'][0]}
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Local Mappings */}
-                    {parsedContext['@context'][1] && typeof parsedContext['@context'][1] === 'object' && (
-                        <div className="border rounded-lg overflow-hidden">
-                            <div className="bg-green-50 px-4 py-2 border-b">
-                                <h4 className="font-medium text-gray-900">Local Semantic Mappings</h4>
-                            </div>
-                            <div className="p-4 space-y-3">
-                                {Object.entries(parsedContext['@context'][1]).map(([key, value]) => (
-                                    <div key={key} className="flex items-start space-x-3">
-                                        <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm font-mono">
-                                            {key}
-                                        </span>
-                                        <span className="text-gray-700 text-sm break-all">
-                                            {typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
+                            <div className="space-y-4">
+                                {/* Core Context Reference */}
+                                <div className="border rounded-lg overflow-hidden">
+                                    <div className="bg-gray-50 px-3 py-2 border-b">
+                                        <h5 className="text-sm font-medium text-gray-900">Core Context Reference</h5>
+                                    </div>
+                                    <div className="p-3">
+                                        <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded font-mono text-sm">
+                                            {parsedContext['@context'][0]}
                                         </span>
                                     </div>
-                                ))}
+                                </div>
+
+                                {/* Local Mappings */}
+                                {parsedContext['@context'][1] && typeof parsedContext['@context'][1] === 'object' && (() => {
+                                    const mappingEntries = Object.entries(parsedContext['@context'][1]);
+                                    const visibleMappings = showAllMappings ? mappingEntries : mappingEntries.slice(0, 3);
+                                    const hasMoreMappings = mappingEntries.length > 3;
+
+                                    return (
+                                        <div className="border rounded-lg overflow-hidden">
+                                            <div className="bg-green-50 px-3 py-2 border-b">
+                                                <h5 className="text-sm font-medium text-gray-900">Local Semantic Mappings</h5>
+                                            </div>
+                                            <div className="p-3 space-y-3">
+                                                {visibleMappings.map(([key, value]) => (
+                                                    <div key={key} className="flex items-start space-x-3">
+                                                        <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm font-mono">
+                                                            {key}
+                                                        </span>
+                                                        <span className="text-gray-700 text-sm break-all">
+                                                            {typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                                {hasMoreMappings && (
+                                                    <button
+                                                        onClick={() => setShowAllMappings(!showAllMappings)}
+                                                        className="flex items-center gap-2 text-green-600 hover:text-green-800 text-sm font-medium"
+                                                    >
+                                                        {showAllMappings ? (
+                                                            <>
+                                                                <ChevronUp className="h-4 w-4" />
+                                                                Show less ({mappingEntries.length - 3} hidden)
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ChevronDown className="h-4 w-4" />
+                                                                Show {mappingEntries.length - 3} more mappings
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
                     )}

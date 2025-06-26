@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { SchemaObject } from 'ajv';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Save, Database } from 'lucide-react';
+import { RotateCcw, Save, Database, ChevronDown, ChevronUp } from 'lucide-react';
 import SchemaPreview from './SchemaPreview';
 
 interface LocalSchemaEditorProps {
@@ -47,6 +47,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState<string>('');
     const [parsedSchema, setParsedSchema] = useState<SchemaObject | null>(initialSchema);
+    const [isPreviewCollapsed, setIsPreviewCollapsed] = useState(false);
 
     const validateSchema = (schemaText: string): boolean => {
         // Allow empty schema text (will show placeholder)
@@ -284,10 +285,19 @@ Example structure:
             </div>
 
             <div className="border rounded-lg overflow-hidden">
-                <div className="bg-blue-50 px-4 py-2 border-b">
+                <button
+                    onClick={() => setIsPreviewCollapsed(!isPreviewCollapsed)}
+                    className="w-full bg-blue-50 px-4 py-2 border-b flex items-center justify-between hover:bg-blue-100 transition-colors"
+                >
                     <h4 className="font-medium text-gray-900">Schema Preview & Analysis</h4>
-                </div>
-                <div className="p-4">
+                    {isPreviewCollapsed ? (
+                        <ChevronDown className="h-4 w-4 text-gray-600" />
+                    ) : (
+                        <ChevronUp className="h-4 w-4 text-gray-600" />
+                    )}
+                </button>
+                {!isPreviewCollapsed && (
+                    <div className="p-4">
                     {parsedSchema ? (
                         <div className="space-y-4">
                             {/* Core Schema Reference */}
@@ -304,28 +314,7 @@ Example structure:
                                 </div>
                             )}
 
-                            {/* Local Properties */}
-                            {parsedSchema.allOf && Array.isArray(parsedSchema.allOf) && parsedSchema.allOf[1]?.properties && (
-                                <div className="border rounded-lg overflow-hidden">
-                                    <div className="bg-blue-50 px-3 py-2 border-b">
-                                        <h5 className="text-sm font-medium text-gray-900">Local Properties</h5>
-                                    </div>
-                                    <div className="p-3 space-y-2">
-                                        {Object.entries(parsedSchema.allOf[1].properties).map(([key, value]) => (
-                                            <div key={key} className="flex items-start space-x-2">
-                                                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm font-mono">
-                                                    {key}
-                                                </span>
-                                                <span className="text-gray-700 text-sm">
-                                                    {typeof value === 'object' && value !== null && 'type' in value
-                                                        ? `${value.type}${(value as any).$ref ? ` (ref: ${(value as any).$ref})` : ''}`
-                                                        : JSON.stringify(value)}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+
 
                             {/* Required Fields */}
                             {parsedSchema.allOf && Array.isArray(parsedSchema.allOf) && parsedSchema.allOf[1]?.required && (
@@ -368,7 +357,8 @@ Example structure:
                             <p>Invalid schema - please fix validation errors</p>
                         </div>
                     )}
-                </div>
+                    </div>
+                )}
             </div>
         </div>
     );
