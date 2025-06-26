@@ -7,6 +7,9 @@ import CoreSchemaView from './CoreSchemaView';
 import CoreContextView from './CoreContextView';
 import { getGeneratorValidator } from '@/lib/getGeneratorValidator';
 
+// Add revalidate to ensure fresh data every 5 seconds (or set to 0 for no cache)
+export const revalidate = 0;
+
 export default async function SchemaManagementPage() {
 
     let coreSchema = null;

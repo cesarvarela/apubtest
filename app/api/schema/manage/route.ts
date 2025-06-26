@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import { Schema } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -54,6 +55,9 @@ export async function POST(request: NextRequest) {
                 })
                 .where(eq(Schema.id, existingSchema[0].id));
 
+            // Invalidate the schema management page cache
+            revalidatePath('/schema/manage');
+
             return NextResponse.json({
                 message: "Schema updated successfully",
                 id: existingSchema[0].id,
@@ -73,6 +77,9 @@ export async function POST(request: NextRequest) {
                     isActive: true
                 })
                 .returning({ id: Schema.id });
+
+            // Invalidate the schema management page cache
+            revalidatePath('/schema/manage');
 
             return NextResponse.json({
                 message: "Schema created successfully",
