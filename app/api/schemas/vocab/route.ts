@@ -4,7 +4,7 @@ import { SchemaGenerator } from '@/lib/schemas';
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const namespace = searchParams.get('namespace') || 'core';
+        const namespace = searchParams.get('namespace') || process.env.NEXT_PUBLIC_NAMESPACE!;
 
         // Create SchemaGenerator instance
         const coreDomain = process.env.CORE_DOMAIN || 'https://github.com/ul-dsri/semantic-incident-db-prototype';

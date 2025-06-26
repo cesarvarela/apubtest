@@ -5,15 +5,8 @@ import { mergeSchemas } from '@/lib/helpers';
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const namespace = searchParams.get('namespace');
+        const namespace = searchParams.get('namespace') || process.env.NEXT_PUBLIC_NAMESPACE!;
         const merged = searchParams.get('merged') === 'true';
-
-        if (!namespace) {
-            return NextResponse.json(
-                { error: "Namespace parameter is required" },
-                { status: 400 }
-            );
-        }
 
         // Create SchemaGenerator instance
         const coreDomain = process.env.CORE_DOMAIN || 'https://github.com/ul-dsri/semantic-incident-db-prototype';
