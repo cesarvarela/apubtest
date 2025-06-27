@@ -270,7 +270,7 @@ export default function VocabPage() {
             )}
 
             {/* Vocabulary Section - Hidden for now */}
-            {false && vocabData ? (
+            {false && vocabData && (
                 <div className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">Vocabulary Terms</h2>
                     <p className="text-gray-700 leading-relaxed mb-6">
@@ -278,20 +278,20 @@ export default function VocabPage() {
                         It includes classes, object properties, and data properties with their semantic definitions.
                     </p>
 
-                    {vocabData.metadata && (
+                    {vocabData?.metadata && (
                         <div className="bg-gray-50 border rounded-lg p-4 mb-6">
                             <h3 className="text-lg font-semibold mb-2">Vocabulary Information</h3>
                             <div className="text-sm text-gray-600 space-y-1">
-                                <p><strong>Namespace:</strong> {vocabData.namespace}</p>
-                                <p><strong>URI:</strong> <code>{vocabData.metadata.uri}</code></p>
-                                <p><strong>Last Updated:</strong> {new Date(vocabData.metadata.updatedAt).toLocaleString()}</p>
+                                <p><strong>Namespace:</strong> {vocabData!.namespace}</p>
+                                <p><strong>URI:</strong> <code>{vocabData!.metadata.uri}</code></p>
+                                <p><strong>Last Updated:</strong> {new Date(vocabData!.metadata.updatedAt).toLocaleString()}</p>
                             </div>
                         </div>
                     )}
 
                     {/* Group terms by type */}
-                    {(() => {
-                        const termsByType = vocabData.vocab['@graph'].reduce((acc, term) => {
+                    {vocabData && (() => {
+                        const termsByType = vocabData!.vocab['@graph'].reduce((acc, term) => {
                             const type = term['@type'];
                             if (!acc[type]) {
                                 acc[type] = [];
@@ -317,16 +317,20 @@ export default function VocabPage() {
                         ));
                     })()}
 
-                    <div className="mb-4">
-                        <a 
-                            href={`/api/schemas/vocab?namespace=${vocabData.namespace}`} 
-                            className="text-blue-600 hover:text-blue-800 underline"
-                        >
-                            Download Vocabulary (JSON-LD)
-                        </a>
-                    </div>
+                    {vocabData && (
+                        <div className="mb-4">
+                            <a 
+                                href={`/api/schemas/vocab?namespace=${vocabData!.namespace}`} 
+                                className="text-blue-600 hover:text-blue-800 underline"
+                            >
+                                Download Vocabulary (JSON-LD)
+                            </a>
+                        </div>
+                    )}
                 </div>
-            ) : false && (
+            )}
+
+            {false && (
                 <NotFoundSection 
                     title="Vocabulary Terms"
                     description="This vocabulary defines the terms and properties used for AI incident reporting. It includes classes, object properties, and data properties with their semantic definitions."
