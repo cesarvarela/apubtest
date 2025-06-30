@@ -122,6 +122,49 @@ NODE_INDEX=1 npm run db:studio:local
 
 This will open Drizzle Studio on port 4981 (for NODE_INDEX=1).
 
+### Schema Seeding
+
+The application includes a seeding system to populate your database with schema data from JSON and JSON-LD files.
+
+#### Seeding Requirements
+
+1. **NODE_INDEX**: The seeding process requires the `NODE_INDEX` environment variable to be set explicitly. This determines which environment file and schema files to use.
+
+2. **Running Server**: The target server must be running on the port specified in your environment file before seeding.
+
+3. **Schema Files**: Create schema files following the naming convention:
+   - `schemas/local-context-seed-{NODE_INDEX}.jsonld` - JSON-LD context file
+   - `schemas/local-schema-seed-{NODE_INDEX}.json` - JSON schema validation file
+
+#### Environment Configuration
+
+Your `.env.local.{NODE_INDEX}` file must contain:
+- `NEXT_PUBLIC_LOCAL_DOMAIN`: Must match your local development server URL
+- `NEXT_PUBLIC_NAMESPACE`: The namespace for your schemas
+
+**Important**: When working locally, `NEXT_PUBLIC_LOCAL_DOMAIN` must match the port pattern `http://localhost:300{NODE_INDEX}`:
+- NODE_INDEX=1 → `http://localhost:3001`
+- NODE_INDEX=2 → `http://localhost:3002`
+
+#### Seeding Process
+
+1. **Start your development server**:
+   ```bash
+   NODE_INDEX=1 npm run dev
+   ```
+
+2. **Run the seed command** (in a separate terminal):
+   ```bash
+   NODE_INDEX=1 npm run seed
+   ```
+
+#### Troubleshooting Seeding
+
+- **"NODE_INDEX environment variable is required"**: Make sure to set NODE_INDEX before running the seed command
+- **"API call failed"**: Ensure your development server is running on the correct port
+- **"Schema validation errors"**: Check that your schema files follow the required structure and reference the correct core schema URL
+- **"Missing environment variables"**: Verify your `.env.local.{NODE_INDEX}` file contains all required variables
+
 ### Environment Variables
 
 The application uses indexed environment files to support multiple nodes:

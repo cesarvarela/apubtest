@@ -8,6 +8,7 @@
     "build:local": "dotenv -e .env.local.$NODE_INDEX -- next build",
     "start": "PORT=300$NODE_INDEX dotenv -e .env.local.$NODE_INDEX -- next start",
     "lint": "next lint",
+    "seed": "tsx scripts/seed.ts",
     "db:migrate": "drizzle-kit migrate",
     "db:generate:local": "dotenv -e .env.local.$NODE_INDEX -- drizzle-kit generate",
     "db:migrate:local": "dotenv -e .env.local.$NODE_INDEX -- drizzle-kit migrate",

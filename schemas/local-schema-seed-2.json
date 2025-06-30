@@ -1,0 +1,63 @@
+{
+    "$id": "http://localhost:3002/schema/cset-v1.json",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "http://localhost:3000/schema/core-schema.json"
+        },
+        {
+            "type": "object",
+            "required": [
+                "title",
+                "description"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "minLength": 5
+                },
+                "reports": {
+                    "$ref": "#/definitions/reportArray"
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 10
+                }
+            },
+            "additionalProperties": true
+        }
+    ],
+    "definitions": {
+        "reportArray": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "@type",
+                    "url",
+                    "headline"
+                ],
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "@type": {
+                        "const": "Article"
+                    },
+                    "author": {
+                        "type": "string"
+                    },
+                    "headline": {
+                        "type": "string"
+                    },
+                    "datePublished": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "additionalProperties": true
+            }
+        }
+    }
+}
