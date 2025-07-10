@@ -1,31 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from 'next/cache';
-import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
+import { getSchemaManager } from "@/lib/getGeneratorValidator";
 
 export async function POST(request: NextRequest) {
     try {
-        const { namespace, schema, type } = await request.json();
+        const { namespace, schema, type, targetType } = await request.json();
 
         if (!namespace || !schema || !type) {
+
             return NextResponse.json(
                 { error: "Missing required fields: namespace, schema, type" },
                 { status: 400 }
             );
         }
 
-        if (type !== 'validation' && type !== 'context' && type !== 'vocab') {
+        if (type !== 'validation' && type !== 'context') {
+
             return NextResponse.json(
-                { error: "Type must be 'validation', 'context', or 'vocab'" },
+                { error: "Type must be 'validation', 'context'" },
                 { status: 400 }
             );
         }
 
-        const [schemaGenerator] = await getGeneratorValidator();
+        const schemaManager = await getSchemaManager();
 
         try {
-            const result = await schemaGenerator.save(type, namespace, schema);
+            const result = await schemaManager.save(type as 'validation' | 'context', namespace, targetType || null, schema);
 
-            // Invalidate the schema management page cache
             revalidatePath('/schema/manage');
 
             return NextResponse.json({
@@ -33,7 +34,9 @@ export async function POST(request: NextRequest) {
                 id: result.id,
                 action: result.action
             });
-        } catch (validationError) {
+        }
+        catch (validationError) {
+
             return NextResponse.json(
                 { error: validationError instanceof Error ? validationError.message : 'Validation failed' },
                 { status: 400 }
@@ -41,6 +44,7 @@ export async function POST(request: NextRequest) {
         }
     }
     catch (error) {
+
         console.error("Error managing schema:", error);
 
         return NextResponse.json(
@@ -55,6 +59,7 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const namespace = searchParams.get('namespace');
         const type = searchParams.get('type') || 'validation';
+        const targetType = searchParams.get('targetType');
 
         if (!namespace) {
             return NextResponse.json(
@@ -63,23 +68,19 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        if (type !== 'validation' && type !== 'context' && type !== 'vocab') {
+        if (type !== 'validation' && type !== 'context') {
             return NextResponse.json(
-                { error: "Type must be 'validation', 'context', or 'vocab'" },
+                { error: "Type must be 'validation', 'context'" },
                 { status: 400 }
             );
         }
 
-        const [schemaGenerator] = await getGeneratorValidator();
+        const schemaManager = await getSchemaManager();
 
         try {
-            const schema = await schemaGenerator.get(type, namespace);
-            const metadata = await schemaGenerator.getMetadata(type, namespace);
+            const schema = await schemaManager.getSchema(type as 'validation' | 'context', namespace, targetType || null);
 
-            return NextResponse.json({
-                schema,
-                metadata
-            });
+            return NextResponse.json({ schema });
         } catch (error) {
             return NextResponse.json(
                 { error: error instanceof Error ? error.message : "Schema not found" },
@@ -100,6 +101,7 @@ export async function DELETE(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const namespace = searchParams.get('namespace');
         const type = searchParams.get('type') || 'validation';
+        const targetType = searchParams.get('targetType');
 
         if (!namespace) {
             return NextResponse.json(
@@ -108,9 +110,9 @@ export async function DELETE(request: NextRequest) {
             );
         }
 
-        if (type !== 'validation' && type !== 'context' && type !== 'vocab') {
+        if (type !== 'validation' && type !== 'context') {
             return NextResponse.json(
-                { error: "Type must be 'validation', 'context', or 'vocab'" },
+                { error: "Type must be 'validation', 'context'" },
                 { status: 400 }
             );
         }
@@ -123,10 +125,10 @@ export async function DELETE(request: NextRequest) {
             );
         }
 
-        const [schemaGenerator] = await getGeneratorValidator();
+        const schemaManager = await getSchemaManager();
 
         try {
-            const result = await schemaGenerator.delete(type, namespace);
+            const result = await schemaManager.delete(type as 'validation' | 'context', namespace, targetType || null);
 
             return NextResponse.json({
                 message: `${type.charAt(0).toUpperCase() + type.slice(1)} deactivated successfully`,
@@ -142,6 +144,39 @@ export async function DELETE(request: NextRequest) {
         console.error("Error deleting schema:", error);
         return NextResponse.json(
             { error: "Failed to delete schema" },
+            { status: 500 }
+        );
+    }
+}
+
+export async function PUT(request: NextRequest) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const namespace = searchParams.get('namespace');
+
+        if (!namespace) {
+            return NextResponse.json(
+                { error: "Namespace parameter is required" },
+                { status: 400 }
+            );
+        }
+
+        const schemaManager = await getSchemaManager();
+
+        try {
+            const targetTypes = await schemaManager.getTargetTypes(namespace);
+
+            return NextResponse.json({ targetTypes });
+        } catch (error) {
+            return NextResponse.json(
+                { error: error instanceof Error ? error.message : "Failed to get target types" },
+                { status: 500 }
+            );
+        }
+    } catch (error) {
+        console.error("Error getting target types:", error);
+        return NextResponse.json(
+            { error: "Failed to get target types" },
             { status: 500 }
         );
     }

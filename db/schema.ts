@@ -31,10 +31,10 @@ export const Pull = pgTable("pull", {
 
 export const Schema = pgTable("schema", {
     id: uuid("id").primaryKey().defaultRandom(),
-    type: text("type", { enum: ["context", "schema", "vocab"] }).notNull(),
+    type: text("type", { enum: ["context", "validation"] }).notNull(),
     namespace: text("namespace").notNull(), // "core" for core schemas, custom namespace for local
     version: text("version").notNull().default("v1"),
-    uri: text("uri").unique().notNull(),
+    targetType: text("target_type"), // For validation schemas: "Incident", "Peer", etc. Null for context schemas
     content: jsonb("content").notNull(),
     isActive: boolean("is_active").notNull().default(true),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
