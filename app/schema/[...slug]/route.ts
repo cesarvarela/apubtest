@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
+import { getSchemaManager } from "@/lib/getGeneratorValidator";
 
 export async function GET(
   request: Request,
@@ -8,11 +8,11 @@ export async function GET(
   const { slug } = await params;
   const [filename] = slug;
 
-  const [schemasGenerator] = await getGeneratorValidator();
+  const schemaManager = await getSchemaManager();
 
   if (filename === "core-v1.json") {
 
-    const schema = await schemasGenerator.getCoreSchema();
+    const schema = await schemaManager.getSchema('validation', 'core');
 
     return NextResponse.json(schema, {
       headers: {
@@ -30,7 +30,7 @@ export async function GET(
 
     if (namespaceParam === process.env.NEXT_PUBLIC_NAMESPACE) {
 
-      const schema = await schemasGenerator.getLocalSchema();
+      const schema = await schemaManager.getSchema('validation', namespaceParam);
 
       return NextResponse.json(schema, {
         headers: {

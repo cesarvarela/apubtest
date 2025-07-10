@@ -1,63 +1,23 @@
-import { SchemaNotFoundError } from '@/lib/schemas';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileCode, Database } from 'lucide-react';
-import LocalSchemaEditor from './LocalSchemaEditor';
 import LocalContextEditor from './LocalContextEditor';
-import CoreSchemaView from './CoreSchemaView';
 import CoreContextView from './CoreContextView';
-import { getGeneratorValidator } from '@/lib/getGeneratorValidator';
+import TargetTypeSchemaManager from './TargetTypeSchemaManager';
+import { getSchemaManager } from '@/lib/getGeneratorValidator';
 
 // Add revalidate to ensure fresh data every 5 seconds (or set to 0 for no cache)
 export const revalidate = 0;
 
 export default async function SchemaManagementPage() {
 
-    let coreSchema = null;
-    let coreContext = null;
-    let localSchema = null;
-    let localContext = null;
+    const namespace = process.env.NEXT_PUBLIC_NAMESPACE || 'local';
+    const schemaManager = await getSchemaManager();
 
-    const [schemasGenerator] = await getGeneratorValidator();
+    // Load contexts directly using SchemaManager instead of HTTP requests
+    // If they are not found we simply leave the corresponding variable as null so the UI can handle the "empty" state gracefully.
 
-    try {
-        coreSchema = await schemasGenerator.getCoreSchema();
-    } catch (error) {
-        if (error instanceof SchemaNotFoundError) {
-            coreSchema = null;
-        } else {
-            throw error;
-        }
-    }
-
-    try {
-        coreContext = await schemasGenerator.getCoreContext();
-    } catch (error) {
-        if (error instanceof SchemaNotFoundError) {
-            coreContext = null;
-        } else {
-            throw error;
-        }
-    }
-
-    try {
-        localSchema = await schemasGenerator.getLocalSchema();
-    } catch (error) {
-        if (error instanceof SchemaNotFoundError) {
-            localSchema = null;
-        } else {
-            throw error;
-        }
-    }
-
-    try {
-        localContext = await schemasGenerator.getLocalContext();
-    } catch (error) {
-        if (error instanceof SchemaNotFoundError) {
-            localContext = null;
-        } else {
-            throw error;
-        }
-    }
+    const coreContext = await schemaManager.getSchema('context', 'core').catch(() => null);
+    const localContext = await schemaManager.getSchema('context', namespace).catch(() => null);
 
     return (
         <div className="container mx-auto py-8 px-4">
@@ -70,39 +30,28 @@ export default async function SchemaManagementPage() {
 
             <div className="space-y-6">
 
-                {/* Local Schema, Context, and Vocab - Editable */}
-                <Card>
-                    <CardContent>
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                            <LocalSchemaEditor
-                                initialSchema={localSchema}
-                                namespace={schemasGenerator.namespace}
-                                hasExistingSchema={localSchema !== null}
-                            />
-                            <LocalContextEditor
-                                initialContext={localContext}
-                                namespace={schemasGenerator.namespace}
-                                hasExistingContext={localContext !== null}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Core Schema - Read Only */}
+                {/* Local Context - Editable */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
-                            <Database className="h-5 w-5" />
-                            <span>Core Schema</span>
+                            <FileCode className="h-5 w-5" />
+                            <span>Local Context</span>
                         </CardTitle>
                         <CardDescription>
-                            The foundational schema that defines the base structure (read-only)
+                            Define semantic mappings and vocabulary for your namespace
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <CoreSchemaView schema={coreSchema} />
+                        <LocalContextEditor
+                            initialContext={localContext}
+                            namespace={namespace}
+                            hasExistingContext={localContext !== null}
+                        />
                     </CardContent>
                 </Card>
+
+                {/* Target Type Schemas */}
+                <TargetTypeSchemaManager namespace={namespace} />
 
                 {/* Core Context - Read Only */}
                 <Card>

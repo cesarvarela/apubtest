@@ -103,10 +103,10 @@ export class PullService {
                 await this.db
                     .update(Pull)
                     .set({
-                        incidentsFound: totalFound.toString(),
-                        incidentsProcessed: totalProcessed.toString(),
-                        incidentsCreated: totalCreated.toString(),
-                        incidentsUpdated: totalUpdated.toString(),
+                        contentFound: totalFound.toString(),
+                        contentProcessed: totalProcessed.toString(),
+                        contentCreated: totalCreated.toString(),
+                        contentUpdated: totalUpdated.toString(),
                         lastPage: currentPage.toString(),
                     })
                     .where(eq(Pull.id, pullRecord.id));
@@ -121,10 +121,10 @@ export class PullService {
                 .set({
                     status: "completed",
                     completedAt: new Date(),
-                    incidentsFound: totalFound.toString(),
-                    incidentsProcessed: totalProcessed.toString(),
-                    incidentsCreated: totalCreated.toString(),
-                    incidentsUpdated: totalUpdated.toString(),
+                    contentFound: totalFound.toString(),
+                    contentProcessed: totalProcessed.toString(),
+                    contentCreated: totalCreated.toString(),
+                    contentUpdated: totalUpdated.toString(),
                 })
                 .where(eq(Pull.id, pullRecord.id));
 
@@ -180,9 +180,9 @@ export class PullService {
                 status: p.status,
                 started: p.startedAt.toISOString(),
                 completed: p.completedAt?.toISOString(),
-                found: p.incidentsFound,
-                created: p.incidentsCreated,
-                updated: p.incidentsUpdated,
+                found: p.contentFound,
+                created: p.contentCreated,
+                updated: p.contentUpdated,
                 error: p.errorMessage?.slice(0, 50),
             }))
         );
@@ -194,8 +194,8 @@ export class PullService {
             acc[p.status] = (acc[p.status] || 0) + 1;
             return acc;
         }, {} as Record<string, number>);
-        const totalCreated = stats.reduce((sum: any, p: any) => sum + parseInt(p.incidentsCreated || "0"), 0);
-        const totalUpdated = stats.reduce((sum: any, p: any) => sum + parseInt(p.incidentsUpdated || "0"), 0);
+        const totalCreated = stats.reduce((sum: any, p: any) => sum + parseInt(p.contentCreated || "0"), 0);
+        const totalUpdated = stats.reduce((sum: any, p: any) => sum + parseInt(p.contentUpdated || "0"), 0);
         console.log("Pull Statistics (last 50 pulls):");
         console.log("Status breakdown:", byStatus);
         console.log(`Total incidents created: ${totalCreated}`);

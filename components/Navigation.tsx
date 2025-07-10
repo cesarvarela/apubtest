@@ -10,7 +10,7 @@ const Navigation = () => {
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/incidents", label: "Incidents" },
+    { href: "/content", label: "Content" },
     { href: "/peers", label: "Peers" },
     { href: "/pulls", label: "Pulls" },
     { href: "/schema/manage", label: "Schema" },
