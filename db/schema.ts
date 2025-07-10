@@ -1,5 +1,17 @@
 import { pgTable, uuid, text, timestamp, jsonb, numeric, boolean } from "drizzle-orm/pg-core";
 
+export const Content = pgTable("content", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    uri: text("uri").unique().notNull(),
+    contentType: text("content_type").notNull(), // Matches targetType in Schema table (e.g., "core:Incident", "aiid:Report")
+    namespace: text("namespace").notNull(), // The namespace this content belongs to
+    data: jsonb("data").notNull(),
+    sourceNode: text("source_node").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Keep the old Incident table for backward compatibility during migration
 export const Incident = pgTable("incident", {
     id: uuid("id").primaryKey().defaultRandom(),
     uri: text("uri").unique().notNull(),
@@ -20,10 +32,10 @@ export const Pull = pgTable("pull", {
     startedAt: timestamp("started_at", { withTimezone: true }).defaultNow().notNull(),
     completedAt: timestamp("completed_at", { withTimezone: true }),
     status: text("status", { enum: ["pending", "in_progress", "completed", "failed"] }).notNull().default("pending"),
-    incidentsFound: numeric("incidents_found").default("0"),
-    incidentsProcessed: numeric("incidents_processed").default("0"),
-    incidentsCreated: numeric("incidents_created").default("0"),
-    incidentsUpdated: numeric("incidents_updated").default("0"),
+    contentFound: numeric("content_found").default("0"),
+    contentProcessed: numeric("content_processed").default("0"),
+    contentCreated: numeric("content_created").default("0"),
+    contentUpdated: numeric("content_updated").default("0"),
     lastPage: numeric("last_page").default("0"),
     errorMessage: text("error_message"),
     metadata: jsonb("metadata"), // For storing additional pull info like pagination cursors, etc.
