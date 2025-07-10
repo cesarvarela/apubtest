@@ -2,6 +2,7 @@
   "name": "semantic-incident-sharing-prototype",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "PORT=300$NODE_INDEX dotenv -e .env.local.$NODE_INDEX -- next dev --turbopack",
     "build": "npm run db:migrate && next build",
@@ -9,7 +10,7 @@
     "start": "PORT=300$NODE_INDEX dotenv -e .env.local.$NODE_INDEX -- next start",
     "lint": "next lint",
     "seed": "tsx scripts/seed.ts",
-    "db:migrate": "drizzle-kit migrate",
+    "test": "vitest --run",
     "db:generate:local": "dotenv -e .env.local.$NODE_INDEX -- drizzle-kit generate",
     "db:migrate:local": "dotenv -e .env.local.$NODE_INDEX -- drizzle-kit migrate",
     "db:studio:local": "dotenv -e .env.local.$NODE_INDEX -- drizzle-kit studio --port 498$NODE_INDEX"
@@ -35,6 +36,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.44.2",
+    "jsonld": "^8.3.3",
     "lucide-react": "^0.522.0",
     "next": "15.3.3",
     "pg": "^8.16.0",
@@ -46,6 +48,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.16",
+    "@types/jsonld": "^1.5.15",
     "@types/node": "^20",
     "@types/pg": "^8.15.4",
     "@types/react": "^19",

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { generateHiddenAtFieldsUiSchema, mergeSchemas } from '../lib/utils';
+import { generateHiddenAtFieldsUiSchema, mergeSchemas } from '../lib/helpers';
 
 describe('generateHiddenAtFieldsUiSchema', () => {
   // Mock console.log to avoid cluttering test output
