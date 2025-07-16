@@ -35,7 +35,11 @@ export class Validator {
                 throw new Error(`Schema not found for type: ${type}`);
             }
 
-            const validate = this.ajv.compile(schema);
+            let validate = this.ajv.getSchema(schema.$id);
+            
+            if (!validate) {
+                validate = this.ajv.compile(schema);
+            }
 
             const valid = validate(payload);
 
@@ -53,7 +57,7 @@ export class Validator {
             }
         }
 
-        // All validations passed
+        // Schema validation complete
     }
 
     private getNamespaceFromType(type: string): string {
@@ -74,4 +78,5 @@ export class Validator {
 
         return Array.isArray(type) ? type : [type];
     }
+
 }
