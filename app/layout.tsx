@@ -31,7 +31,7 @@ export default async function RootLayout({
       >
         <Navigation />
         <Breadcrumbs />
-        <div className="min-h-[calc(100vh-theme(spacing.16)-theme(spacing.12))]">
+        <div>
           {children}
         </div>
       </body>

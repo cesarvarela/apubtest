@@ -50,6 +50,15 @@ export default function Home() {
             Configure and manage schemas
           </p>
         </Link>
+        
+        <Link href="/demos" className="group block p-6 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+            Semantic Display →
+          </h3>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Explore semantic data rendering examples
+          </p>
+        </Link>
       </div>
     </main>
   );

@@ -14,6 +14,7 @@ const Navigation = () => {
     { href: "/peers", label: "Peers" },
     { href: "/pulls", label: "Pulls" },
     { href: "/schema/manage", label: "Schema" },
+    { href: "/demos", label: "Demos" },
   ];
 
   const isActiveLink = (href: string) => {
