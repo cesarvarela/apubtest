@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "@context": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array" },
+        { "type": "object" }
+      ]
+    },
+    "@type": {
+      "oneOf": [
+        { "const": "aiid:Incident" },
+        { "type": "array", "contains": { "const": "aiid:Incident" } }
+      ]
+    },
+    "@id": { "type": "string", "format": "uri" },
+    "deployedBy": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "@type": { "const": "core:Organization" },
+          "@id": { "type": "string", "format": "uri" }
+        },
+        "required": ["@type", "@id"]
+      }
+    },
+    "reports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "@type": { "const": "aiid:Report" },
+          "@id": { "type": "string", "format": "uri" }
+        },
+        "required": ["@type", "@id"]
+      }
+    }
+  },
+  "required": ["@type", "@id"],
+  "additionalProperties": true
+}

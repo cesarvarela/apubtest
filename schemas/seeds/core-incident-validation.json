@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "@context": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array" },
+        { "type": "object" }
+      ]
+    },
+    "@type": {
+      "oneOf": [
+        { "const": "core:Incident" },
+        { "type": "array", "contains": { "const": "core:Incident" } }
+      ]
+    },
+    "@id": { "type": "string", "format": "uri" },
+    "title": { "type": "string" },
+    "name": { "type": "string" }
+  },
+  "required": ["@type", "@id", "title"],
+  "additionalProperties": true
+}

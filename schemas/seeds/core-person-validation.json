@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "@context": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array" },
+        { "type": "object" }
+      ]
+    },
+    "@type": {
+      "oneOf": [
+        { "const": "core:Person" },
+        { "type": "array", "contains": { "const": "core:Person" } }
+      ]
+    },
+    "@id": { "type": "string", "format": "uri" },
+    "name": { "type": "string" },
+    "email": { "type": "string", "format": "email" }
+  },
+  "required": ["@type", "@id", "name"],
+  "additionalProperties": true
+}

@@ -1,0 +1,19 @@
+{
+  "@context": {
+    "@protected": true,
+    
+    "core": "https://example.org/core#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ui": "https://example.org/ui#",
+    
+    "Incident": { "@id": "core:Incident", "@type": "@id" },
+    
+    "id": "@id",
+    "title": { "@id": "schema:name", "@type": "xsd:string" },
+    "name": { "@id": "schema:name", "@type": "xsd:string" },
+    
+    "ui:title": { "@id": "ui:title", "@type": "@json" },
+    "ui:name": { "@id": "ui:name", "@type": "@json" }
+  }
+}

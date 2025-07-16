@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "@context": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array" },
+        { "type": "object" }
+      ]
+    },
+    "@type": {
+      "oneOf": [
+        { "const": "aiid:Report" },
+        { "type": "array", "contains": { "const": "aiid:Report" } }
+      ]
+    },
+    "@id": { "type": "string", "format": "uri" }
+  },
+  "required": ["@type", "@id"],
+  "additionalProperties": true
+}

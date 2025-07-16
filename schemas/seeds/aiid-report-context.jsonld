@@ -1,0 +1,13 @@
+{
+  "@context": {
+    "@protected": true,
+    
+    "aiid": "https://example.org/aiid#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    
+    "Report": { "@id": "aiid:Report", "@type": "@id" },
+    
+    "id": "@id"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "@protected": true,
+    
+    "core": "https://example.org/core#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    
+    "Person": "core:Person",
+    
+    "id": "@id",
+    "name": { "@id": "schema:name", "@type": "xsd:string" },
+    "email": { "@id": "schema:email", "@type": "xsd:string" }
+  }
+}

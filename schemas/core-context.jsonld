@@ -1,8 +1,0 @@
-{
-    "@context": {
-        "@vocab": "https://github.com/ul-dsri/semantic-incident-db-prototype#",
-        "@protected": true,
-        "@id": "@id",
-        "@type": "@type"
-    }
-} 
