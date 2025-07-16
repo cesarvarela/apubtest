@@ -35,12 +35,20 @@ class LocalSetup {
 
         const databaseURL: string = masterConn.replace(/\/postgres$/, `/${dbName}`);
 
-        console.log(`Database URL: ${databaseURL}`);
+        try {
+            execSync(`DATABASE_URL=\"${databaseURL}\" npm run db:migrate`, {
+                stdio: 'inherit',
+                cwd: process.cwd(),
+            });
+        } catch (error: any) {
+            console.error(`Failed to run database migrations for ${dbName}`);
+            console.error(`Command: DATABASE_URL="${databaseURL}" npm run db:migrate`);
+            console.error(`Error details:`, error.message);
 
-        execSync(`DATABASE_URL=\"${databaseURL}\" npm run db:push`, {
-            stdio: 'inherit',
-            cwd: process.cwd(),
-        });
+            throw new Error(`Database migration failed for ${dbName}: ${error.message}`);
+        }
+
+        console.log(`Successfully created and migrated database ${dbName}`);
 
         const drizzlePool = new Pool({ connectionString: databaseURL });
         const db = drizzle(drizzlePool);
