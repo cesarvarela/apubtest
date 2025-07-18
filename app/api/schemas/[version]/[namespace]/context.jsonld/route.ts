@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getSchemaManager } from "@/lib/getGeneratorValidator";
+import { ContextMerger } from "@/lib/ContextMerger";
 
 export async function GET(
-    request: NextRequest,
-    { params }: { params: Promise<{ version: string; namespace: string; type: string }> }
+    request: Request,
+    { params }: { params: Promise<{ version: string; namespace: string }> }
 ) {
     try {
-        const { version, namespace, type } = await params;
+        const { version, namespace } = await params;
 
         if (!version) {
             return NextResponse.json(
@@ -29,30 +30,46 @@ export async function GET(
             );
         }
 
-        if (!type) {
+        // Get current namespace from environment
+        const currentNamespace = process.env.NEXT_PUBLIC_NAMESPACE;
+        
+        // Only allow core and local (current) namespace access
+        if (namespace !== 'core' && namespace !== 'local' && namespace !== currentNamespace) {
             return NextResponse.json(
-                { error: "Type parameter is required" },
-                { status: 400 }
+                { error: `Access denied. Only 'core' and local namespace '${currentNamespace}' schemas are available` },
+                { status: 403 }
             );
         }
 
-        // Remove .jsonld extension from type parameter
-        const cleanType = type.endsWith('.jsonld') ? type.slice(0, -7) : type;
+        // Resolve namespace (convert 'local' to actual namespace)
+        const resolvedNamespace = namespace === 'local' ? currentNamespace : namespace;
+        
+        if (!resolvedNamespace) {
+            return NextResponse.json(
+                { error: "Could not resolve namespace" },
+                { status: 500 }
+            );
+        }
 
         const schemaManager = await getSchemaManager();
 
         try {
-            const context = await schemaManager.getSchema('context', namespace, cleanType);
-
-            if (!context) {
+            // Get all context schemas for this namespace
+            const contextSchemas = await schemaManager.getSchemasByNamespaceAndType(resolvedNamespace, 'context');
+            
+            if (!contextSchemas || contextSchemas.length === 0) {
                 return NextResponse.json(
-                    { error: `Context not found for namespace: ${namespace}, type: ${cleanType}, version: ${version}` },
+                    { error: `No context schemas found for namespace: ${resolvedNamespace}` },
                     { status: 404 }
                 );
             }
 
+            // Merge all contexts for this namespace using ContextMerger
+            const contexts = contextSchemas.map(schema => schema.content);
+            const mergedContext = ContextMerger.mergeContexts(contexts, resolvedNamespace);
+
             // Set appropriate headers for JSON-LD content
-            return NextResponse.json(context, {
+            return NextResponse.json(mergedContext, {
                 headers: {
                     'Content-Type': 'application/ld+json',
                     'Access-Control-Allow-Origin': '*',
@@ -62,7 +79,7 @@ export async function GET(
             });
 
         } catch (error) {
-            console.error(`Error retrieving context for namespace ${namespace}, type ${cleanType}, version ${version}:`, error);
+            console.error(`Error retrieving merged context for namespace ${resolvedNamespace}:`, error);
             return NextResponse.json(
                 { error: error instanceof Error ? error.message : "Context not found" },
                 { status: 404 }

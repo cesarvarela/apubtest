@@ -35,7 +35,7 @@ export class Validator {
                 throw new Error(`Schema not found for type: ${type}`);
             }
 
-            let validate = this.ajv.getSchema(schema.$id);
+            let validate = schema.$id ? this.ajv.getSchema(schema.$id) : null;
             
             if (!validate) {
                 validate = this.ajv.compile(schema);

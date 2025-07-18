@@ -14,10 +14,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (type !== 'validation' && type !== 'context') {
+        if (type !== 'validation' && type !== 'context' && type !== 'relationship') {
 
             return NextResponse.json(
-                { error: "Type must be 'validation', 'context'" },
+                { error: "Type must be 'validation', 'context', or 'relationship'" },
                 { status: 400 }
             );
         }
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         const schemaManager = await getSchemaManager();
 
         try {
-            const result = await schemaManager.save(type as 'validation' | 'context', namespace, targetType || null, schema);
+            const result = await schemaManager.save(type as 'validation' | 'context' | 'relationship', namespace, targetType || null, schema);
 
             revalidatePath('/schema/manage');
 
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
         const schemaManager = await getSchemaManager();
 
         try {
-            const schema = await schemaManager.getSchema(type as 'validation' | 'context', namespace, targetType || null);
+            const schema = await schemaManager.getSchema(type as 'validation' | 'context' | 'relationship', namespace, targetType || null);
 
             return NextResponse.json({ schema });
         } catch (error) {
@@ -117,18 +117,11 @@ export async function DELETE(request: NextRequest) {
             );
         }
 
-        // Prevent deletion of core schemas
-        if (namespace === 'core') {
-            return NextResponse.json(
-                { error: "Cannot delete core schemas, contexts, or vocabs" },
-                { status: 403 }
-            );
-        }
 
         const schemaManager = await getSchemaManager();
 
         try {
-            const result = await schemaManager.delete(type as 'validation' | 'context', namespace, targetType || null);
+            const result = await schemaManager.delete(type as 'validation' | 'context' | 'relationship', namespace, targetType || null);
 
             return NextResponse.json({
                 message: `${type.charAt(0).toUpperCase() + type.slice(1)} deactivated successfully`,
@@ -153,6 +146,7 @@ export async function PUT(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const namespace = searchParams.get('namespace');
+        const schemaType = searchParams.get('type') || 'validation';
 
         if (!namespace) {
             return NextResponse.json(
@@ -164,7 +158,16 @@ export async function PUT(request: NextRequest) {
         const schemaManager = await getSchemaManager();
 
         try {
-            const targetTypes = await schemaManager.getTargetTypes(namespace);
+            let targetTypes: string[];
+            
+            switch (schemaType) {
+                case 'context':
+                    targetTypes = await schemaManager.getContextTargetTypes(namespace);
+                    break;
+                default:
+                    targetTypes = await schemaManager.getTargetTypes(namespace);
+                    break;
+            }
 
             return NextResponse.json({ targetTypes });
         } catch (error) {

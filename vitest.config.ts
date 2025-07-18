@@ -13,7 +13,7 @@ export default defineConfig({
     watch: false,
     globals: true,
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    setupFiles: ['./globalSetup.ts'],
+    globalSetup: ['./globalSetup.ts'],
     testTimeout: process.env.VSCODE_INSPECTOR_OPTIONS ? 1000 * 60 * 60 : 5000, // 2 minutes in VSCode, 1 minute otherwise
     environment: 'node',
     deps: {

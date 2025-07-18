@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "aiid-incident-validation",
   "type": "object",
   "properties": {
     "@context": {
@@ -9,13 +10,10 @@
         { "type": "object" }
       ]
     },
-    "@type": {
-      "oneOf": [
-        { "const": "aiid:Incident" },
-        { "type": "array", "contains": { "const": "aiid:Incident" } }
-      ]
-    },
+    "@type": { "const": "aiid:Incident" },
     "@id": { "type": "string", "format": "uri" },
+    "incident_id": { "type": "number" },
+    "title": { "type": "string" },
     "deployedBy": {
       "type": "array",
       "items": {
@@ -33,7 +31,31 @@
         "type": "object",
         "properties": {
           "@type": { "const": "aiid:Report" },
-          "@id": { "type": "string", "format": "uri" }
+          "@id": { "type": "string", "format": "uri" },
+          "title": { "type": "string" },
+          "author": {
+            "type": "object",
+            "properties": {
+              "@type": { "const": "core:Person" },
+              "@id": { "type": "string", "format": "uri" },
+              "name": { "type": "string" }
+            },
+            "required": ["@type", "@id", "name"]
+          }
+        },
+        "required": ["@type", "@id", "title", "author"]
+      }
+    },
+    "affectedParties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "@type": { 
+            "enum": ["core:Organization", "core:Person"] 
+          },
+          "@id": { "type": "string", "format": "uri" },
+          "name": { "type": "string" }
         },
         "required": ["@type", "@id"]
       }

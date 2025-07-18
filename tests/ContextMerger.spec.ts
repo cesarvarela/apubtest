@@ -31,7 +31,7 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(result).toEqual({
         "@context": {
@@ -64,7 +64,7 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(result).toEqual({
         "@context": {
@@ -93,7 +93,7 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(result).toEqual({
         "@context": {
@@ -129,7 +129,7 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(result).toEqual({
         "@context": {
@@ -163,11 +163,11 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
-      expect(result["@context"]["@protected"]).toBe(true);
-      expect(result["@context"]["schema"]).toBe("https://schema.org/");
-      expect(result["@context"]["core"]).toBe("https://example.com/core#");
+      expect((result as any)["@context"]["@protected"]).toBe(true);
+      expect((result as any)["@context"]["schema"]).toBe("https://schema.org/");
+      expect((result as any)["@context"]["core"]).toBe("https://example.com/core#");
     });
 
     it('should preserve other @ metadata', () => {
@@ -185,7 +185,7 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(result).toEqual({
         "@context": {
@@ -212,14 +212,14 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining("Type conflict for 'Incident'")
       );
       
       // First definition should win
-      expect(result["@context"]["Incident"]).toBe("core:Incident");
+      expect((result as any)["@context"]["Incident"]).toBe("core:Incident");
     });
 
     it('should warn on property definition conflicts', () => {
@@ -241,14 +241,14 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining("Property conflict for 'name'")
       );
       
       // First definition should win
-      expect(result["@context"]["name"]).toEqual({
+      expect((result as any)["@context"]["name"]).toEqual({
         "@id": "schema:name",
         "@type": "xsd:string"
       });
@@ -289,7 +289,7 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(result).toEqual({
         "@context": {
@@ -297,7 +297,7 @@ describe('ContextMerger', () => {
           "core": "https://example.com/core#"
         }
       });
-      expect(result["@context"]["@context"]).toBeUndefined();
+      expect((result as any)["@context"]["@context"]).toBeUndefined();
     });
 
     it('should handle real-world incident context merge', () => {
@@ -374,7 +374,7 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(result).toEqual({
         "@context": {
@@ -419,7 +419,7 @@ describe('ContextMerger', () => {
         }
       };
 
-      const result = ContextMerger.mergeContexts([context1, context2]);
+      const result = ContextMerger.mergeContexts([context1 as any, context2 as any]);
 
       expect(result).toEqual({
         "@context": {

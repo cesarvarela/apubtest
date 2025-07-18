@@ -234,7 +234,11 @@ function StringValidation({
           <select
             id="format"
             value={field.format || ''}
-            onChange={(e) => onChange({ format: e.target.value || undefined })}
+            onChange={(e) => {
+              const value = e.target.value;
+              const format = value === '' ? undefined : value as 'uri' | 'email' | 'date' | 'date-time' | 'time' | 'regex' | 'uuid';
+              onChange({ format });
+            }}
             className="w-full p-2 text-sm border rounded-md bg-background"
           >
             <option value="">No specific format</option>
@@ -555,9 +559,19 @@ function RelationshipValidation({
   onChange: (updates: Partial<FieldDefinition>) => void;
 }) {
   const updateRelationshipConfig = (updates: Partial<NonNullable<FieldDefinition['relationshipConfig']>>) => {
-    onChange({
-      relationshipConfig: { ...field.relationshipConfig, ...updates }
-    });
+    const currentConfig = field.relationshipConfig;
+    const newConfig = { ...currentConfig, ...updates };
+    
+    // Ensure required properties are present
+    if (newConfig.targetType) {
+      onChange({
+        relationshipConfig: {
+          targetType: newConfig.targetType,
+          cardinality: newConfig.cardinality || 'one',
+          container: newConfig.container
+        }
+      });
+    }
   };
 
   return (
@@ -574,7 +588,12 @@ function RelationshipValidation({
           <select
             id="targetType"
             value={field.relationshipConfig?.targetType || ''}
-            onChange={(e) => updateRelationshipConfig({ targetType: e.target.value })}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value) {
+                updateRelationshipConfig({ targetType: value });
+              }
+            }}
             className="w-full p-2 text-sm border rounded-md bg-background"
           >
             <option value="">Select target type...</option>

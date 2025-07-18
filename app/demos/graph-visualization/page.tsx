@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import GraphVisualization from '@/components/semantic/GraphVisualization';
+import { useState, useMemo } from 'react';
+import GraphVisualization from '@/components/graph/GraphVisualization';
 import { useJsonLdExpansion } from '@/hooks/useJsonLdExpansion';
 import {
   Accordion,
@@ -13,78 +13,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import Link from 'next/link';
 
-const payload = {
-  "@context": [
-    "http://localhost:3000/api/schemas/v1/core/context.jsonld",
-    "http://localhost:3001/api/schemas/v1/aiid/context.jsonld"
-  ],
-  "@type": "aiid:Incident",
-  "@id": "https://incidentdatabase.ai/incident/23",
-  "incidentId": "INC-2024-MED-001",
-  "title": "AI Model Misclassification in Medical Diagnosis System",
-  "deployedBy": [
-    {
-      "@type": "core:Organization",
-      "@id": "https://en.wikipedia.org/wiki/Google",
-      "name": "Google LLC",
-    },
-    {
-      "@type": "core:Organization",
-      "@id": "https://en.wikipedia.org/wiki/DeepMind",
-      "name": "DeepMind Technologies",
-    },
-  ],
-  "reports": [
-    {
-      "@type": "aiid:Report",
-      "@id": "https://incidentdatabase.ai/report/1002",
-      "title": "Medical AI System Fails to Detect Rare Condition",
-      "author": {
-        "@type": "core:Person",
-        "@id": "https://example.org/person/jane-doe",
-        "name": "Jane Doe",
-        "email": "jane.doe@example.org"
-      }
-    },
-    {
-      "@type": "aiid:Report",
-      "@id": "https://incidentdatabase.ai/report/1003",
-      "title": "Diagnostic Algorithm Shows Bias in Minority Patient Cases",
-      "author": {
-        "@type": "core:Person",
-        "@id": "https://example.org/person/john-smith",
-        "name": "John Smith",
-        "email": "john.smith@example.org"
-      }
-    },
-    {
-      "@type": "aiid:Report",
-      "@id": "https://incidentdatabase.ai/report/1004",
-      "title": "Follow-up Analysis of Diagnostic Failures",
-      "author": {
-        "@type": "core:Person",
-        "@id": "https://example.org/person/jane-doe",
-        "name": "Jane Doe",
-        "email": "jane.doe@example.org"
-      }
-    }
-  ],
-  "ui:deployedBy": {
-    "component": "DeployedByFieldRenderer",
-    "label": "Deployed By"
-  },
-  "ui:reports": {
-    "label": "Related Reports"
-  },
-  "ui:title": {
-    "label": "Incident Title",
-    "order": 1
-  },
-  "ui:incidentId": {
-    "label": "Incident ID",
-    "order": 2
-  },
-}
 
 const coreContext = {
   "@context": {
@@ -142,9 +70,10 @@ const localContext = {
       "@type": "@id",
       "@container": "@set"
     },
-    "author": {
-      "@id": "aiid:author",
-      "@type": "@id"
+    "authors": {
+      "@id": "aiid:authors",
+      "@type": "@id",
+      "@container": "@set"
     },
     "Report": {
       "@id": "aiid:Report",
@@ -169,14 +98,19 @@ const localContext = {
   }
 }
 
+import aiidFullPayload from '@/data/aiid-converted.json';
+
 export default function GraphVisualizationPage() {
   const [showRawData, setShowRawData] = useState(false);
+  const [payload, setPayload] = useState(aiidFullPayload);
 
   const { expandedData, loading, error } = useJsonLdExpansion({
     payload,
     coreContext,
     localContext
   });
+
+  const contexts = useMemo(() => ({ coreContext, localContext }), []);
 
   if (loading) {
     return (
@@ -217,31 +151,33 @@ export default function GraphVisualizationPage() {
             Graph Visualization Demo
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Interactive graph visualization showing relationships between semantic entities using Observable Plot
+            Interactive graph visualization showing relationships between semantic entities using Canvas and D3.js force simulation
           </p>
         </div>
 
         {/* Controls */}
-        <div className="flex items-center space-x-4 p-4 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700">
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="show-raw-data"
-              checked={showRawData}
-              onCheckedChange={setShowRawData}
-            />
-            <Label htmlFor="show-raw-data" className="text-sm font-medium">
-              Show Raw Data
-            </Label>
-          </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            Click on nodes to inspect their data
+        <div className="space-y-4">
+          <div className="flex items-center space-x-4 p-4 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="show-raw-data"
+                checked={showRawData}
+                onCheckedChange={setShowRawData}
+              />
+              <Label htmlFor="show-raw-data" className="text-sm font-medium">
+                Show Raw Data
+              </Label>
+            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Click on nodes to inspect their data • Drag nodes to reposition them
+            </div>
           </div>
         </div>
 
         {/* Graph Visualization */}
         <GraphVisualization
           expandedPayload={expandedData}
-          context={{ coreContext, localContext }}
+          context={contexts}
         />
 
         {/* Raw Data Display */}

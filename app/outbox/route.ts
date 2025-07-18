@@ -1,13 +1,13 @@
 import { db } from "@/db";
 import { Incident } from "@/db/schema";
-import { getGeneratorValidator } from "@/lib/getGeneratorValidator";
+import { getSchemaManager } from "@/lib/getGeneratorValidator";
 import { eq, desc } from "drizzle-orm";
 
 export async function GET(request: Request) {
 
     const page = Number(new URL(request.url).searchParams.get("page") ?? 0);
     const pageSize = 50;
-    const [schemasGenerator] = await getGeneratorValidator();
+    const schemaManager = await getSchemaManager();
 
     const incidents = await db
         .select()
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         type: "OrderedCollectionPage",
         next: incidents.length === pageSize ? `${process.env.DOMAIN}/outbox?page=${page + 1}` : undefined,
         orderedItems: incidents.map((incident) => ({
-            "@context": ["https://www.w3.org/ns/activitystreams", schemasGenerator.coreContextUrl],
+            "@context": ["https://www.w3.org/ns/activitystreams", schemaManager.getSchemaUrl('context', 'core')],
             id: `${incident.uri}#create`,
             type: "Create",
             actor: `${process.env.NEXT_PUBLIC_LOCAL_DOMAIN}/actor`,

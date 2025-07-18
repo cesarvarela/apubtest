@@ -4,6 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 import PeerManager from './PeerManager';
 
+// This page needs to be dynamic since it accesses the database
+export const dynamic = 'force-dynamic';
+
 export default async function PeersPage() {
   const peers = await db.select().from(PeerTable);
 

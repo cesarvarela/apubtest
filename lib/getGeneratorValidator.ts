@@ -26,7 +26,15 @@ export async function getValidator(): Promise<Validator> {
 export async function getContentManager(): Promise<ContentManager> {
 
     const schemaManager = await getSchemaManager();
-    const validator = await getValidator();
+    const validator = new Validator(schemaManager);
+    const contentManager = new ContentManager(db, schemaManager, validator);
 
-    return new ContentManager(db, schemaManager, validator);
+    return contentManager;
+}
+
+export async function getGeneratorValidator(): Promise<{ schemaManager: SchemaManager; contentManager: ContentManager }> {
+    const schemaManager = await getSchemaManager();
+    const contentManager = await getContentManager();
+
+    return { schemaManager, contentManager };
 }

@@ -43,11 +43,26 @@ export const Pull = pgTable("pull", {
 
 export const Schema = pgTable("schema", {
     id: uuid("id").primaryKey().defaultRandom(),
-    type: text("type", { enum: ["context", "validation"] }).notNull(),
+    type: text("type", { enum: ["context", "validation", "relationship"] }).notNull(),
     namespace: text("namespace").notNull(), // "core" for core schemas, custom namespace for local
     version: text("version").notNull().default("v1"),
     targetType: text("target_type"), // For validation schemas: "Incident", "Peer", etc. Null for context schemas
     content: jsonb("content").notNull(),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const Relationship = pgTable("relationship", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    namespace: text("namespace").notNull(),
+    name: text("name").notNull(), // e.g., "reportedBy", "causes", "relatedTo"
+    sourceType: text("source_type").notNull(), // e.g., "Incident", "Report"
+    targetType: text("target_type").notNull(), // e.g., "Person", "Organization"
+    cardinality: text("cardinality", { enum: ["one-to-one", "one-to-many", "many-to-one", "many-to-many"] }).notNull(),
+    isRequired: boolean("is_required").notNull().default(false),
+    inverseRelationship: text("inverse_relationship"), // Name of the inverse relationship
+    metadata: jsonb("metadata"), // Additional relationship constraints and settings
     isActive: boolean("is_active").notNull().default(true),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

@@ -20,8 +20,14 @@
       "@type": "@id",
       "@container": "@set"
     },
+    "affectedParties": {
+      "@id": "aiid:affectedParties",
+      "@type": "@id",
+      "@container": "@set"
+    },
     
     "ui:deployedBy": { "@id": "ui:deployedBy", "@type": "@json" },
-    "ui:reports": { "@id": "ui:reports", "@type": "@json" }
+    "ui:reports": { "@id": "ui:reports", "@type": "@json" },
+    "ui:affectedParties": { "@id": "ui:affectedParties", "@type": "@json" }
   }
 }

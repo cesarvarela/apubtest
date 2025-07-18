@@ -1,0 +1,766 @@
+[
+  {
+    "@context": [
+      "http://localhost:3000/api/schemas/v1/core/context.jsonld",
+      "http://localhost:3001/api/schemas/v1/aiid/context.jsonld"
+    ],
+    "@type": "aiid:Incident",
+    "@id": "https://incidentdatabase.ai/incident/23",
+    "incident_id": 23,
+    "title": "Las Vegas Self-Driving Bus Involved in Accident",
+    "deployedBy": [
+      {
+        "@type": "core:Organization",
+        "@id": "https://en.wikipedia.org/wiki/Navya_(company)",
+        "name": "Navya"
+      },
+      {
+        "@type": "core:Organization",
+        "@id": "https://en.wikipedia.org/wiki/Keolis",
+        "name": "Keolis North America"
+      }
+    ],
+    "reports": [
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/2389",
+        "title": "Self-driving shuttle bus in crash on first day",
+        "url": "https://www.bbc.com/news/technology-41923814",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/dave-lee",
+            "name": "Dave Lee"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/270",
+        "title": "The real lesson of that self-driving shuttle’s first-day accident",
+        "url": "https://arstechnica.com/cars/2017/11/the-real-lesson-of-that-self-driving-shuttles-first-day-accident/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/timothy-b-lee",
+            "name": "Timothy B. Lee"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/269",
+        "title": "U.S. safety board to probe self-driving shuttle crash in Las Vegas",
+        "url": "https://www.reuters.com/article/us-autos-selfdriving/u-s-safety-board-to-probe-self-driving-shuttle-crash-in-las-vegas-idUSKBN1DA2K1",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/david-shepardson",
+            "name": "David Shepardson"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/268",
+        "title": "Self-driving bus involved in accident on its first day",
+        "url": "https://money.cnn.com/2017/11/09/technology/self-driving-bus-accident-las-vegas/index.html",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/madison-park",
+            "name": "Madison Park"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/267",
+        "title": "Self-Driving Bus Crashed in Vegas in Its First Hour: Who Was At Fault?",
+        "url": "https://www.inverse.com/article/38279-self-driving-bus-crash",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/inverse",
+            "name": "Inverse"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/266",
+        "title": "A self-driving shuttle in Las Vegas got into an accident on its first day of service",
+        "url": "https://www.theverge.com/2017/11/8/16626224/las-vegas-self-driving-shuttle-crash-accident-first-day",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/nick-statt",
+            "name": "Nick Statt"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/264",
+        "title": "Digital Trends was onboard the ill-fated Las Vegas self-driving shuttle",
+        "url": "https://www.digitaltrends.com/cars/self-driving-bus-crash-vegas-account/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/chuong-nguyen",
+            "name": "Chuong Nguyen"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/aj-dellinger",
+            "name": "Aj Dellinger"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/christian-de-looper",
+            "name": "Christian De Looper"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/trevor-mogg",
+            "name": "Trevor Mogg"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/stephen-edelstein",
+            "name": "Stephen Edelstein"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/ronan-glon",
+            "name": "Ronan Glon"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/263",
+        "title": "Keolis' self-driving shuttle launches in Las Vegas, crashes after two hours",
+        "url": "https://www.intelligenttransport.com/transport-news/29928/aaa-keolis-launch-first-public-self-driving-shuttle-downtown-las-vegas/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/intelligent-transport",
+            "name": "Intelligent Transport"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/261",
+        "title": "US safety board to probe self-driving shuttle crash in Las Vegas",
+        "url": "https://tribune.com.pk/story/1555671/8-us-safety-board-probe-self-driving-shuttle-crash-las-vegas/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/reuters",
+            "name": "Reuters"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/260",
+        "title": "Self-Driving Bus Crashes Two Hours After Being Put on the Road",
+        "url": "https://www.martinmontilino.com/self-driving-bus-crashes-two-hours-after-being-put-on-the-road/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/martin-t-montilino",
+            "name": "Martin T. Montilino"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/259",
+        "title": "Truck Driver Gets the Blame in Driverless Shuttle Bus Crash",
+        "url": "https://www.truckinginfo.com/160097/truck-driver-gets-the-blame-in-driverless-shuttle-bus-crash",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/jim-park",
+            "name": "Jim Park"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/258",
+        "title": "Self-Driving-Shuttle Era Begins with a First-Day Crash in Vegas",
+        "url": "https://www.caranddriver.com/news/a15339580/shuttle-down-self-driving-shuttle-era-begins-with-a-first-day-crash-in-las-vegas/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/pete-bigelow",
+            "name": "Pete Bigelow"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/257",
+        "title": "Self-driving shuttle bus crashes on first day of testing",
+        "url": "https://uk.motor1.com/news/186160/autonomous-shuttle-bus-crash-first-day/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/sam-burnett",
+            "name": "Sam Burnett"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/254",
+        "title": "Self-driving bus involved in crash less than two hours after Las Vegas launch",
+        "url": "http://kathmandupost.ekantipur.com/printedition/news/2017-11-11/self-driving-bus-involved-in-crash-less-than-two-hours-after-las-vegas-launch.html",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/samuel-gibbs",
+            "name": "Samuel Gibbs"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/253",
+        "title": "Las Vegas' self-driving bus crashes in first hour of service",
+        "url": "https://www.engadget.com/2017/11/09/las-vegas-self-driving-shuttle-bus-crash/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/saqib-shah",
+            "name": "Saqib Shah"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/250",
+        "title": "Las Vegas Won't Stop Driverless Shuttle Program after Fatal Accident in Arizona",
+        "url": "http://www.govtech.com/transportation/Las-Vegas-Wont-Stop-Driverless-Shuttle-Program-after-Fatal-Accident-in-Arizona.html",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/mick-akers",
+            "name": "Mick Akers"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/249",
+        "title": "Las Vegas' Driverless Shuttle Is Back In Service But The Feds Want To Examine What Happened",
+        "url": "https://jalopnik.com/las-vegas-driverless-shuttle-is-back-in-service-but-the-1820393012",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/ryan-felton",
+            "name": "Ryan Felton"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/248",
+        "title": "Driverless bus in crash after two hours on road in Las Vegas",
+        "url": "https://news.sky.com/story/driverless-bus-in-crash-after-two-hours-on-road-in-las-vegas-11119198",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/sky-news",
+            "name": "Sky News"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/247",
+        "title": "Driverless car involved in crash in first hour of first day",
+        "url": "https://www.telegraph.co.uk/technology/2017/11/09/driverless-car-involved-crash-first-hour-first-day/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/james-titcomb",
+            "name": "James Titcomb"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/246",
+        "title": "How does downtown's autonomous bus work?",
+        "url": "https://lasvegassun.com/news/2018/apr/05/how-does-downtowns-autonomous-bus-work/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/mick-akers",
+            "name": "Mick Akers"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/245",
+        "title": "Self-driving bus gets into accident on its first day in Las Vegas, human driver blamed for collision",
+        "url": "https://www.nydailynews.com/news/national/self-driving-bus-accident-day-las-vegas-article-1.3621441",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/terence-cullen",
+            "name": "Terence Cullen"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/244",
+        "title": "Self-Driving Bus in Las Vegas Crashes Just 2 Hours After Launch",
+        "url": "https://www.archdaily.com/883379/self-driving-bus-in-las-vegas-crashes-just-2-hours-after-launch",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/rory-stott",
+            "name": "Rory Stott"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/243",
+        "title": "Las Vegas self-driving bus crashed into on its first day",
+        "url": "https://www.gearbrain.com/las-vegas-driverless-bus-crash-2508016007.html",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/alistair-charlton",
+            "name": "Alistair Charlton"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/242",
+        "title": "Self-driving bus involved in crash less than two hours after Las Vegas launch",
+        "url": "https://www.theguardian.com/technology/2017/nov/09/self-driving-bus-crashes-two-hours-after-las-vegas-launch-truck-autonomous-vehicle",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/samuel-gibbs",
+            "name": "Samuel Gibbs"
+          }
+        ]
+      }
+    ],
+    "affectedParties": [
+      {
+        "@type": "core:Organization",
+        "@id": "https://en.wikipedia.org/wiki/Navya_(company)",
+        "name": "Navya"
+      },
+      {
+        "@type": "core:Organization",
+        "@id": "https://en.wikipedia.org/wiki/Keolis",
+        "name": "Keolis North America"
+      },
+      {
+        "@type": "core:Person",
+        "@id": "https://example.org/entities/person/bus-passengers",
+        "name": "bus passengers"
+      }
+    ]
+  },
+  {
+    "@context": [
+      "http://localhost:3000/api/schemas/v1/core/context.jsonld",
+      "http://localhost:3001/api/schemas/v1/aiid/context.jsonld"
+    ],
+    "@type": "aiid:Incident",
+    "@id": "https://incidentdatabase.ai/incident/4",
+    "incident_id": 4,
+    "title": "Uber AV Killed Pedestrian in Arizona",
+    "deployedBy": [
+      {
+        "@type": "core:Organization",
+        "@id": "https://en.wikipedia.org/wiki/Uber",
+        "name": "Uber"
+      }
+    ],
+    "reports": [
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/2147",
+        "title": "Who's liable when a self-driving truck causes a crash?",
+        "url": "https://www.ccjdigital.com/business/article/15064258/whos-liable-when-a-selfdriving-truck-causes-a-crash",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/aaron-huff",
+            "name": "Aaron Huff"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/1542",
+        "title": "‘I’m the Operator’: The Aftermath of a Self-Driving Tragedy",
+        "url": "https://www.wired.com/story/uber-self-driving-car-fatal-crash/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/lauren-smiley",
+            "name": "Lauren Smiley"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/1378",
+        "title": "Self-Driving Uber Car Kills Pedestrian in Arizona, Where Robots Roam",
+        "url": "https://www.nytimes.com/2018/03/19/technology/uber-driverless-fatality.html",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/daisuke-wakabayashi",
+            "name": "Daisuke Wakabayashi"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/1377",
+        "title": "Remember the Uber self-driving car that killed a woman crossing the street? The AI had no clue about jaywalkers",
+        "url": "https://www.theregister.com/2019/11/06/uber_self_driving_car_death/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/katyanna-quach",
+            "name": "Katyanna Quach"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/1376",
+        "title": "Franken-algorithms: The Deadly Consequences of Unpredictable Code",
+        "url": "https://www.theguardian.com/technology/2018/aug/29/coding-algorithms-frankenalgos-program-danger",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/andrew-smith",
+            "name": "Andrew Smith"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/1375",
+        "title": "A self-driving Uber just killed a pedestrian",
+        "url": "https://qz.com/1232570/a-self-driving-uber-just-killed-a-woman-in-arizona-as-uber-suspends-its-autonomous-tests/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/mike-murphy",
+            "name": "Mike Murphy"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/1257",
+        "title": "Uber crash shows 'catastrophic failure' of self-driving technology, experts say",
+        "url": "https://www.theguardian.com/technology/2018/mar/22/self-driving-car-uber-death-woman-failure-fatal-crash-arizona",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/sam-levin",
+            "name": "Sam Levin"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/647",
+        "title": "Uber self-drives robo-cars out of Arizona after fatal crash",
+        "url": "https://www.cbsnews.com/news/uber-ends-self-driving-car-arizona-after-tempe-fatal-crash-elaine-herzberg/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/cbs-news",
+            "name": "CBS News"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/646",
+        "title": "Self-driving Uber kills Arizona woman in first fatal crash involving pedestrian",
+        "url": "https://www.theguardian.com/technology/2018/mar/19/uber-self-driving-car-kills-woman-arizona-tempe",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/sam-levin",
+            "name": "Sam Levin"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/julia-carrie-wong",
+            "name": "Julia Carrie Wong"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/645",
+        "title": "Self-Driving Uber Investigation Reveals Handoff Problem",
+        "url": "https://www.citylab.com/transportation/2018/05/behind-the-uber-self-driving-car-crash-a-failure-to-communicate/561230/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/laura-bliss",
+            "name": "Laura Bliss"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/644",
+        "title": "The Economist explains",
+        "url": "https://www.economist.com/the-economist-explains/2018/05/29/why-ubers-self-driving-car-killed-a-pedestrian",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/the-economist",
+            "name": "The Economist"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/642",
+        "title": "Uber operator in fatal self-driving vehicle crash was likely streaming 'The Voice'",
+        "url": "https://money.cnn.com/2018/06/22/technology/uber-self-driving-crash-police-report/index.html",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/sara-ashley-o-brien",
+            "name": "Sara Ashley O'Brien"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/641",
+        "title": "Uber Driver in Fatal Tempe Crash May Have Been Watching The Voice Behind the Wheel",
+        "url": "https://gizmodo.com/uber-driver-in-fatal-tempe-crash-may-have-been-watching-1827039127",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/kate-conger",
+            "name": "Kate Conger"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/bryan-menegus",
+            "name": "Bryan Menegus"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/640",
+        "title": "Arizona driver in deadly self-driving Uber crash could face charges",
+        "url": "https://www.abc15.com/news/region-southeast-valley/tempe/tempe-police-release-new-video-from-deadly-self-driving-uber-crash",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/kim-tobin",
+            "name": "Kim Tobin"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/clayton-klapper",
+            "name": "Clayton Klapper"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/morgan-bircher",
+            "name": "Morgan Bircher"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/639",
+        "title": "Uber self-driving car kills pedestrian in Arizona",
+        "url": "https://www.cnet.com/roadshow/news/uber-autonomous-car-crash-arizona-tempe/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/dara-kerr",
+            "name": "Dara Kerr"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/638",
+        "title": "Uber's driverless-car safety comes under scrutiny after fatality",
+        "url": "https://www.cnet.com/news/uber-self-driving-car-fatality-in-arizona-has-people-asking-how-safe-are-driverless-cars/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/dara-kerr",
+            "name": "Dara Kerr"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/637",
+        "title": "Uber reportedly settles with family of victim in self-driving car crash",
+        "url": "https://www.cnet.com/news/uber-reportedly-settles-with-family-of-victim-self-driving-car-crash/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/steven-musil",
+            "name": "Steven Musil"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/636",
+        "title": "Uber's fatal self-driving crash reportedly caused by software",
+        "url": "https://www.cnet.com/roadshow/news/uber-reportedly-finds-false-positive-self-driving-car-accident/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/abrar-al-heeti",
+            "name": "Abrar Al-Heeti"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/635",
+        "title": "Uber operator was watching The Voice just before fatal self-driving crash in Tempe, Arizona",
+        "url": "https://www.straitstimes.com/world/united-states/uber-operator-watching-the-voice-before-self-driving-crash-in-tempe-arizona",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/the-straits-times",
+            "name": "The Straits Times"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/634",
+        "title": "Report: Software bug led to death in Uber’s self-driving crash",
+        "url": "https://arstechnica.com/tech-policy/2018/05/report-software-bug-led-to-death-in-ubers-self-driving-crash/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/timothy-b-lee",
+            "name": "Timothy B. Lee"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/633",
+        "title": "Uber car's 'safety' driver streamed TV show before fatal crash: police",
+        "url": "https://www.reuters.com/article/us-uber-selfdriving-crash/uber-cars-safety-driver-streamed-tv-show-before-fatal-crash-police-idUSKBN1JI0LB",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/heather-somerville",
+            "name": "Heather Somerville"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/632",
+        "title": "Uber driver streamed The Voice before self-driving car crash",
+        "url": "https://www.cnbc.com/2018/06/22/uber-driver-streamed-the-voice-before-self-driving-car-crash.html",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/heather-somerville",
+            "name": "Heather Somerville"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/david-shepardson",
+            "name": "David Shepardson"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/631",
+        "title": "Uber Self-Driving Car Crash: What Really Happened",
+        "url": "https://www.forbes.com/sites/meriameberboucha/2018/05/28/uber-self-driving-car-crash-what-really-happened/#5bc866e94dc4",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/meriame-berboucha",
+            "name": "Meriame Berboucha"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/630",
+        "title": "Safety driver of fatal self-driving Uber crash was reportedly watching Hulu at time of accident",
+        "url": "https://www.theverge.com/2018/6/22/17492320/safety-driver-self-driving-uber-crash-hulu-police-report",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/chaim-gartenberg",
+            "name": "Chaim Gartenberg"
+          }
+        ]
+      },
+      {
+        "@type": "aiid:Report",
+        "@id": "https://incidentdatabase.ai/report/629",
+        "title": "Tempe police release report, audio, photo",
+        "url": "https://www.azcentral.com/story/news/local/tempe-breaking/2018/06/21/uber-self-driving-car-crash-tempe-police-elaine-herzberg/724344002/",
+        "authors": [
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/chris-coppola",
+            "name": "Chris Coppola"
+          },
+          {
+            "@type": "core:Person",
+            "@id": "https://example.org/person/brieanna-j-frank",
+            "name": "Brieanna J Frank"
+          }
+        ]
+      }
+    ],
+    "affectedParties": [
+      {
+        "@type": "core:Person",
+        "@id": "https://example.org/entities/person/pedestrians",
+        "name": "pedestrians"
+      },
+      {
+        "@type": "core:Person",
+        "@id": "https://example.org/entities/person/elaine-herzberg",
+        "name": "Elaine Herzberg"
+      }
+    ]
+  }
+]

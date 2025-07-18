@@ -181,13 +181,15 @@ export default function VisualSchemaEditor({
               {/* Field Editor Panel */}
               <ResizablePanel defaultSize={70} minSize={50}>
                 <div className="h-full bg-background">
-                  <FieldEditor
-                    field={selectedField}
-                    namespace={namespace}
-                    availableTypes={availableTypes}
-                    onChange={(updates) => selectedField && updateField(selectedField.id, updates)}
-                    existingFieldNames={existingFieldNames.filter(name => name !== selectedField?.name)}
-                  />
+                  {selectedField && (
+                    <FieldEditor
+                      field={selectedField}
+                      namespace={namespace}
+                      availableTypes={availableTypes}
+                      onChange={(updates) => updateField(selectedField.id, updates)}
+                      existingFieldNames={existingFieldNames.filter(name => name !== selectedField.name)}
+                    />
+                  )}
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>

@@ -5,7 +5,7 @@ export class ContextMerger {
   /**
    * Generic context merging - works with any namespace structure
    */
-  static mergeContexts(contexts: JsonLd[]): JsonLd {
+  static mergeContexts(contexts: JsonLd[], namespace?: string): JsonLd {
     const merged: any = {
       "@context": {}
     };

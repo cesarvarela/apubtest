@@ -8,18 +8,42 @@
 export function generateHiddenAtFieldsUiSchema(schema: any): any {
     const uiSchema: any = {};
 
+    // Helper function to check if we're inside a relationship object
+    function isPathInRelationshipObject(properties: any, path: string[]): boolean {
+        if (path.length === 0) return false;
+        
+        // Check if current properties structure looks like a relationship object
+        const hasIdField = properties?.['@id']?.type === 'string' && properties?.['@id']?.format === 'uri';
+        const hasTypeField = properties?.['@type']?.const || properties?.['@type']?.type;
+        
+        return hasIdField && hasTypeField;
+    }
+
     function hideAtFieldsInProperties(properties: any, path: string[] = []) {
         if (!properties) return;
 
         Object.keys(properties).forEach(key => {
             if (key.startsWith('@')) {
-                // Navigate to the correct nested level in uiSchema
-                let current = uiSchema;
-                for (const segment of path) {
-                    if (!current[segment]) current[segment] = {};
-                    current = current[segment];
+                // Only hide root-level @-prefixed fields, not ones within relationship objects
+                if (path.length === 0) {
+                    // This is a root-level @-prefixed field - hide it
+                    uiSchema[key] = { 'ui:widget': 'hidden' };
+                } else {
+                    // This is a nested @-prefixed field (likely in a relationship object)
+                    // Check if we're inside a relationship object
+                    const isInRelationshipObject = isPathInRelationshipObject(properties, path);
+                    
+                    if (!isInRelationshipObject) {
+                        // Navigate to the correct nested level in uiSchema
+                        let current = uiSchema;
+                        for (const segment of path) {
+                            if (!current[segment]) current[segment] = {};
+                            current = current[segment];
+                        }
+                        current[key] = { 'ui:widget': 'hidden' };
+                    }
+                    // If it's in a relationship object, don't hide it - let it show normally
                 }
-                current[key] = { 'ui:widget': 'hidden' };
             }
         });
     }
