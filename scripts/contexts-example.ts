@@ -1,5 +1,5 @@
 import jsonld from "jsonld";
-import { JsonLdDocument, JsonLd, RemoteDocument } from "jsonld/jsonld-spec";
+import { JsonLd, RemoteDocument } from "jsonld/jsonld-spec";
 import { ContextMerger } from "../lib/ContextMerger";
 
 // Core contexts - one per type for easier management
@@ -164,7 +164,7 @@ const documentLoader = (url: string): Promise<RemoteDocument> => {
     return Promise.reject(new Error(`Unknown context: ${url}`));
 };
 
-async function showExpansion(name: string, data: JsonLdDocument) {
+async function showExpansion(name: string, data: JsonLd) {
     console.log(`\n=== ${name} ===`);
     console.log("Compact form:", JSON.stringify(data, null, 2));
     
