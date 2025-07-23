@@ -99,6 +99,7 @@ interface AiidIncident {
   AllegedDeployerOfAISystem: AiidEntity[];
   reports: AiidReport[];
   AllegedHarmedOrNearlyHarmedParties: AiidEntity[];
+  date: string;
 }
 
 interface AiidData {
@@ -254,6 +255,7 @@ function convertAiidIncidentToJsonLd(incident: AiidIncident) {
     "@id": generateIncidentUri(incident.incident_id),
     "incident_id": incident.incident_id,
     "title": incident.title,
+    "date": incident.date,
     "deployedBy": deployedBy,
     "reports": reports,
     "affectedParties": affectedParties
@@ -275,7 +277,7 @@ async function main() {
     // Generate output file path
     const inputDir = path.dirname(inputFile);
     const inputBasename = path.basename(inputFile, path.extname(inputFile));
-    const outputFile = path.join(inputDir, `${inputBasename}-converted.jsonld`);
+    const outputFile = path.join(inputDir, `${inputBasename}-converted.json`);
     
     console.log('=== AIID to JSON-LD Conversion ===\n');
     console.log(`Input file: ${inputFile}`);
