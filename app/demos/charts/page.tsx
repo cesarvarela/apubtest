@@ -12,6 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from 'next/link';
 import DynamicChart from '@/components/charts/DynamicChart';
+import { ChartConfig, ChartData, EntityCollection, NormalizedEntity, SchemaProperty } from '@/types/charts';
+import { extractChartData } from '@/lib/charts/chartDataExtractor';
+import { chartTemplates } from '@/lib/charts/chartTemplates';
+import { extractAvailableFields, extractAvailableRelationships, getCompatibleDimensionEntities, formatFieldLabel, FieldInfo, RelationshipInfo } from '@/lib/charts/fieldExtractor';
 
 import aiidFullPayload from '@/data/aiid-converted.json';
 
@@ -112,54 +116,7 @@ const localContext = {
   }
 }
 
-// Normalized entity interfaces
-interface NormalizedEntity {
-  id: string;
-  type: string;
-  properties: { [key: string]: any };
-  relationships: { [relationName: string]: string[] };
-  sourceData: any;
-}
-
-interface EntityCollection {
-  entities: { [id: string]: NormalizedEntity };
-  types: { [type: string]: string[] }; // Maps type to array of entity IDs
-  relationships: { [relationName: string]: Array<{ source: string; target: string }> };
-}
-
-// Dynamic chart interfaces
-interface SchemaProperty {
-  key: string;
-  label: string;
-  uri: string;
-  type: 'string' | 'date' | 'number' | 'object' | 'array';
-  isRelation: boolean;
-}
-
-interface SchemaType {
-  key: string;
-  label: string;
-  uri: string;
-  properties: SchemaProperty[];
-}
-
-interface ChartConfig {
-  chartType: 'bar' | 'line' | 'pie' | 'scatter';
-  xAxis: SchemaProperty | null;
-  yAxis: SchemaProperty | null;
-  groupBy: SchemaProperty | null;
-  aggregation: 'count' | 'sum' | 'average';
-  entityType: string | null; // Filter by entity type
-  sortBy: 'count' | 'alphabetical';
-  sortOrder: 'asc' | 'desc';
-  topN: number | null; // null means show all
-}
-
-interface DynamicChartData {
-  data: Array<{ [key: string]: any }>;
-  xLabel: string;
-  yLabel: string;
-}
+// Import types from centralized location - interfaces now defined in types/charts.ts
 
 
 // Functions to analyze JSON-LD context and extract schema information
@@ -379,6 +336,32 @@ function normalizeEntities(expandedData: any[]): EntityCollection {
   // Extract all entities
   expandedData.forEach(item => extractEntity(item));
 
+  // Create reverse relationships algorithmically
+  Object.values(collection.entities).forEach(entity => {
+    Object.entries(entity.relationships).forEach(([relationName, targetIds]) => {
+      // Create reverse relationships with multiple key formats to match all possible lookups
+      const reverseRelationNames = [
+        `_reverse_${relationName}`, // _reverse_aiid:reports
+        `_reverse_${relationName.split(':').pop() || relationName}`, // _reverse_reports
+        `_reverse_${relationName.replace(/^https?:\/\/[^#]*#/, '')}`, // _reverse_reports (from URI)
+      ];
+      
+      targetIds.forEach(targetId => {
+        const targetEntity = collection.entities[targetId];
+        if (targetEntity) {
+          reverseRelationNames.forEach(reverseRelationName => {
+            if (!targetEntity.relationships[reverseRelationName]) {
+              targetEntity.relationships[reverseRelationName] = [];
+            }
+            if (!targetEntity.relationships[reverseRelationName].includes(entity.id)) {
+              targetEntity.relationships[reverseRelationName].push(entity.id);
+            }
+          });
+        }
+      });
+    });
+  });
+
   console.log('Normalized entities:', {
     totalEntities: Object.keys(collection.entities).length,
     types: Object.keys(collection.types).map(type => ({
@@ -394,233 +377,7 @@ function normalizeEntities(expandedData: any[]): EntityCollection {
   return collection;
 }
 
-function extractDynamicDataFromEntities(entityCollection: EntityCollection, config: ChartConfig): DynamicChartData {
-  if (!config.xAxis) {
-    console.log('extractDynamicDataFromEntities - early return: no xAxis');
-    return { data: [], xLabel: '', yLabel: '' };
-  }
-
-  console.log('extractDynamicDataFromEntities called with:', {
-    totalEntities: Object.keys(entityCollection.entities).length,
-    entityType: config.entityType,
-    xAxisKey: config.xAxis.key,
-    xAxisUri: config.xAxis.uri,
-    yAxisKey: config.yAxis?.key,
-    aggregation: config.aggregation
-  });
-
-  // Filter entities by type if specified
-  let relevantEntities = Object.values(entityCollection.entities);
-  if (config.entityType && config.entityType !== 'all') {
-    relevantEntities = relevantEntities.filter(entity => entity.type === config.entityType);
-  }
-
-  console.log('Filtered entities:', relevantEntities.length, 'of type:', config.entityType);
-
-  let results: { [key: string]: any }[] = [];
-
-  if (!config.yAxis || config.aggregation === 'count') {
-    // Count aggregation grouped by X-axis property
-    const countMap = new Map<string, number>();
-
-    relevantEntities.forEach(entity => {
-      const xValue = extractEntityPropertyValue(entity, config.xAxis!, entityCollection);
-      if (xValue !== null && xValue !== undefined) {
-        let groupKey: string;
-
-        if (config.xAxis!.isRelation && config.xAxis!.type === 'array') {
-          // For relations, show the count or names
-          if (typeof xValue === 'number') {
-            groupKey = `${xValue} ${config.xAxis!.key}`;
-          } else {
-            groupKey = String(xValue);
-          }
-        } else if (config.xAxis!.type === 'date') {
-          // Group dates by year
-          const date = new Date(xValue);
-          groupKey = date.getFullYear().toString();
-        } else {
-          groupKey = String(xValue);
-        }
-
-        countMap.set(groupKey, (countMap.get(groupKey) || 0) + 1);
-      }
-    });
-
-    Array.from(countMap.entries()).forEach(([key, count]) => {
-      results.push({
-        [config.xAxis!.key]: key,
-        count: count
-      });
-    });
-
-    // Apply dynamic sorting
-    results.sort((a, b) => {
-      if (config.xAxis!.type === 'date') {
-        // Always sort dates chronologically
-        return parseInt(a[config.xAxis!.key]) - parseInt(b[config.xAxis!.key]);
-      } else {
-        let comparison = 0;
-
-        if (config.sortBy === 'alphabetical') {
-          // Sort alphabetically by the x-axis key
-          comparison = a[config.xAxis!.key].localeCompare(b[config.xAxis!.key]);
-        } else {
-          // Sort by count (default)
-          comparison = a.count - b.count;
-        }
-
-        // Apply sort order
-        return config.sortOrder === 'desc' ? -comparison : comparison;
-      }
-    });
-
-    // Apply dynamic top N filter
-    if (config.xAxis!.type !== 'date' && config.topN && results.length > config.topN) {
-      results = results.slice(0, config.topN);
-    }
-
-  } else {
-    // Direct property extraction with both X and Y values
-    const aggregationMap = new Map<string, number[]>();
-
-    relevantEntities.forEach(entity => {
-      const xValue = extractEntityPropertyValue(entity, config.xAxis!, entityCollection);
-      const yValue = extractEntityPropertyValue(entity, config.yAxis!, entityCollection);
-
-      if (xValue !== null && yValue !== null) {
-        const xKey = String(xValue);
-        if (!aggregationMap.has(xKey)) {
-          aggregationMap.set(xKey, []);
-        }
-        aggregationMap.get(xKey)!.push(Number(yValue) || 0);
-      }
-    });
-
-    Array.from(aggregationMap.entries()).forEach(([key, values]) => {
-      let aggregatedValue: number;
-      switch (config.aggregation) {
-        case 'sum':
-          aggregatedValue = values.reduce((sum, val) => sum + val, 0);
-          break;
-        case 'average':
-          aggregatedValue = values.reduce((sum, val) => sum + val, 0) / values.length;
-          break;
-        default:
-          aggregatedValue = values.length;
-      }
-
-      results.push({
-        [config.xAxis!.key]: key,
-        [config.yAxis!.key]: aggregatedValue
-      });
-    });
-  }
-
-  return {
-    data: results,
-    xLabel: config.xAxis.label,
-    yLabel: config.yAxis?.label || 'Count'
-  };
-}
-
-function extractEntityPropertyValue(entity: NormalizedEntity, property: SchemaProperty, entityCollection: EntityCollection): any {
-  // First check direct properties
-  if (entity.properties[property.key] !== undefined) {
-    const value = entity.properties[property.key];
-    if (property.type === 'date' && value) {
-      return value;
-    }
-    return value;
-  }
-
-  // Check relationships
-  if (entity.relationships[property.key]) {
-    const relatedIds = entity.relationships[property.key];
-
-    if (property.isRelation && property.type === 'array') {
-      // Return count for array relationships
-      return relatedIds.length;
-    } else if (property.isRelation) {
-      // For single relationships, try to extract names
-      const relatedEntities = relatedIds.map(id => entityCollection.entities[id]).filter(Boolean);
-      if (relatedEntities.length > 0) {
-        // Try to get names from related entities
-        const names = relatedEntities.map(relatedEntity => {
-          return relatedEntity.properties.name ||
-            relatedEntity.properties.title ||
-            relatedEntity.properties.incidentId ||
-            relatedEntity.id.split('/').pop() ||
-            'Unknown';
-        });
-        return names.join(', ');
-      }
-      return relatedIds.length;
-    }
-  }
-
-  // Check expanded URI in the source data
-  const expandedValue = entity.sourceData[property.uri];
-  if (expandedValue !== undefined) {
-    if (Array.isArray(expandedValue)) {
-      if (property.isRelation && expandedValue.length > 0) {
-        if (property.key === 'deployedBy' || property.uri.includes('deployedBy')) {
-          // For deployedBy, extract organization names
-          const names: string[] = [];
-          expandedValue.forEach((org: any) => {
-            if (org && typeof org === 'object') {
-              const nameProperty = org['https://schema.org/name'];
-              if (nameProperty && Array.isArray(nameProperty) && nameProperty.length > 0 && nameProperty[0]) {
-                names.push(nameProperty[0]['@value'] || 'Unnamed');
-              }
-            }
-          });
-          return names.length > 0 ? names.join(', ') : 'Unknown Organization';
-        } else if (property.key === 'reports' || property.uri.includes('reports')) {
-          // For reports, return count
-          return expandedValue.length;
-        } else if (property.key === 'authors' || property.uri.includes('authors')) {
-          // For authors, extract names or return count
-          const names: string[] = [];
-          expandedValue.forEach((author: any) => {
-            if (author && typeof author === 'object') {
-              const nameProperty = author['https://schema.org/name'];
-              if (nameProperty && Array.isArray(nameProperty) && nameProperty.length > 0 && nameProperty[0]) {
-                names.push(nameProperty[0]['@value'] || 'Unnamed');
-              }
-            }
-          });
-          return names.length > 0 ? names.join(', ') : expandedValue.length;
-        } else {
-          // General relation handling
-          if (property.type === 'array') {
-            return expandedValue.length; // Return count for arrays
-          } else if (expandedValue.length > 0 && expandedValue[0]) {
-            // Try to extract name from first related object
-            const nameProperty = expandedValue[0]['https://schema.org/name'];
-            if (nameProperty && Array.isArray(nameProperty) && nameProperty.length > 0) {
-              return nameProperty[0]['@value'];
-            }
-            return expandedValue[0]['@id'] || 'Unknown';
-          } else {
-            return 'No data';
-          }
-        }
-      } else {
-        // For simple values
-        if (expandedValue.length > 0 && expandedValue[0]) {
-          return expandedValue[0]['@value'] || expandedValue[0];
-        }
-        return null;
-      }
-    } else if (expandedValue['@value'] !== undefined) {
-      return expandedValue['@value'];
-    }
-    return expandedValue;
-  }
-
-  return null;
-}
+// Old data extraction functions removed - now using extractChartData from lib/charts/chartDataExtractor.ts
 
 
 export default function ChartsPage() {
@@ -654,62 +411,165 @@ export default function ChartsPage() {
     }));
   }, [normalizedEntities]);
 
-  // Dynamic chart configuration
+  // Dynamic chart configuration with new measure/dimension model
   const [chartConfig, setChartConfig] = useState<ChartConfig>({
     chartType: 'bar',
-    xAxis: null,
-    yAxis: null,
-    groupBy: null,
-    aggregation: 'count',
-    entityType: null,
-    sortBy: 'count',
+    measure: {
+      entity: 'aiid:Incident',
+      aggregation: 'count'
+    },
+    dimension: {
+      entity: 'core:Organization',
+      field: 'name',
+      via: 'deployedBy'
+    },
+    sortBy: 'measure',
     sortOrder: 'desc',
     topN: 15
   });
 
-  // Set default configuration when properties and entity types are available
-  useEffect(() => {
-    if (availableProperties.length > 0 && availableEntityTypes.length > 0 && !chartConfig.xAxis) {
-      const deployedByProp = availableProperties.find(p => p.key === 'deployedBy');
-      const defaultEntityType = availableEntityTypes.find(t => t.key.includes('Incident')) || availableEntityTypes[0];
+  // Cascading update functions for form dependencies
+  const handleMeasureEntityChange = (newMeasureEntity: string) => {
+    setChartConfig(prev => ({
+      ...prev,
+      measure: { ...prev.measure, entity: newMeasureEntity },
+      // Reset dependent fields
+      dimension: {
+        entity: prev.dimension.entity, // Keep if compatible, will be validated below
+        field: 'name', // Reset to default
+        via: undefined // Reset relationship
+      }
+    }));
+  };
 
-      if (deployedByProp && defaultEntityType) {
-        setChartConfig(prev => ({
-          ...prev,
-          xAxis: deployedByProp,
-          groupBy: deployedByProp,
-          yAxis: null,
-          aggregation: 'count',
-          entityType: defaultEntityType.key,
-          sortBy: 'count',
-          sortOrder: 'desc',
-          topN: 15
-        }));
+  const handleDimensionEntityChange = (newDimensionEntity: string) => {
+    // Get available fields for the new entity
+    const newFields = extractAvailableFields(normalizedEntities, newDimensionEntity);
+    const defaultField = newFields.find(f => f.key === 'name') || 
+                        newFields.find(f => f.key === 'title') || 
+                        newFields[0];
+
+    setChartConfig(prev => ({
+      ...prev,
+      dimension: {
+        ...prev.dimension,
+        entity: newDimensionEntity,
+        field: defaultField?.key || 'name'
+      }
+    }));
+  };
+
+  const handleRelationshipChange = (newRelationship: string | undefined) => {
+    // Get compatible dimension entities for this relationship
+    const compatible = getCompatibleDimensionEntities(
+      normalizedEntities, 
+      chartConfig.measure.entity, 
+      newRelationship
+    );
+
+    // If current dimension entity is not compatible, pick the first compatible one
+    let newDimensionEntity = chartConfig.dimension.entity;
+    if (!compatible.includes(newDimensionEntity) && compatible.length > 0) {
+      newDimensionEntity = compatible[0];
+    }
+
+    // Get fields for the (possibly new) dimension entity
+    const newFields = extractAvailableFields(normalizedEntities, newDimensionEntity);
+    const defaultField = newFields.find(f => f.key === 'name') || 
+                        newFields.find(f => f.key === 'title') || 
+                        newFields[0];
+
+    setChartConfig(prev => ({
+      ...prev,
+      dimension: {
+        entity: newDimensionEntity,
+        field: defaultField?.key || 'name',
+        via: newRelationship === 'none' ? undefined : newRelationship
+      }
+    }));
+  };
+
+  // Dynamic field extraction based on current selections
+  const availableFields = useMemo(() => {
+    if (!chartConfig.dimension.entity) return [];
+    
+    // Use dynamic field extraction
+    const fields = extractAvailableFields(normalizedEntities, chartConfig.dimension.entity);
+    
+    // If no fields found, create fallback based on current configuration
+    if (fields.length === 0 && chartConfig.dimension.field) {
+      return [{
+        key: chartConfig.dimension.field,
+        label: formatFieldLabel(chartConfig.dimension.field),
+        type: 'string' as const,
+        frequency: 1,
+        totalCount: 1,
+        entityCount: 1,
+        isCommon: true
+      }];
+    }
+    
+    return fields;
+  }, [normalizedEntities, chartConfig.dimension.entity, chartConfig.dimension.field]);
+  
+
+  const availableRelationships = useMemo(() => {
+    if (!chartConfig.measure.entity) return [];
+    const relationships = extractAvailableRelationships(normalizedEntities, chartConfig.measure.entity);
+    
+    // If no relationships are found but we have a current via relationship, create a fallback
+    if (relationships.length === 0 && chartConfig.dimension.via) {
+      return [{
+        key: chartConfig.dimension.via,
+        label: chartConfig.dimension.via,
+        targetEntityTypes: chartConfig.dimension.entity ? [chartConfig.dimension.entity] : [],
+        frequency: 1,
+        totalCount: 1
+      }];
+    }
+    
+    return relationships;
+  }, [normalizedEntities, chartConfig.measure.entity, chartConfig.dimension.via, chartConfig.dimension.entity]);
+
+  const compatibleDimensionEntities = useMemo(() => {
+    const compatible = getCompatibleDimensionEntities(
+      normalizedEntities, 
+      chartConfig.measure.entity, 
+      chartConfig.dimension.via
+    );
+    
+    const filtered = availableEntityTypes.filter(entityType => 
+      compatible.includes(entityType.key)
+    );
+    
+    // If no compatible entities found but we have a current dimension entity, include it
+    if (filtered.length === 0 && chartConfig.dimension.entity) {
+      const currentEntity = availableEntityTypes.find(et => et.key === chartConfig.dimension.entity);
+      if (currentEntity) {
+        return [currentEntity];
       }
     }
-  }, [availableProperties, availableEntityTypes, chartConfig.xAxis]);
+    
+    return filtered;
+  }, [normalizedEntities, chartConfig.measure.entity, chartConfig.dimension.via, availableEntityTypes, chartConfig.dimension.entity]);
 
   // Process data for charts using expanded JSON-LD
 
-  // Dynamic chart data using normalized entities
-  const dynamicChartData = useMemo<DynamicChartData>(() => {
-    if (!chartConfig.xAxis || Object.keys(normalizedEntities.entities).length === 0) {
-      console.log('Dynamic chart data - missing requirements:', {
-        hasXAxis: !!chartConfig.xAxis,
-        entitiesCount: Object.keys(normalizedEntities.entities).length,
-        chartConfig
-      });
-      return { data: [], xLabel: '', yLabel: '' };
+  // Dynamic chart data using new measure/dimension model
+  const dynamicChartData = useMemo<ChartData>(() => {
+    if (Object.keys(normalizedEntities.entities).length === 0) {
+      console.log('Dynamic chart data - no entities available');
+      return { data: [], measureLabel: '', dimensionLabel: '' };
     }
 
-    console.log('Extracting dynamic data with normalized entities:', {
+    console.log('Extracting chart data with new measure/dimension model:', {
       config: chartConfig,
       totalEntities: Object.keys(normalizedEntities.entities).length,
       entityTypes: Object.keys(normalizedEntities.types)
     });
 
-    const result = extractDynamicDataFromEntities(normalizedEntities, chartConfig);
-    console.log('Dynamic chart data result:', result);
+    const result = extractChartData(normalizedEntities, chartConfig);
+    console.log('Chart data result:', result);
 
     return result;
   }, [normalizedEntities, chartConfig]);
@@ -764,157 +624,29 @@ export default function ChartsPage() {
           </div>
         </div>
 
-        {/* Prebuilt Examples */}
+        {/* Chart Templates */}
         <div className="p-4 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700">
-          <h3 className="text-lg font-semibold mb-4">Prebuilt Examples</h3>
+          <h3 className="text-lg font-semibold mb-4">Chart Templates</h3>
           <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => {
-                const deployedBy = availableProperties.find(p => p.key === 'deployedBy');
-                const incidentType = availableEntityTypes.find(t => t.key.includes('Incident'));
-                if (deployedBy) {
-                  setChartConfig(prev => ({
-                    ...prev,
-                    xAxis: deployedBy,
-                    groupBy: deployedBy,
-                    yAxis: null,
-                    aggregation: 'count',
-                    chartType: 'bar',
-                    entityType: incidentType?.key || null,
-                    sortBy: 'count',
-                    sortOrder: 'desc',
-                    topN: 15
-                  }));
-                }
-              }}
-              className="px-4 py-2 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
-            >
-              Organizations vs Incidents
-            </button>
-            <button
-              onClick={() => {
-                const date = availableProperties.find(p => p.key === 'date');
-                const incidentType = availableEntityTypes.find(t => t.key.includes('Incident'));
-                if (date) {
-                  setChartConfig(prev => ({
-                    ...prev,
-                    xAxis: date,
-                    groupBy: date,
-                    yAxis: null,
-                    aggregation: 'count',
-                    chartType: 'line',
-                    entityType: incidentType?.key || null,
-                    sortBy: 'count',
-                    sortOrder: 'desc',
-                    topN: null
-                  }));
-                }
-              }}
-              className="px-4 py-2 text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
-            >
-              Timeline
-            </button>
-            <button
-              onClick={() => {
-                const reports = availableProperties.find(p => p.key === 'reports');
-                const incidentType = availableEntityTypes.find(t => t.key.includes('Incident'));
-                if (reports) {
-                  setChartConfig(prev => ({
-                    ...prev,
-                    xAxis: reports,
-                    groupBy: reports,
-                    yAxis: null,
-                    aggregation: 'count',
-                    chartType: 'pie',
-                    entityType: incidentType?.key || null,
-                    sortBy: 'count',
-                    sortOrder: 'desc',
-                    topN: 10
-                  }));
-                }
-              }}
-              className="px-4 py-2 text-sm bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
-            >
-              Reports Distribution
-            </button>
-            <button
-              onClick={() => {
-                const affectedParties = availableProperties.find(p => p.key === 'affectedParties');
-                const incidentType = availableEntityTypes.find(t => t.key.includes('Incident'));
-                if (affectedParties) {
-                  setChartConfig(prev => ({
-                    ...prev,
-                    xAxis: affectedParties,
-                    groupBy: affectedParties,
-                    yAxis: null,
-                    aggregation: 'count',
-                    chartType: 'bar',
-                    entityType: incidentType?.key || null,
-                    sortBy: 'count',
-                    sortOrder: 'desc',
-                    topN: 20
-                  }));
-                }
-              }}
-              className="px-4 py-2 text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
-            >
-              Harmed Parties
-            </button>
-            <button
-              onClick={() => {
-                const affectedParties = availableProperties.find(p => p.key === 'affectedParties');
-                const incidentType = availableEntityTypes.find(t => t.key.includes('Incident'));
-                if (affectedParties) {
-                  setChartConfig(prev => ({
-                    ...prev,
-                    xAxis: affectedParties,
-                    groupBy: affectedParties,
-                    yAxis: null,
-                    aggregation: 'count',
-                    chartType: 'pie',
-                    entityType: incidentType?.key || null,
-                    sortBy: 'count',
-                    sortOrder: 'desc',
-                    topN: 10
-                  }));
-                }
-              }}
-              className="px-4 py-2 text-sm bg-pink-100 dark:bg-pink-900 text-pink-800 dark:text-pink-200 rounded hover:bg-pink-200 dark:hover:bg-pink-800 transition-colors"
-            >
-              Affected Groups Count
-            </button>
+            {chartTemplates.map(template => (
+              <button
+                key={template.id}
+                onClick={() => setChartConfig(template.config)}
+                className="px-4 py-2 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors flex items-center gap-2"
+                title={template.description}
+              >
+                <span>{template.icon}</span>
+                {template.title}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Chart Configuration Panel */}
         <div className="p-4 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700">
           <h3 className="text-lg font-semibold mb-4">Chart Configuration</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {/* Row 1: Main Configuration */}
-            <div>
-              <Label htmlFor="entity-type" className="text-sm font-medium mb-2 block">
-                Entity Type
-              </Label>
-              <Select
-                value={chartConfig.entityType || 'all'}
-                onValueChange={(value) =>
-                  setChartConfig(prev => ({ ...prev, entityType: value === 'all' ? null : value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select entity type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types ({Object.keys(normalizedEntities.entities).length})</SelectItem>
-                  {availableEntityTypes.map(entityType => (
-                    <SelectItem key={entityType.key} value={entityType.key}>
-                      {entityType.label} ({entityType.count})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            {/* Chart Type */}
             <div>
               <Label htmlFor="chart-type" className="text-sm font-medium mb-2 block">
                 Chart Type
@@ -937,79 +669,40 @@ export default function ChartsPage() {
               </Select>
             </div>
 
+            {/* Measure Entity */}
             <div>
-              <Label htmlFor="x-axis" className="text-sm font-medium mb-2 block">
-                X-Axis (Categories)
+              <Label htmlFor="measure-entity" className="text-sm font-medium mb-2 block">
+                What to Measure
               </Label>
               <Select
-                value={chartConfig.xAxis?.key || ''}
-                onValueChange={(value) => {
-                  const property = availableProperties.find(p => p.key === value);
+                value={chartConfig.measure.entity}
+                onValueChange={handleMeasureEntityChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select entity to measure" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableEntityTypes.map(entityType => (
+                    <SelectItem key={entityType.key} value={entityType.key}>
+                      {entityType.label} ({entityType.count})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Measure Aggregation */}
+            <div>
+              <Label htmlFor="measure-aggregation" className="text-sm font-medium mb-2 block">
+                How to Measure
+              </Label>
+              <Select
+                value={chartConfig.measure.aggregation}
+                onValueChange={(value: 'count' | 'sum' | 'average') =>
                   setChartConfig(prev => ({
                     ...prev,
-                    xAxis: property || null,
-                    groupBy: property || prev.groupBy // Also set as groupBy for aggregation
-                  }));
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select X-axis property" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableProperties.map(prop => (
-                    <SelectItem key={prop.key} value={prop.key}>
-                      {prop.label} ({prop.type}{prop.isRelation ? ', relation' : ''})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="y-axis" className="text-sm font-medium mb-2 block">
-                Y-Axis (Values)
-              </Label>
-              <Select
-                value={chartConfig.yAxis?.key || 'count'}
-                onValueChange={(value) => {
-                  if (value === 'count') {
-                    setChartConfig(prev => ({
-                      ...prev,
-                      yAxis: null,
-                      aggregation: 'count'
-                    }));
-                  } else {
-                    const property = availableProperties.find(p => p.key === value);
-                    setChartConfig(prev => ({
-                      ...prev,
-                      yAxis: property || null,
-                      aggregation: property?.type === 'number' ? 'sum' : 'count'
-                    }));
-                  }
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Y-axis property" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="count">Count of Items</SelectItem>
-                  {availableProperties.filter(prop => prop.type === 'number' || prop.isRelation).map(prop => (
-                    <SelectItem key={prop.key} value={prop.key}>
-                      {prop.label} ({prop.type}{prop.isRelation ? ' count' : ''})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="aggregation" className="text-sm font-medium mb-2 block">
-                Aggregation
-              </Label>
-              <Select
-                value={chartConfig.aggregation}
-                onValueChange={(value: 'count' | 'sum' | 'average') =>
-                  setChartConfig(prev => ({ ...prev, aggregation: value }))
+                    measure: { ...prev.measure, aggregation: value }
+                  }))
                 }
               >
                 <SelectTrigger>
@@ -1023,14 +716,111 @@ export default function ChartsPage() {
               </Select>
             </div>
 
-            {/* Row 2: Sorting and Filtering Options */}
+            {/* Dimension Entity */}
+            <div>
+              <Label htmlFor="dimension-entity" className="text-sm font-medium mb-2 block">
+                Group By Entity
+              </Label>
+              <Select
+                value={chartConfig.dimension.entity}
+                onValueChange={handleDimensionEntityChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select grouping entity" />
+                </SelectTrigger>
+                <SelectContent>
+                  {compatibleDimensionEntities.map(entityType => (
+                    <SelectItem key={entityType.key} value={entityType.key}>
+                      {entityType.label} ({entityType.count})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Dimension Field */}
+            <div>
+              <Label htmlFor="dimension-field" className="text-sm font-medium mb-2 block">
+                Group By Field
+              </Label>
+              <Select
+                value={chartConfig.dimension.field}
+                onValueChange={(value) =>
+                  setChartConfig(prev => ({
+                    ...prev,
+                    dimension: { ...prev.dimension, field: value }
+                  }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select display field" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableFields.map(field => (
+                    <SelectItem key={field.key} value={field.key}>
+                      {field.label} 
+                      {field.type !== 'string' && ` (${field.type})`}
+                      {!field.isCommon && ` (${Math.round(field.frequency * 100)}%)`}
+                    </SelectItem>
+                  ))}
+                  {availableFields.length === 0 && (
+                    <SelectItem value="name" disabled>No fields available</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Relationship Path */}
+            <div>
+              <Label htmlFor="dimension-via" className="text-sm font-medium mb-2 block">
+                Relationship (Via)
+              </Label>
+              <Select
+                value={(() => {
+                  if (!chartConfig.dimension.via) return 'none';
+                  
+                  // First try exact match
+                  const exactMatch = availableRelationships.find(rel => rel.key === chartConfig.dimension.via);
+                  if (exactMatch) return exactMatch.key;
+                  
+                  // Then try compact key mapping (deployedBy -> https://example.org/aiid#deployedBy)
+                  const compactMatch = availableRelationships.find(rel => {
+                    const compactKey = rel.key.includes('#') 
+                      ? rel.key.split('#').pop() 
+                      : rel.key.includes(':') && !rel.key.includes('://') 
+                        ? rel.key.split(':').pop()
+                        : rel.key;
+                    return compactKey === chartConfig.dimension.via;
+                  });
+                  
+                  return compactMatch ? compactMatch.key : 'none';
+                })()}
+                onValueChange={(value) => handleRelationshipChange(value === 'none' ? undefined : value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select relationship" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None (same entity)</SelectItem>
+                  {availableRelationships.map(rel => (
+                    <SelectItem key={rel.key} value={rel.key}>
+                      {rel.label}
+                      {rel.frequency < 1 && ` (${Math.round(rel.frequency * 100)}%)`}
+                      {rel.targetEntityTypes.length > 0 && ` → ${rel.targetEntityTypes.map(t => t.split(':')[1] || t).join(', ')}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Sort Options */}
             <div>
               <Label htmlFor="sort-by" className="text-sm font-medium mb-2 block">
                 Sort By
               </Label>
               <Select
                 value={chartConfig.sortBy}
-                onValueChange={(value: 'count' | 'alphabetical') =>
+                onValueChange={(value: 'measure' | 'dimension') =>
                   setChartConfig(prev => ({ ...prev, sortBy: value }))
                 }
               >
@@ -1038,8 +828,8 @@ export default function ChartsPage() {
                   <SelectValue placeholder="Select sort method" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="count">Count (Value)</SelectItem>
-                  <SelectItem value="alphabetical">Alphabetical</SelectItem>
+                  <SelectItem value="measure">By Value</SelectItem>
+                  <SelectItem value="dimension">Alphabetical</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1073,7 +863,7 @@ export default function ChartsPage() {
                 onValueChange={(value) =>
                   setChartConfig(prev => ({
                     ...prev,
-                    topN: value === 'all' ? null : parseInt(value)
+                    topN: value === 'all' ? undefined : parseInt(value)
                   }))
                 }
               >
@@ -1105,23 +895,18 @@ export default function ChartsPage() {
           {/* Configuration Summary */}
           <div className="mt-4 p-3 bg-gray-50 dark:bg-zinc-900 rounded text-sm">
             <strong>Configuration:</strong> {chartConfig.chartType} chart
-            {chartConfig.entityType && ` • Entity: ${availableEntityTypes.find(t => t.key === chartConfig.entityType)?.label || chartConfig.entityType}`}
-            {chartConfig.xAxis && ` • X: ${chartConfig.xAxis.label}`}
-            {chartConfig.yAxis && ` • Y: ${chartConfig.yAxis.label}`}
-            {chartConfig.aggregation && ` (${chartConfig.aggregation})`}
+            <br />
+            <strong>Measure:</strong> {chartConfig.measure.aggregation} of {chartConfig.measure.entity} 
+            <br />
+            <strong>Dimension:</strong> {chartConfig.dimension.entity} ({chartConfig.dimension.field})
+            {chartConfig.dimension.via && ` via ${chartConfig.dimension.via}`}
             <br />
             <strong>Data & Sorting:</strong> {dynamicChartData.data.length} points •
             Sort by {chartConfig.sortBy} ({chartConfig.sortOrder}) •
             Show {chartConfig.topN ? `top ${chartConfig.topN}` : 'all'}
             <br />
-            <strong>Entity Filter:</strong> {chartConfig.entityType || 'All'} |
-            <strong>X-Axis:</strong> {chartConfig.xAxis?.key || 'None'} |
-            <strong>Y-Axis:</strong> {chartConfig.yAxis?.key || 'Count'}
-            <br />
             <strong>Total Entities:</strong> {Object.keys(normalizedEntities.entities).length} |
             <strong>Entity Types:</strong> {availableEntityTypes.map(t => `${t.label}(${t.count})`).join(', ')}
-            <br />
-            <strong>Available Properties:</strong> {availableProperties.map(p => p.key).join(', ')}
           </div>
         </div>
       </div>
@@ -1142,9 +927,9 @@ export default function ChartsPage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="dynamic-chart-data">
+          <AccordionItem value="chart-data">
             <AccordionTrigger className="px-6 text-lg font-semibold text-gray-900 dark:text-white">
-              Chart Data
+              Chart Data ({dynamicChartData.data.length} points)
             </AccordionTrigger>
             <AccordionContent className="px-6">
               <textarea
