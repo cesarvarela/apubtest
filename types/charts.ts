@@ -2,7 +2,7 @@
 
 export interface ChartMeasure {
   entity: string;                      // Entity to measure (e.g., 'aiid:Incident')
-  aggregation: 'count' | 'sum' | 'average';
+  aggregation: 'count' | 'sum' | 'avg';
   field?: string;                      // Optional: specific field to aggregate
 }
 

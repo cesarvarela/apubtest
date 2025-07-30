@@ -175,8 +175,7 @@ export default function SimpleChart({ data, chartType, resultsLimit = 20, classN
               fill: 'color',
               stroke: 'white',
               strokeWidth: 2,
-              title: d => `${d.label}: ${d.value} (${d.percentage}%)`,
-              r: (d: any) => Math.sqrt(d.value) * 5  // Size based on value
+              title: d => `${d.label}: ${d.value} (${d.percentage}%)`
             }),
             // Add labels
             Plot.text(donutData, {

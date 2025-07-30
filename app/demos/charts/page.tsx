@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Link from 'next/link';
 import DynamicChart from '@/components/charts/DynamicChart';
 import { ChartConfig, ChartData, EntityCollection, NormalizedEntity, SchemaProperty } from '@/types/charts';
-import { extractChartData } from '@/lib/charts/chartDataExtractor';
+import { extractChartData } from '@/lib/charts/measureDimensionExtractor';
 import { chartTemplates } from '@/lib/charts/chartTemplates';
 import { extractAvailableFields, extractAvailableRelationships, getCompatibleDimensionEntities, formatFieldLabel, FieldInfo, RelationshipInfo } from '@/lib/charts/fieldExtractor';
 
@@ -698,7 +698,7 @@ export default function ChartsPage() {
               </Label>
               <Select
                 value={chartConfig.measure.aggregation}
-                onValueChange={(value: 'count' | 'sum' | 'average') =>
+                onValueChange={(value: 'count' | 'sum' | 'avg') =>
                   setChartConfig(prev => ({
                     ...prev,
                     measure: { ...prev.measure, aggregation: value }
@@ -711,7 +711,7 @@ export default function ChartsPage() {
                 <SelectContent>
                   <SelectItem value="count">Count</SelectItem>
                   <SelectItem value="sum">Sum</SelectItem>
-                  <SelectItem value="average">Average</SelectItem>
+                  <SelectItem value="avg">Average</SelectItem>
                 </SelectContent>
               </Select>
             </div>

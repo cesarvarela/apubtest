@@ -6,9 +6,9 @@ import {
   discoverEntityTypes,
   getGroupingOptions,
   getGroupingTargetTypes,
-  getDisplayableFields,
-  selectDefaultDisplayField
+  getDisplayableFields
 } from '@/lib/charts/dynamicAnalyzer';
+import { selectDefaultDisplayField } from '@/lib/charts/chartDataExtractor';
 import { 
   extractChartData, 
   validateChartConfig,
