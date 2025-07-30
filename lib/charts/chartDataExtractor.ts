@@ -1,382 +1,738 @@
-import { ChartConfig, ChartData, EntityCollection, NormalizedEntity, ChartMeasure, ChartDimension } from '@/types/charts';
-
 /**
- * Extracts chart data using the measure/dimension model
+ * Universal chart data extraction engine for normalized data
+ * Works with any entity types and relationships discovered dynamically
  */
-export function extractChartData(entityCollection: EntityCollection, config: ChartConfig): ChartData {
-  console.log('extractChartData called with:', {
-    totalEntities: Object.keys(entityCollection.entities).length,
-    measureEntity: config.measure.entity,
-    dimensionEntity: config.dimension.entity,
-    relationshipVia: config.dimension.via
-  });
 
-  // Get all entities of the measure type (what we're counting)
-  const measureEntities = getMeasureEntities(entityCollection, config.measure.entity);
-  
-  if (measureEntities.length === 0) {
-    console.log('No measure entities found for:', config.measure.entity);
-    return { data: [], measureLabel: '', dimensionLabel: '' };
-  }
+import { NormalizationResult, NormalizedEntity, EntityReference } from '../normalization';
+import { 
+  discoverEntityTypes, 
+  discoverRelationships, 
+  analyzeEntityFields,
+  getCompatibleTargetTypes,
+  RelationshipInfo,
+  FieldInfo 
+} from './dynamicAnalyzer';
 
-  console.log('Found measure entities:', measureEntities.length);
+// Chart configuration types
+export interface ChartConfig {
+  sourceType: string;
+  groupBy: string;
+  groupByFieldType?: 'string' | 'number' | 'boolean' | 'date' | 'array' | 'object' | 'reference'; // Type of the groupBy field for smart sorting
+  groupByLabelField?: string; // When grouping by references, which field to use for display labels
+  aggregation: 'count' | 'sum' | 'avg' | 'min' | 'max' | 'cumulative';
+  valueField?: string; // Required for sum, avg, min, max
+  relationshipPath?: string[]; // For relationship traversal ['reports', 'authors']
+  filters?: ChartFilter[];
+  targetTypeFilter?: string; // Filter mixed-type reference fields to specific type
+  sortBy?: 'count-desc' | 'count-asc' | 'alpha-asc' | 'alpha-desc' | 'chrono-asc' | 'chrono-desc'; // How to sort the final chart data
+}
 
-  // Group measure entities by dimension values
-  const groupedData = groupByDimension(entityCollection, measureEntities, config);
-  
-  // Apply aggregation
-  const aggregatedData = applyAggregation(groupedData, config);
-  
-  // Apply sorting and filtering
-  const finalData = applySortingAndFiltering(aggregatedData, config);
+export interface ChartFilter {
+  field: string;
+  operator: 'equals' | 'contains' | 'greater_than' | 'less_than' | 'in';
+  value: any;
+}
 
-  const measureLabel = getMeasureLabel(config.measure);
-  const dimensionLabel = getDimensionLabel(config.dimension);
+export interface ChartDataPoint {
+  label: string;
+  value: number;
+  count: number; // Number of entities that contributed to this data point
+  entities: EntityReference[]; // References to contributing entities
+}
 
-  return {
-    data: finalData,
-    measureLabel,
-    dimensionLabel
+export interface ChartResult {
+  data: ChartDataPoint[];
+  config: ChartConfig;
+  metadata: {
+    totalEntities: number;
+    uniqueGroups: number;
+    sourceEntityType: string;
+    targetEntityType?: string;
   };
 }
 
 /**
- * Get all entities of the specified measure type
+ * Extracts chart data based on configuration
  */
-function getMeasureEntities(entityCollection: EntityCollection, measureEntityType: string): NormalizedEntity[] {
-  const entityIds = entityCollection.types[measureEntityType] || [];
-  const entities = entityIds.map(id => entityCollection.entities[id]).filter(Boolean);
+export function extractChartData(
+  normalizedData: NormalizationResult,
+  config: ChartConfig
+): ChartResult {
+  // Get source entities
+  const sourceEntities = normalizedData.extracted[config.sourceType] || [];
   
-  // Log entity count for debugging
-  console.log(`Found ${entities.length} entities of type ${measureEntityType}`);
+  if (sourceEntities.length === 0) {
+    return {
+      data: [],
+      config,
+      metadata: {
+        totalEntities: 0,
+        uniqueGroups: 0,
+        sourceEntityType: config.sourceType
+      }
+    };
+  }
+
+  // Apply filters first
+  const filteredEntities = applyFilters(sourceEntities, config.filters || []);
   
-  return entities;
+  // Follow relationship path if specified
+  const targetEntities = config.relationshipPath && config.relationshipPath.length > 0
+    ? followRelationshipPath(normalizedData, filteredEntities, config.relationshipPath)
+    : filteredEntities;
+
+  // Group entities by the specified field
+  const groupedData = groupEntitiesByField(targetEntities, config.groupBy, normalizedData, config);
+  
+  // Apply aggregation
+  const chartData = applyAggregation(groupedData, config);
+  
+  // Determine target entity type
+  const targetEntityType = targetEntities.length > 0 ? targetEntities[0]['@type'] : config.sourceType;
+  
+  // Apply sorting based on user configuration
+  let sortedChartData = [...chartData];
+  const sortBy = config.sortBy || 'count-desc'; // Default to count descending
+  
+  switch (sortBy) {
+    case 'count-desc':
+      sortedChartData.sort((a, b) => b.value - a.value);
+      break;
+    case 'count-asc':
+      sortedChartData.sort((a, b) => a.value - b.value);
+      break;
+    case 'alpha-asc':
+      sortedChartData.sort((a, b) => a.label.localeCompare(b.label));
+      break;
+    case 'alpha-desc':
+      sortedChartData.sort((a, b) => b.label.localeCompare(a.label));
+      break;
+    case 'chrono-asc':
+      sortedChartData.sort((a, b) => {
+        const dateA = new Date(a.label);
+        const dateB = new Date(b.label);
+        return dateA.getTime() - dateB.getTime();
+      });
+      break;
+    case 'chrono-desc':
+      sortedChartData.sort((a, b) => {
+        const dateA = new Date(a.label);
+        const dateB = new Date(b.label);
+        return dateB.getTime() - dateA.getTime();
+      });
+      break;
+    default:
+      // Fallback to count descending
+      sortedChartData.sort((a, b) => b.value - a.value);
+  }
+
+  return {
+    data: sortedChartData,
+    config,
+    metadata: {
+      totalEntities: filteredEntities.length,
+      uniqueGroups: chartData.length,
+      sourceEntityType: config.sourceType,
+      targetEntityType: targetEntityType !== config.sourceType ? targetEntityType : undefined
+    }
+  };
 }
 
 /**
- * Group measure entities by dimension values
+ * Applies filters to entities
  */
-function groupByDimension(
-  entityCollection: EntityCollection, 
-  measureEntities: NormalizedEntity[], 
-  config: ChartConfig
-): Map<string, NormalizedEntity[]> {
-  const groups = new Map<string, NormalizedEntity[]>();
-
-  measureEntities.forEach(measureEntity => {
-    const dimensionValues = getDimensionValues(entityCollection, measureEntity, config.dimension);
-    
-    // Handle cases where one measure entity can belong to multiple dimension values
-    dimensionValues.forEach(dimensionValue => {
-      if (!groups.has(dimensionValue)) {
-        groups.set(dimensionValue, []);
+function applyFilters(entities: NormalizedEntity[], filters: ChartFilter[]): NormalizedEntity[] {
+  return entities.filter(entity => {
+    return filters.every(filter => {
+      const fieldValue = entity[filter.field];
+      
+      switch (filter.operator) {
+        case 'equals':
+          return fieldValue === filter.value;
+        case 'contains':
+          return String(fieldValue).toLowerCase().includes(String(filter.value).toLowerCase());
+        case 'greater_than':
+          return Number(fieldValue) > Number(filter.value);
+        case 'less_than':
+          return Number(fieldValue) < Number(filter.value);
+        case 'in':
+          return Array.isArray(filter.value) && filter.value.includes(fieldValue);
+        default:
+          return true;
       }
-      groups.get(dimensionValue)!.push(measureEntity);
     });
   });
+}
 
-  console.log('Grouped data:', {
-    groupCount: groups.size,
-    groups: Array.from(groups.entries()).map(([key, entities]) => ({
-      dimension: key,
-      count: entities.length
-    }))
+/**
+ * Follows a relationship path to get target entities
+ */
+function followRelationshipPath(
+  normalizedData: NormalizationResult,
+  sourceEntities: NormalizedEntity[],
+  relationshipPath: string[]
+): NormalizedEntity[] {
+  let currentEntities = sourceEntities;
+  
+  for (const relationName of relationshipPath) {
+    const nextEntities: NormalizedEntity[] = [];
+    
+    for (const entity of currentEntities) {
+      const relationValue = entity[relationName];
+      
+      if (Array.isArray(relationValue)) {
+        // Handle array of references
+        for (const ref of relationValue) {
+          if (ref && ref['@type'] && ref['@id']) {
+            const targetEntity = findEntityByReference(normalizedData, ref);
+            if (targetEntity) {
+              nextEntities.push(targetEntity);
+            }
+          }
+        }
+      } else if (relationValue && relationValue['@type'] && relationValue['@id']) {
+        // Handle single reference
+        const targetEntity = findEntityByReference(normalizedData, relationValue);
+        if (targetEntity) {
+          nextEntities.push(targetEntity);
+        }
+      }
+    }
+    
+    currentEntities = nextEntities;
+  }
+  
+  return currentEntities;
+}
+
+/**
+ * Finds an entity by its reference
+ */
+function findEntityByReference(
+  normalizedData: NormalizationResult,
+  reference: EntityReference
+): NormalizedEntity | null {
+  const entities = normalizedData.extracted[reference['@type']];
+  if (!entities) return null;
+  
+  return entities.find(entity => entity['@id'] === reference['@id']) || null;
+}
+
+/**
+ * Groups entities by a field value, with support for reference resolution
+ */
+function groupEntitiesByField(
+  entities: NormalizedEntity[],
+  groupByField: string,
+  normalizedData?: NormalizationResult,
+  config?: ChartConfig
+): { [key: string]: NormalizedEntity[] } {
+  const groups: { [key: string]: NormalizedEntity[] } = {};
+  
+  entities.forEach(entity => {
+    const fieldValue = entity[groupByField];
+    
+    if (fieldValue === null || fieldValue === undefined) {
+      const groupKey = '(Not specified)';
+      if (!groups[groupKey]) groups[groupKey] = [];
+      groups[groupKey].push(entity);
+    } else if (Array.isArray(fieldValue)) {
+      // For array fields, create separate entries for each item
+      fieldValue.forEach(item => {
+        // Apply target type filter if specified
+        if (config?.targetTypeFilter && typeof item === 'object' && item['@type']) {
+          if (item['@type'] !== config.targetTypeFilter) {
+            return; // Skip this item if it doesn't match the target type filter
+          }
+        }
+        
+        let key: string;
+        if (typeof item === 'object' && item['@id'] && item['@type']) {
+          // Try to resolve the reference to get a readable name
+          if (normalizedData) {
+            const resolvedEntity = findEntityByReference(normalizedData, item);
+            if (resolvedEntity) {
+              // Use the specified label field or find best available display field
+              if (config?.groupByLabelField && resolvedEntity[config.groupByLabelField]) {
+                key = resolvedEntity[config.groupByLabelField];
+              } else {
+                // Use dynamic fallback - no hardcoded field names
+                const bestDisplayField = findBestDisplayField(resolvedEntity);
+                key = bestDisplayField || item['@id'];
+              }
+            } else {
+              key = item['@id'];
+            }
+          } else {
+            key = item['@id'];
+          }
+        } else {
+          key = String(item);
+        }
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(entity);
+      });
+    } else if (typeof fieldValue === 'object' && fieldValue['@type'] && fieldValue['@id']) {
+      // For reference objects, try to resolve to get readable name
+      let groupKey: string;
+      if (normalizedData) {
+        const resolvedEntity = findEntityByReference(normalizedData, fieldValue);
+        if (resolvedEntity) {
+          // Use the specified label field or find best available display field
+          if (config?.groupByLabelField && resolvedEntity[config.groupByLabelField]) {
+            groupKey = resolvedEntity[config.groupByLabelField];
+          } else {
+            // Use dynamic fallback - no hardcoded field names
+            const bestDisplayField = findBestDisplayField(resolvedEntity);
+            groupKey = bestDisplayField || fieldValue['@id'];
+          }
+        } else {
+          groupKey = fieldValue['@id'];
+        }
+      } else {
+        groupKey = fieldValue['@id'];
+      }
+      if (!groups[groupKey]) groups[groupKey] = [];
+      groups[groupKey].push(entity);
+    } else {
+      const groupKey = String(fieldValue);
+      if (!groups[groupKey]) groups[groupKey] = [];
+      groups[groupKey].push(entity);
+    }
   });
-
+  
   return groups;
 }
 
 /**
- * Get dimension values for a measure entity
- */
-function getDimensionValues(
-  entityCollection: EntityCollection,
-  measureEntity: NormalizedEntity,
-  dimension: ChartDimension
-): string[] {
-  // Same entity - get dimension value directly from the measure entity
-  if (dimension.entity === measureEntity.type) {
-    const value = getEntityFieldValue(measureEntity, dimension.field);
-    
-    // DEBUG: Log same-entity field extraction for dates
-    if (dimension.field === 'date') {
-      console.log('Same-entity date extraction:', {
-        entityId: measureEntity.id,
-        fieldRequested: dimension.field,
-        properties: Object.keys(measureEntity.properties),
-        dateProperty: measureEntity.properties.date,
-        extractedValue: value,
-        sampleProperties: measureEntity.properties
-      });
-    }
-    
-    return value ? [formatDimensionValue(value, dimension.field)] : ['Unknown'];
-  }
-
-  // Different entity - follow relationship path
-  if (!dimension.via) {
-    console.warn('Cross-entity dimension requires "via" relationship path');
-    return ['Unknown'];
-  }
-
-  return getRelatedDimensionValues(entityCollection, measureEntity, dimension);
-}
-
-/**
- * Get dimension values by following relationships
- */
-function getRelatedDimensionValues(
-  entityCollection: EntityCollection,
-  measureEntity: NormalizedEntity,
-  dimension: ChartDimension
-): string[] {
-  if (!dimension.via) {
-    return ['Unknown relationship'];
-  }
-
-  // Generate possible relationship key variations
-  const possibleKeys = generateRelationshipKeyVariations(dimension.via);
-  
-  let relationshipIds: string[] = [];
-  for (const key of possibleKeys) {
-    if (measureEntity.relationships[key] && measureEntity.relationships[key].length > 0) {
-      relationshipIds = measureEntity.relationships[key];
-      break;
-    }
-  }
-  
-  // Log successful relationship key discovery for debugging
-  if (relationshipIds.length === 0) {
-    console.log('No relationships found. Available keys:', Object.keys(measureEntity.relationships));
-  }
-  
-  if (relationshipIds.length === 0) {
-    return ['No ' + (dimension.via || 'relationship')];
-  }
-
-  const values: string[] = [];
-  
-  relationshipIds.forEach((relatedId: string) => {
-    const relatedEntity = entityCollection.entities[relatedId];
-    
-    if (relatedEntity && relatedEntity.type === dimension.entity) {
-      const value = getEntityFieldValue(relatedEntity, dimension.field);
-      if (value) {
-        values.push(formatDimensionValue(value, dimension.field));
-      }
-    }
-  });
-
-  return values.length > 0 ? values : ['Unknown ' + dimension.entity];
-}
-
-/**
- * Get field value from an entity using dynamic field resolution
- */
-function getEntityFieldValue(entity: NormalizedEntity, fieldName: string): any {
-  return findFieldValue(entity.properties, fieldName);
-}
-
-/**
- * Dynamically find field value by trying different key variations
- */
-function findFieldValue(properties: Record<string, any>, targetField: string): any {
-  // Direct match first
-  if (properties[targetField] !== undefined) {
-    return properties[targetField];
-  }
-
-  // Generate possible key variations for the target field
-  const possibleKeys = generateFieldKeyVariations(targetField);
-  
-  for (const key of possibleKeys) {
-    if (properties[key] !== undefined) {
-      return properties[key];
-    }
-  }
-
-  // Special fallback logic for common fields
-  if (targetField === 'name') {
-    return properties.name || properties.title || properties.incidentId || 'Unnamed';
-  }
-  
-  if (targetField === 'title') {
-    return properties.title || properties.name || 'Untitled';
-  }
-
-  return undefined;
-}
-
-/**
- * Generate possible key variations for a field name
- */
-function generateFieldKeyVariations(fieldName: string): string[] {
-  const variations = [
-    fieldName, // Original
-    `aiid:${fieldName}`, // Prefixed with aiid
-    `core:${fieldName}`, // Prefixed with core
-    `https://example.org/aiid#${fieldName}`, // Full aiid URI
-    `https://example.org/core#${fieldName}`, // Full core URI
-    `https://schema.org/${fieldName}`, // Schema.org URI
-  ];
-
-  // Add common aliases for specific fields
-  if (fieldName === 'date') {
-    variations.push('incident_date', 'dateOccurred', 'timestamp');
-  }
-  
-  if (fieldName === 'name') {
-    variations.push('title', 'label');
-  }
-  
-  if (fieldName === 'id') {
-    variations.push('incident_id', 'incidentId', 'identifier');
-  }
-
-  return variations;
-}
-
-/**
- * Generate possible key variations for a relationship name
- */
-function generateRelationshipKeyVariations(relationshipName: string): string[] {
-  const variations = [
-    relationshipName, // Original compact form (e.g., "deployedBy")
-    `aiid:${relationshipName}`, // Prefixed form (e.g., "aiid:deployedBy") 
-    `https://example.org/aiid#${relationshipName}`, // Full expanded URI form
-    `core:${relationshipName}`, // Core namespace form
-    `https://example.org/core#${relationshipName}`, // Core expanded URI form
-    `_reverse_${relationshipName}`, // Reverse relationship (e.g., "_reverse_reports")
-    `_reverse_aiid:${relationshipName}`, // Reverse prefixed form
-    `_reverse_https://example.org/aiid#${relationshipName}`, // Reverse expanded URI form
-    `_reverse_core:${relationshipName}`, // Reverse core namespace form
-    `_reverse_https://example.org/core#${relationshipName}`, // Reverse core expanded URI form
-  ];
-
-  return variations;
-}
-
-/**
- * Format dimension value for display
- */
-function formatDimensionValue(value: any, fieldName: string): string {
-  if (fieldName === 'date' && value) {
-    // Group dates by year for better visualization
-    const date = new Date(value);
-    return date.getFullYear().toString();
-  }
-  
-  return String(value);
-}
-
-/**
- * Apply aggregation to grouped data
+ * Applies aggregation to grouped data
  */
 function applyAggregation(
-  groupedData: Map<string, NormalizedEntity[]>,
+  groupedData: { [key: string]: NormalizedEntity[] },
   config: ChartConfig
-): Array<{ dimension: string; measure: number }> {
-  const results: Array<{ dimension: string; measure: number }> = [];
-
-  groupedData.forEach((entities, dimensionValue) => {
-    let measureValue: number;
-
-    switch (config.measure.aggregation) {
+): ChartDataPoint[] {
+  const dataPoints = Object.entries(groupedData).map(([label, entities]) => {
+    let value: number;
+    
+    switch (config.aggregation) {
       case 'count':
-        measureValue = entities.length;
+        value = entities.length;
         break;
       case 'sum':
-        if (!config.measure.field) {
-          measureValue = entities.length; // Fallback to count
-        } else {
-          const fieldName = config.measure.field;
-          measureValue = entities.reduce((sum, entity) => {
-            const value = getEntityFieldValue(entity, fieldName);
-            return sum + (Number(value) || 0);
-          }, 0);
-        }
+        value = entities.reduce((sum, entity) => {
+          const fieldValue = config.valueField ? entity[config.valueField] : 0;
+          return sum + (Number(fieldValue) || 0);
+        }, 0);
         break;
-      case 'average':
-        if (!config.measure.field) {
-          measureValue = 1; // Average of counts doesn't make much sense
-        } else {
-          const fieldName = config.measure.field;
-          const sum = entities.reduce((sum, entity) => {
-            const value = getEntityFieldValue(entity, fieldName);
-            return sum + (Number(value) || 0);
-          }, 0);
-          measureValue = entities.length > 0 ? sum / entities.length : 0;
-        }
+      case 'avg':
+        const sum = entities.reduce((sum, entity) => {
+          const fieldValue = config.valueField ? entity[config.valueField] : 0;
+          return sum + (Number(fieldValue) || 0);
+        }, 0);
+        value = entities.length > 0 ? sum / entities.length : 0;
+        break;
+      case 'min':
+        value = entities.reduce((min, entity) => {
+          const fieldValue = config.valueField ? entity[config.valueField] : 0;
+          const numValue = Number(fieldValue) || 0;
+          return numValue < min ? numValue : min;
+        }, Infinity);
+        if (value === Infinity) value = 0;
+        break;
+      case 'max':
+        value = entities.reduce((max, entity) => {
+          const fieldValue = config.valueField ? entity[config.valueField] : 0;
+          const numValue = Number(fieldValue) || 0;
+          return numValue > max ? numValue : max;
+        }, -Infinity);
+        if (value === -Infinity) value = 0;
+        break;
+      case 'cumulative':
+        // For cumulative, we'll calculate running totals after sorting
+        value = entities.length; // Start with count, will be updated in cumulative calculation
         break;
       default:
-        measureValue = entities.length;
+        value = entities.length;
     }
-
-    results.push({
-      dimension: dimensionValue,
-      measure: measureValue
-    });
+    
+    return {
+      label: formatLabel(label),
+      value,
+      count: entities.length,
+      entities: entities.map(entity => ({
+        '@type': entity['@type'],
+        '@id': entity['@id']
+      }))
+    };
   });
 
-  return results;
+  // Handle cumulative aggregation
+  if (config.aggregation === 'cumulative') {
+    return applyCumulativeCalculation(dataPoints);
+  }
+
+  return dataPoints;
 }
 
 /**
- * Apply sorting and filtering to final data
+ * Applies cumulative calculation to data points  
+ * Calculates running totals based on chronological order but preserves original array order
  */
-function applySortingAndFiltering(
-  data: Array<{ dimension: string; measure: number }>,
-  config: ChartConfig
-): Array<{ [key: string]: any }> {
-  // Sort data
-  data.sort((a, b) => {
-    let comparison = 0;
-
-    if (config.sortBy === 'dimension') {
-      comparison = a.dimension.localeCompare(b.dimension);
-    } else {
-      comparison = a.measure - b.measure;
-    }
-
-    return config.sortOrder === 'desc' ? -comparison : comparison;
+function applyCumulativeCalculation(dataPoints: ChartDataPoint[]): ChartDataPoint[] {
+  // Create chronologically sorted version for calculation only
+  const chronoSorted = [...dataPoints].sort((a, b) => {
+    const dateA = new Date(a.label);
+    const dateB = new Date(b.label);
+    return dateA.getTime() - dateB.getTime();
   });
 
-  // Apply top N filter
-  if (config.topN && data.length > config.topN) {
-    data = data.slice(0, config.topN);
-  }
+  // Calculate cumulative values
+  let cumulativeValue = 0; 
+  const cumulativeMap = new Map<string, number>();
+  
+  chronoSorted.forEach(point => {
+    cumulativeValue += point.count;
+    cumulativeMap.set(point.label, cumulativeValue);
+  });
 
-  // Transform to chart format
-  return data.map(item => ({
-    [config.dimension.field]: item.dimension,
-    measure: item.measure
+  // Apply cumulative values to original array order (preserves user's intended sort)
+  return dataPoints.map(point => ({
+    ...point,
+    value: cumulativeMap.get(point.label) || point.count,
   }));
 }
 
 /**
- * Generate measure label for charts
+ * Formats labels for display
  */
-function getMeasureLabel(measure: ChartMeasure): string {
-  const entityName = measure.entity.split(':')[1] || measure.entity;
-  
-  switch (measure.aggregation) {
-    case 'count':
-      return `Count of ${entityName}`;
-    case 'sum':
-      return `Sum of ${measure.field || entityName}`;
-    case 'average':
-      return `Average ${measure.field || entityName}`;
-    default:
-      return entityName;
+function formatLabel(label: string): string {
+  if (label.startsWith('http://') || label.startsWith('https://')) {
+    // Extract last part of URL
+    const parts = label.split('/');
+    return parts[parts.length - 1] || label;
   }
+  
+  if (label.includes(':')) {
+    // Handle namespaced IDs
+    const parts = label.split(':');
+    return parts[parts.length - 1] || label;
+  }
+  
+  return label;
 }
 
 /**
- * Generate dimension label for charts
+ * Gets available grouping options for a chart configuration (includes reverse relationships)
  */
-function getDimensionLabel(dimension: ChartDimension): string {
-  const entityName = dimension.entity.split(':')[1] || dimension.entity;
-  return `${entityName} (${dimension.field})`;
+export function getGroupingOptions(
+  normalizedData: NormalizationResult,
+  sourceType: string,
+  relationshipPath?: string[]
+): FieldInfo[] {
+  // Get source entities
+  const sourceEntities = normalizedData.extracted[sourceType] || [];
+  
+  if (sourceEntities.length === 0) return [];
+  
+  // Follow relationship path if specified to get target entities
+  const targetEntities = relationshipPath && relationshipPath.length > 0
+    ? followRelationshipPath(normalizedData, sourceEntities, relationshipPath)
+    : sourceEntities;
+  
+  if (targetEntities.length === 0) return [];
+  
+  // Analyze fields of target entities INCLUDING reverse relationships for charting
+  return analyzeEntityFieldsForCharting(targetEntities);
 }
 
-// ChartDimension is now imported at the top of the file
+/**
+ * Analyzes all fields available in entities INCLUDING reverse relationships (for chart grouping)
+ */
+function analyzeEntityFieldsForCharting(entities: NormalizedEntity[]): FieldInfo[] {
+  if (!entities || entities.length === 0) return [];
+  
+  const fieldStats: { [fieldName: string]: FieldInfo } = {};
+  
+  entities.forEach(entity => {
+    Object.entries(entity).forEach(([fieldName, value]) => {
+      // Skip JSON-LD @id and @type fields, but INCLUDE reverse relationships
+      if (fieldName.startsWith('@')) return;
+      
+      if (!fieldStats[fieldName]) {
+        fieldStats[fieldName] = {
+          fieldName,
+          type: inferFieldTypeForCharting(fieldName, value),
+          frequency: 0,
+          totalCount: 0,
+          entityCount: entities.length,
+          sampleValues: [],
+          isCommon: false
+        };
+      }
+      
+      fieldStats[fieldName].totalCount++;
+      
+      // Collect sample values (up to 5)
+      if (fieldStats[fieldName].sampleValues.length < 5) {
+        const sampleValue = Array.isArray(value) ? `[${value.length} items]` : 
+                          typeof value === 'object' ? '[object]' : 
+                          String(value);
+        if (!fieldStats[fieldName].sampleValues.includes(sampleValue)) {
+          fieldStats[fieldName].sampleValues.push(sampleValue);
+        }
+      }
+    });
+  });
+  
+  // Calculate frequencies and mark common fields
+  Object.values(fieldStats).forEach(field => {
+    field.frequency = field.totalCount / field.entityCount;
+    field.isCommon = field.frequency > 0.8;
+  });
+  
+  return Object.values(fieldStats).sort((a, b) => b.frequency - a.frequency);
+}
+
+/**
+ * Infers the type of a field based on its name and value (for charting, including reverse relationships)
+ */
+function inferFieldTypeForCharting(fieldName: string, value: any): FieldInfo['type'] {
+  if (Array.isArray(value)) {
+    // Check if it's an array of references
+    if (value.length > 0 && value[0] && typeof value[0] === 'object' && value[0]['@type'] && value[0]['@id']) {
+      return 'reference';
+    }
+    return 'array';
+  }
+  
+  if (value && typeof value === 'object') {
+    // Check if it's a reference
+    if (value['@type'] && value['@id']) {
+      return 'reference';
+    }
+    return 'object';
+  }
+  
+  if (typeof value === 'number') return 'number';
+  if (typeof value === 'boolean') return 'boolean';
+  
+  // Heuristics for dates
+  if (typeof value === 'string') {
+    if (fieldName.toLowerCase().includes('date') || 
+        fieldName.toLowerCase().includes('time') ||
+        /^\\d{4}-\\d{2}-\\d{2}/.test(value)) {
+      return 'date';
+    }
+  }
+  
+  return 'string';
+}
+
+/**
+ * Gets available numeric fields for aggregation
+ */
+export function getNumericFields(
+  normalizedData: NormalizationResult,
+  sourceType: string,
+  relationshipPath?: string[]
+): FieldInfo[] {
+  const allFields = getGroupingOptions(normalizedData, sourceType, relationshipPath);
+  return allFields.filter(field => field.type === 'number');
+}
+
+/**
+ * Gets the target entity types for a grouping field (for reference fields)
+ */
+export function getGroupingTargetTypes(
+  normalizedData: NormalizationResult,
+  sourceType: string,
+  groupByField: string,
+  relationshipPath?: string[]
+): string[] {
+  // Get source entities
+  const sourceEntities = normalizedData.extracted[sourceType] || [];
+  
+  if (sourceEntities.length === 0) return [];
+  
+  // Follow relationship path if specified to get target entities
+  const targetEntities = relationshipPath && relationshipPath.length > 0
+    ? followRelationshipPath(normalizedData, sourceEntities, relationshipPath)
+    : sourceEntities;
+  
+  if (targetEntities.length === 0) return [];
+  
+  // Look across multiple entities to determine target types, not just the first one
+  const targetTypes: string[] = [];
+  
+  // Examine up to 50 entities to find target types for this field
+  const entitiesToCheck = targetEntities.slice(0, 50);
+  
+  for (let i = 0; i < entitiesToCheck.length; i++) {
+    const entity = entitiesToCheck[i];
+    const fieldValue = entity[groupByField];
+    
+    if (fieldValue) {
+      if (Array.isArray(fieldValue)) {
+        // For array fields, check the type of items
+        fieldValue.forEach(item => {
+          if (item && typeof item === 'object' && item['@type']) {
+            if (!targetTypes.includes(item['@type'])) {
+              targetTypes.push(item['@type']);
+            }
+          }
+        });
+      } else if (typeof fieldValue === 'object' && fieldValue['@type']) {
+        if (!targetTypes.includes(fieldValue['@type'])) {
+          targetTypes.push(fieldValue['@type']);
+        }
+      }
+    }
+    
+    // If we've found target types, we can stop early
+    if (targetTypes.length > 0) {
+      break;
+    }
+  }
+  
+  return targetTypes;
+}
+
+/**
+ * Gets available label fields for referenced entities
+ */
+export function getReferenceLabelFields(
+  normalizedData: NormalizationResult,
+  targetTypes: string[]
+): FieldInfo[] {
+  const allFields: FieldInfo[] = [];
+  
+  for (const targetType of targetTypes) {
+    const entities = normalizedData.extracted[targetType] || [];
+    if (entities.length > 0) {
+      const fields = analyzeEntityFields(entities);
+      // Only include string fields that are commonly present (good for labels)
+      const labelFields = fields.filter(field => 
+        field.type === 'string' && field.frequency > 0.5 && !field.fieldName.startsWith('@')
+      );
+      allFields.push(...labelFields);
+    }
+  }
+  
+  // Remove duplicates and sort by frequency
+  const uniqueFields = allFields.reduce((acc, field) => {
+    const existing = acc.find(f => f.fieldName === field.fieldName);
+    if (!existing) {
+      acc.push(field);
+    }
+    return acc;
+  }, [] as FieldInfo[]);
+  
+  return uniqueFields.sort((a, b) => b.frequency - a.frequency);
+}
+
+/**
+ * Validates a chart configuration
+ */
+export function validateChartConfig(
+  normalizedData: NormalizationResult,
+  config: ChartConfig
+): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  // Check if source type exists
+  if (!normalizedData.extracted[config.sourceType]) {
+    errors.push(`Source type '${config.sourceType}' not found in data`);
+  }
+  
+  // Check if aggregation requires a value field
+  if (['sum', 'avg', 'min', 'max'].includes(config.aggregation) && !config.valueField) {
+    errors.push(`Aggregation '${config.aggregation}' requires a valueField`);
+  }
+  
+  // Check if relationship path is valid
+  if (config.relationshipPath && config.relationshipPath.length > 0) {
+    let currentType = config.sourceType;
+    for (const relationName of config.relationshipPath) {
+      const relationships = discoverRelationships(normalizedData, currentType);
+      const relationship = relationships.find(r => r.relationName === relationName);
+      if (!relationship) {
+        errors.push(`Relationship '${relationName}' not found for type '${currentType}'`);
+        break;
+      }
+      // Use first target type for validation (could be enhanced)
+      currentType = relationship.targetTypes[0];
+    }
+  }
+  
+  return {
+    valid: errors.length === 0,
+    errors
+  };
+}
+
+/**
+ * Gets available display fields for chart labels (schema-agnostic)
+ * Discovers all string fields from target entities without hardcoded assumptions
+ */
+export function getDisplayableFields(
+  normalizedData: NormalizationResult,
+  targetTypes: string[]
+): FieldInfo[] {
+  const allFields: FieldInfo[] = [];
+  
+  targetTypes.forEach(targetType => {
+    const entities = normalizedData.extracted[targetType] || [];
+    if (entities.length > 0) {
+      const fields = analyzeEntityFields(entities);
+      // Get ALL string fields, no hardcoded names
+      const stringFields = fields.filter(field => 
+        field.type === 'string' && 
+        field.fieldName !== '@type' && // Skip @type but allow @id
+        field.frequency > 0.3 // Only fields present in 30%+ of entities
+      );
+      allFields.push(...stringFields);
+    }
+  });
+  
+  // Remove duplicates and merge frequency data
+  const uniqueFields = allFields.reduce((acc, field) => {
+    const existing = acc.find(f => f.fieldName === field.fieldName);
+    if (!existing) {
+      acc.push(field);
+    } else if (field.frequency > existing.frequency) {
+      // Replace with higher frequency version
+      const index = acc.indexOf(existing);
+      acc[index] = field;
+    }
+    return acc;
+  }, [] as FieldInfo[]);
+  
+  return uniqueFields.sort((a, b) => b.frequency - a.frequency); // Best fields first
+}
+
+/**
+ * Selects default display field from available options (no hardcoded preferences)
+ */
+export function selectDefaultDisplayField(availableFields: FieldInfo[]): string | null {
+  if (availableFields.length === 0) return null;
+  
+  // No hardcoded preferences - just use most frequent string field
+  return availableFields[0].fieldName;
+}
+
+/**
+ * Finds best display field from entity dynamically (no hardcoded field names)
+ */
+export function findBestDisplayField(entity: NormalizedEntity): string | null {
+  // No hardcoded field names - find best available string field
+  const stringFields = Object.entries(entity)
+    .filter(([key, value]) => 
+      typeof value === 'string' && 
+      !key.startsWith('@') && 
+      value.length > 0 && 
+      value.length < 100 // Reasonable display length
+    )
+    .sort((a, b) => a[1].length - b[1].length); // Prefer shorter strings
+  
+  return stringFields.length > 0 ? stringFields[0][1] : null;
+}
