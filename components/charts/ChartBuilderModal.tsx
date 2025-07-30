@@ -101,83 +101,86 @@ export default function ChartBuilderModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
+      <DialogContent className="max-w-7xl w-[90vw] max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
             {editingChart ? 'Edit Chart' : 'Create New Chart'}
           </DialogTitle>
         </DialogHeader>
         
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-          {/* Main Content - Chart Builder */}
-          <div className="xl:col-span-3">
-            <ChartBuilder
-              normalizedData={normalizedData}
-              state={chartState}
-              onStateChange={setChartState}
-              onChartResult={setChartResult}
-              defaultOpenStates={{
-                entityType: true,
-                grouping: true,
-                displayField: true,
-                configuration: true,
-                preview: true
-              }}
-            />
-          </div>
+        <div className="flex-1 overflow-y-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Main Content - Chart Builder */}
+            <div className="lg:col-span-3">
+              <ChartBuilder
+                normalizedData={normalizedData}
+                state={chartState}
+                onStateChange={setChartState}
+                onChartResult={setChartResult}
+                defaultOpenStates={{
+                  entityType: true,
+                  grouping: true,
+                  displayField: true,
+                  configuration: true,
+                  preview: true
+                }}
+              />
+            </div>
 
-          {/* Sidebar - Configuration Summary and Title */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Configuration</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">What to Count</label>
-                  <p className="text-sm">{chartState.selectedEntityType ? formatEntityTypeLabel(chartState.selectedEntityType) : 'Not selected'}</p>
-                </div>
-                
-                {chartState.selectedGrouping && (
-                  <>
-                    <Separator />
-                    <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Grouped By</label>
-                      <p className="text-sm">{chartState.selectedGrouping.description}</p>
-                    </div>
-                  </>
-                )}
-                
-                {chartState.selectedChartType && chartState.selectedGrouping && (
-                  <>
-                    <Separator />
-                    <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Chart Type</label>
-                      <p className="text-sm capitalize">{chartState.selectedChartType.replace('-', ' ')}</p>
-                    </div>
-                  </>
-                )}
+            {/* Sidebar - Configuration Summary and Title */}
+            <div className="lg:col-span-1">
+              <Card className="sticky top-0">
+                <CardHeader>
+                  <CardTitle className="text-base">Configuration</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">What to Count</label>
+                    <p className="mt-1">{chartState.selectedEntityType ? formatEntityTypeLabel(chartState.selectedEntityType) : 'Not selected'}</p>
+                  </div>
+                  
+                  {chartState.selectedGrouping && (
+                    <>
+                      <Separator />
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Grouped By</label>
+                        <p className="mt-1">{chartState.selectedGrouping.description}</p>
+                      </div>
+                    </>
+                  )}
+                  
+                  {chartState.selectedChartType && chartState.selectedGrouping && (
+                    <>
+                      <Separator />
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Chart Type</label>
+                        <p className="mt-1 capitalize">{chartState.selectedChartType.replace('-', ' ')}</p>
+                      </div>
+                    </>
+                  )}
 
-                {chartResult && (
-                  <>
-                    <Separator />
-                    <div className="space-y-2">
-                      <Label htmlFor="chart-title">Chart Title</Label>
-                      <Input
-                        id="chart-title"
-                        value={chartTitle}
-                        onChange={(e) => setChartTitle(e.target.value)}
-                        placeholder="Enter chart title..."
-                      />
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+                  {chartResult && (
+                    <>
+                      <Separator />
+                      <div className="space-y-2">
+                        <Label htmlFor="chart-title" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Chart Title</Label>
+                        <Input
+                          id="chart-title"
+                          value={chartTitle}
+                          onChange={(e) => setChartTitle(e.target.value)}
+                          placeholder="Enter chart title..."
+                          className="text-sm"
+                        />
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="mt-6">
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
