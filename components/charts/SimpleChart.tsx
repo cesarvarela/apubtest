@@ -4,8 +4,7 @@ import { useEffect, useRef } from 'react';
 import * as Plot from '@observablehq/plot';
 import { ChartResult } from '@/lib/charts/chartDataExtractor';
 import { generateChartTitle, formatChartAxisLabel } from '@/lib/charts/labelGenerator';
-
-type ChartType = 'bar' | 'horizontal-bar' | 'pie' | 'donut' | 'line';
+import { ChartType } from '@/lib/charts/types';
 
 interface SimpleChartProps {
   data: ChartResult;
@@ -25,7 +24,7 @@ export default function SimpleChart({ data, chartType, resultsLimit = 20, classN
     // Clear previous chart
     chartRef.current.innerHTML = '';
 
-    const chartData = resultsLimit === 'all' ? data.data : data.data.slice(0, resultsLimit);
+    const chartData = data.data;
     const hasLongLabels = chartData.some(d => d.label.length > 15);
 
     // Base configuration
@@ -260,9 +259,9 @@ export default function SimpleChart({ data, chartType, resultsLimit = 20, classN
   return (
     <div className={`w-full ${className}`}>
       <div ref={chartRef} className="flex justify-center overflow-x-auto" />
-      {resultsLimit !== 'all' && data.data.length > resultsLimit && (
+      {data.data.length < data.metadata.uniqueGroups && (
         <p className="text-sm text-gray-500 italic text-center mt-2">
-          Showing top {resultsLimit} results of {data.data.length} total groups
+          Showing top {data.data.length} results of {data.metadata.uniqueGroups} total groups
         </p>
       )}
     </div>

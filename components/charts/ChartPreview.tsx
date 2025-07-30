@@ -5,18 +5,7 @@ import { Collapsible } from "@/components/ui/collapsible";
 import SimpleChart from "@/components/charts/SimpleChart";
 import { ChartResult } from '@/lib/charts/chartDataExtractor';
 import { generateChartTitle, formatChartAxisLabel } from '@/lib/charts/labelGenerator';
-
-type ChartType = 'bar' | 'horizontal-bar' | 'pie' | 'donut' | 'line';
-
-interface GroupingOption {
-  fieldName: string;
-  label: string;
-  description: string;
-  targetTypes: string[];
-  frequency: number;
-  availableDisplayFields?: any[];
-  fieldType?: string;
-}
+import { ChartType, GroupingOption } from '@/lib/charts/types';
 
 interface ChartPreviewProps {
   selectedEntityType: string;

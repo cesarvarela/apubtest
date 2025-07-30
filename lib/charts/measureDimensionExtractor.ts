@@ -1,21 +1,21 @@
 /**
- * Modern chart data extraction for measure/dimension model
- * Clean implementation without legacy dependencies
+ * Chart data extraction for measure/dimension model
+ * Works directly with normalized JSON-LD data
  */
 
-import { ChartConfig, ChartData, EntityCollection, NormalizedEntity } from '@/types/charts';
+import { ChartConfig, ChartData } from '@/types/charts';
+import { NormalizationResult, NormalizedEntity } from '@/lib/normalization';
 import { formatFieldLabel, formatChartAxisLabel } from './labelGenerator';
 
 /**
  * Extracts chart data using the measure/dimension model
  */
 export function extractChartData(
-  entities: EntityCollection,
+  normalizedData: NormalizationResult,
   config: ChartConfig
 ): ChartData {
   // Get measure entities (what we're counting/measuring)
-  const measureEntityIds = entities.types[config.measure.entity] || [];
-  const measureEntities = measureEntityIds.map(id => entities.entities[id]);
+  const measureEntities = normalizedData.extracted[config.measure.entity] || [];
 
   if (measureEntities.length === 0) {
     return {
@@ -26,29 +26,35 @@ export function extractChartData(
   }
 
   // Follow relationship if specified (via field)
-  let targetEntities = measureEntities;
+  let targetEntities: NormalizedEntity[] = measureEntities;
   if (config.dimension.via) {
     targetEntities = [];
+    const allDimensionEntities = normalizedData.extracted[config.dimension.entity] || [];
+    const viaField = config.dimension.via; // Capture it in a const
+    
     measureEntities.forEach(entity => {
-      const relationshipTargets = entity.relationships[config.dimension.via!] || [];
-      relationshipTargets.forEach(targetId => {
-        const targetEntity = entities.entities[targetId];
-        if (targetEntity && targetEntity.type === config.dimension.entity) {
+      const relationshipTargets = entity[viaField] || [];
+      const targetIds = Array.isArray(relationshipTargets) 
+        ? relationshipTargets.map(ref => ref['@id'] || ref)
+        : [relationshipTargets['@id'] || relationshipTargets];
+      
+      targetIds.forEach(targetId => {
+        const targetEntity = allDimensionEntities.find(e => e['@id'] === targetId);
+        if (targetEntity) {
           targetEntities.push(targetEntity);
         }
       });
     });
   } else if (config.dimension.entity !== config.measure.entity) {
     // Direct dimension entity (different from measure entity)
-    const dimensionEntityIds = entities.types[config.dimension.entity] || [];
-    targetEntities = dimensionEntityIds.map(id => entities.entities[id]);
+    targetEntities = normalizedData.extracted[config.dimension.entity] || [];
   }
 
   // Group by dimension field
   const groups: { [key: string]: NormalizedEntity[] } = {};
   
   targetEntities.forEach(entity => {
-    const dimensionValue = entity.properties[config.dimension.field];
+    const dimensionValue = entity[config.dimension.field];
     let groupKey: string;
     
     if (dimensionValue === null || dimensionValue === undefined) {
@@ -79,13 +85,13 @@ export function extractChartData(
         break;
       case 'sum':
         value = groupEntities.reduce((sum, entity) => {
-          const fieldValue = config.measure.field ? entity.properties[config.measure.field] : 0;
+          const fieldValue = config.measure.field ? entity[config.measure.field] : 0;
           return sum + (Number(fieldValue) || 0);
         }, 0);
         break;
       case 'avg':
         const sum = groupEntities.reduce((sum, entity) => {
-          const fieldValue = config.measure.field ? entity.properties[config.measure.field] : 0;
+          const fieldValue = config.measure.field ? entity[config.measure.field] : 0;
           return sum + (Number(fieldValue) || 0);
         }, 0);
         value = groupEntities.length > 0 ? sum / groupEntities.length : 0;
@@ -98,7 +104,7 @@ export function extractChartData(
       [config.dimension.field]: label,
       value,
       count: groupEntities.length,
-      entities: groupEntities.map(e => ({ '@type': e.type, '@id': e.id }))
+      entities: groupEntities.map(e => ({ '@type': e['@type'], '@id': e['@id'] }))
     };
   });
 

@@ -1,4 +1,4 @@
-import { EntityCollection, NormalizedEntity } from '@/types/charts';
+import { NormalizationResult, NormalizedEntity } from '@/lib/normalization';
 
 export interface FieldInfo {
   key: string;
@@ -22,11 +22,10 @@ export interface RelationshipInfo {
  * Dynamically extract available fields for a specific entity type
  */
 export function extractAvailableFields(
-  entityCollection: EntityCollection, 
+  normalizedData: NormalizationResult, 
   entityType: string
 ): FieldInfo[] {
-  const entityIds = entityCollection.types[entityType] || [];
-  const entities = entityIds.map(id => entityCollection.entities[id]).filter(Boolean);
+  const entities = normalizedData.extracted[entityType] || [];
   
   if (entities.length === 0) {
     return [];
@@ -116,11 +115,10 @@ function extractCanonicalFieldName(fieldName: string): string {
  * Extract available relationships for a specific entity type  
  */
 export function extractAvailableRelationships(
-  entityCollection: EntityCollection,
+  normalizedData: NormalizationResult,
   entityType: string
 ): RelationshipInfo[] {
-  const entityIds = entityCollection.types[entityType] || [];
-  const entities = entityIds.map(id => entityCollection.entities[id]).filter(Boolean);
+  const entities = normalizedData.extracted[entityType] || [];
   
   if (entities.length === 0) {
     return [];
@@ -131,7 +129,17 @@ export function extractAvailableRelationships(
   const relationshipTargets = new Map<string, Set<string>>();
 
   entities.forEach(entity => {
-    Object.entries(entity.relationships).forEach(([relationName, targetIds]) => {
+    Object.entries(entity).forEach(([relationName, value]) => {
+      if (relationName.startsWith('@')) return;
+      
+      // Check if it's a relationship
+      const refs = Array.isArray(value) 
+        ? value.filter(v => v && typeof v === 'object' && v['@id'])
+        : (value && typeof value === 'object' && value['@id'] ? [value] : []);
+      
+      if (refs.length === 0) return;
+      
+      const targetIds = refs.map(r => r['@id']);
       relationshipCounts.set(relationName, (relationshipCounts.get(relationName) || 0) + 1);
       
       if (!relationshipTargets.has(relationName)) {
@@ -139,10 +147,9 @@ export function extractAvailableRelationships(
       }
       
       const targetTypes = relationshipTargets.get(relationName)!;
-      targetIds.forEach(targetId => {
-        const targetEntity = entityCollection.entities[targetId];
-        if (targetEntity) {
-          targetTypes.add(targetEntity.type);
+      refs.forEach(ref => {
+        if (ref['@type']) {
+          targetTypes.add(ref['@type']);
         }
       });
     });
@@ -179,7 +186,7 @@ export function extractAvailableRelationships(
  * Get compatible dimension entities for a given measure entity and relationship
  */
 export function getCompatibleDimensionEntities(
-  entityCollection: EntityCollection,
+  normalizedData: NormalizationResult,
   measureEntityType: string,
   relationshipKey?: string
 ): string[] {
@@ -189,7 +196,7 @@ export function getCompatibleDimensionEntities(
   }
 
   // Find what entity types this relationship points to
-  const relationshipInfo = extractAvailableRelationships(entityCollection, measureEntityType)
+  const relationshipInfo = extractAvailableRelationships(normalizedData, measureEntityType)
     .find(rel => rel.key === relationshipKey);
   
   return relationshipInfo?.targetEntityTypes || [];

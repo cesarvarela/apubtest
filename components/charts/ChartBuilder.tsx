@@ -8,18 +8,14 @@ import {
   getGroupingTargetTypes,
   getDisplayableFields
 } from '@/lib/charts/dynamicAnalyzer';
-import { selectDefaultDisplayField } from '@/lib/charts/chartDataExtractor';
-import { 
-  extractChartData, 
-  validateChartConfig,
-  ChartConfig,
-  ChartResult
-} from '@/lib/charts/chartDataExtractor';
+import { ChartConfig } from '@/types/charts';
+import { extractChartData } from '@/lib/charts/measureDimensionExtractor';
 import {
   generateGroupingLabel,
   generateChartDescription
 } from '@/lib/charts/labelGenerator';
 import { ChartBuilderState, GroupingOption, DefaultOpenStates } from '@/lib/charts/types';
+import { ChartResult } from '@/lib/charts/chartDataExtractor';
 
 import EntityTypeCard from './EntityTypeCard';
 import GroupingCard from './GroupingCard';
@@ -112,43 +108,104 @@ export default function ChartBuilder({
   const chartResult = useMemo(() => {
     if (!state.selectedEntityType || !state.selectedGrouping) return null;
     
-    // For reference fields, use selected display field or fallback
-    let groupByLabelField: string | undefined;
-    if (state.selectedGrouping.targetTypes.length > 0) {
-      if (state.selectedDisplayField) {
-        groupByLabelField = state.selectedDisplayField;
-      } else if (state.selectedGrouping.availableDisplayFields && state.selectedGrouping.availableDisplayFields.length > 0) {
-        // Auto-select the best available display field using our new function
-        groupByLabelField = selectDefaultDisplayField(state.selectedGrouping.availableDisplayFields) || undefined;
-      }
-      // No fallback to hardcoded 'name' - fully dynamic
-    }
-    
-    const config: ChartConfig = {
-      sourceType: state.selectedEntityType,
-      groupBy: state.selectedGrouping.fieldName,
-      groupByFieldType: state.selectedGrouping.fieldType,
-      aggregation: state.selectedAggregation,
-      groupByLabelField,
-      targetTypeFilter: state.selectedGrouping.targetTypes.length === 1 ? state.selectedGrouping.targetTypes[0] : undefined,
-      sortBy: state.selectedSort
-    };
-    
-    const validation = validateChartConfig(normalizedData, config);
-    if (!validation.valid) {
-      console.error('Invalid chart config:', validation.errors);
-      return null;
+    // Build chart configuration from state
+    let chartType: ChartConfig['chartType'] = 'bar';
+    switch (state.selectedChartType) {
+      case 'bar':
+      case 'horizontal-bar':
+        chartType = 'bar';
+        break;
+      case 'line':
+        chartType = 'line';
+        break;
+      case 'pie':
+      case 'donut':
+        chartType = 'pie';
+        break;
     }
 
-    return extractChartData(normalizedData, config);
-  }, [normalizedData, state.selectedEntityType, state.selectedGrouping, state.selectedDisplayField, state.selectedAggregation, state.selectedSort]);
+    // Determine sort configuration
+    let sortBy: 'measure' | 'dimension' = 'measure';
+    let sortOrder: 'asc' | 'desc' = 'desc';
+    switch (state.selectedSort) {
+      case 'count-desc':
+        sortBy = 'measure';
+        sortOrder = 'desc';
+        break;
+      case 'count-asc':
+        sortBy = 'measure';
+        sortOrder = 'asc';
+        break;
+      case 'alpha-asc':
+      case 'chrono-asc':
+        sortBy = 'dimension';
+        sortOrder = 'asc';
+        break;
+      case 'alpha-desc':
+      case 'chrono-desc':
+        sortBy = 'dimension';
+        sortOrder = 'desc';
+        break;
+    }
+
+    const config: ChartConfig = {
+      chartType,
+      measure: {
+        entity: state.selectedEntityType,
+        aggregation: state.selectedAggregation === 'cumulative' ? 'count' : 
+                     (state.selectedAggregation as 'count' | 'sum' | 'avg'),
+      },
+      dimension: {
+        entity: state.selectedGrouping.targetTypes.length > 0 ? 
+                state.selectedGrouping.targetTypes[0] : 
+                state.selectedEntityType,
+        field: state.selectedDisplayField || state.selectedGrouping.fieldName,
+        ...(state.selectedGrouping.targetTypes.length > 0 && {
+          via: state.selectedGrouping.fieldName
+        })
+      },
+      sortBy,
+      sortOrder,
+      topN: state.selectedResultsLimit === 'all' ? undefined : state.selectedResultsLimit
+    };
+
+    // Extract data using the configuration
+    const chartData = extractChartData(normalizedData, config);
+    
+    // Build result for chart components
+    const result: ChartResult = {
+      data: chartData.data.map(item => ({
+        label: String(item[config.dimension.field] || ''),
+        value: item.value || 0,
+        count: item.count || 0,
+        entities: item.entities || []
+      })),
+      config: {
+        sourceType: state.selectedEntityType,
+        groupBy: state.selectedGrouping.fieldName,
+        groupByFieldType: state.selectedGrouping.fieldType,
+        aggregation: state.selectedAggregation,
+        groupByLabelField: state.selectedDisplayField || undefined,
+        targetTypeFilter: state.selectedGrouping.targetTypes.length === 1 ? state.selectedGrouping.targetTypes[0] : undefined,
+        sortBy: state.selectedSort
+      },
+      metadata: {
+        totalEntities: (normalizedData.extracted[state.selectedEntityType] || []).length,
+        uniqueGroups: chartData.data.length,
+        sourceEntityType: state.selectedEntityType,
+        targetEntityType: state.selectedGrouping.targetTypes.length > 0 ? state.selectedGrouping.targetTypes[0] : undefined
+      }
+    };
+
+    return result;
+  }, [normalizedData, state]);
 
   // Call onChartResult callback when chartResult changes
   useEffect(() => {
     if (onChartResult) {
       onChartResult(chartResult);
     }
-  }, [chartResult, onChartResult]);
+  }, [chartResult]); // Removed onChartResult to prevent infinite loop
 
   return (
     <div className="space-y-6">

@@ -1,6 +1,7 @@
 import { FieldInfo } from './dynamicAnalyzer';
 import { ChartResult } from './chartDataExtractor';
 
+// Central chart type definition used by all components
 export type ChartType = 'bar' | 'horizontal-bar' | 'pie' | 'donut' | 'line';
 
 export interface GroupingOption {

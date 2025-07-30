@@ -1,8 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-type ChartType = 'bar' | 'horizontal-bar' | 'pie' | 'donut' | 'line';
+import { ChartType } from '@/lib/charts/types';
 
 interface ChartTypeOption {
   type: ChartType;

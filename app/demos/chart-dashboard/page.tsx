@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,13 +13,41 @@ import { ChartBuilderState, SavedChart } from '@/lib/charts/types';
 import SimpleChart from "@/components/charts/SimpleChart";
 import ChartBuilderModal from "@/components/charts/ChartBuilderModal";
 
-// import sampleData from '@/data/sample-aiid-converted.json';
 import sampleData from '@/data/aiid-converted.json';
 
 export default function ChartDashboardPage() {
+  // Initialize with empty state to avoid hydration mismatch
   const [savedCharts, setSavedCharts] = useState<SavedChart[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingChart, setEditingChart] = useState<SavedChart | null>(null);
+
+  // Load saved charts from localStorage after mount
+  useEffect(() => {
+    const stored = localStorage.getItem('chartDashboard_savedCharts');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        // Convert date strings back to Date objects
+        const charts = parsed.map((chart: any) => ({
+          ...chart,
+          createdAt: new Date(chart.createdAt)
+        }));
+        setSavedCharts(charts);
+      } catch (e) {
+        console.error('Failed to parse saved charts:', e);
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  // Persist charts to localStorage whenever they change
+  useEffect(() => {
+    // Only persist after initial load is complete
+    if (!isLoading) {
+      localStorage.setItem('chartDashboard_savedCharts', JSON.stringify(savedCharts));
+    }
+  }, [savedCharts, isLoading]);
 
   // Normalize the sample data
   const normalizedData = useMemo(() => {
@@ -104,7 +132,18 @@ export default function ChartDashboardPage() {
         </div>
 
         {/* Dashboard Grid */}
-        {savedCharts.length === 0 ? (
+        {isLoading ? (
+          // Show loading state while checking localStorage
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <div className="text-center space-y-4">
+                <div className="text-gray-600 dark:text-gray-400">
+                  Loading charts...
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : savedCharts.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
               <div className="text-center space-y-4">

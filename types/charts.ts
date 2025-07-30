@@ -27,21 +27,6 @@ export interface ChartData {
   dimensionLabel: string;
 }
 
-// Entity and relationship types
-export interface NormalizedEntity {
-  id: string;
-  type: string;
-  properties: { [key: string]: any };
-  relationships: { [relationName: string]: string[] };
-  sourceData: any;
-}
-
-export interface EntityCollection {
-  entities: { [id: string]: NormalizedEntity };
-  types: { [type: string]: string[] };
-  relationships: { [relationName: string]: Array<{ source: string; target: string }> };
-}
-
 // Schema analysis types
 export interface SchemaProperty {
   key: string;
