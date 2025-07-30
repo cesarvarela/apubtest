@@ -58,7 +58,7 @@ export default function ChartBuilder({
     const options: GroupingOption[] = [];
     
     fields
-      .filter(field => !field.fieldName.startsWith('@')) // Skip JSON-LD metadata
+      .filter(field => field.fieldName !== '@type') // Only skip @type, allow @id
       .forEach(field => {
         const targetTypes = getGroupingTargetTypes(normalizedData, state.selectedEntityType!, field.fieldName);
         

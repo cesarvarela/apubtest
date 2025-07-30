@@ -84,8 +84,8 @@ export function analyzeEntityFields(entities: NormalizedEntity[]): FieldInfo[] {
   
   entities.forEach(entity => {
     Object.entries(entity).forEach(([fieldName, value]) => {
-      // Skip @type and reverse relationships, but allow @id for field analysis
-      if (fieldName === '@type' || fieldName.startsWith('reverse_')) return;
+      // Skip @type but allow @id and reverse relationships for field analysis
+      if (fieldName === '@type') return;
       
       if (!fieldStats[fieldName]) {
         fieldStats[fieldName] = {
@@ -321,9 +321,7 @@ export function getGroupingOptions(normalizedData: NormalizationResult, entityTy
   
   return analyzeEntityFields(entities).filter(field => {
     // Filter out fields that are not suitable for grouping
-    return field.fieldName !== '@id' && 
-           field.fieldName !== '@type' && 
-           !field.fieldName.startsWith('reverse_');
+    return field.fieldName !== '@type';
   });
 }
 
@@ -377,7 +375,6 @@ export function getDisplayableFields(
         .filter(field => 
           field.type === 'string' && 
           field.frequency > 0.5 && 
-          field.fieldName !== '@id' &&
           field.fieldName !== '@type'
         )
         .forEach(field => {
