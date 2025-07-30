@@ -1,7 +1,7 @@
 'use client';
 
 import { Collapsible } from "@/components/ui/collapsible";
-import SimpleChart from "./SimpleChart";
+import ChartRenderer from "./ChartRenderer";
 import { ChartResult } from '@/lib/charts/chartDataExtractor';
 import { generateChartTitle, formatChartAxisLabel } from '@/lib/charts/labelGenerator';
 import { ChartBuilderState } from '@/lib/charts/types';
@@ -44,7 +44,7 @@ export default function ChartPreviewCard({
         
         {/* Chart Visualization */}
         <div className="bg-white dark:bg-gray-900 rounded-lg border p-4">
-          <SimpleChart 
+          <ChartRenderer 
             data={chartResult} 
             chartType={state.selectedChartType}
             resultsLimit={state.selectedResultsLimit}

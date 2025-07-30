@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible } from "@/components/ui/collapsible";
-import SimpleChart from "@/components/charts/SimpleChart";
+import ChartRenderer from "@/components/charts/ChartRenderer";
 import { ChartResult } from '@/lib/charts/chartDataExtractor';
 import { generateChartTitle, formatChartAxisLabel } from '@/lib/charts/labelGenerator';
 import { ChartType, GroupingOption } from '@/lib/charts/types';
@@ -42,7 +42,7 @@ export default function ChartPreview({
           
           {/* Chart Visualization */}
           <div className="bg-white dark:bg-gray-900 rounded-lg border p-4">
-            <SimpleChart 
+            <ChartRenderer 
               data={chartResult} 
               chartType={selectedChartType}
             />

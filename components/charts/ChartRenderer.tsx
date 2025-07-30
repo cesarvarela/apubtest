@@ -6,14 +6,14 @@ import { ChartResult } from '@/lib/charts/chartDataExtractor';
 import { generateChartTitle, formatChartAxisLabel } from '@/lib/charts/labelGenerator';
 import { ChartType } from '@/lib/charts/types';
 
-interface SimpleChartProps {
+interface ChartRendererProps {
   data: ChartResult;
   chartType: ChartType;
   resultsLimit?: 10 | 20 | 50 | 100 | 'all';
   className?: string;
 }
 
-export default function SimpleChart({ data, chartType, resultsLimit = 20, className = '' }: SimpleChartProps) {
+export default function ChartRenderer({ data, chartType, resultsLimit = 20, className = '' }: ChartRendererProps) {
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -152,43 +152,114 @@ export default function SimpleChart({ data, chartType, resultsLimit = 20, classN
         break;
 
       case 'donut':
-        // Create a radial bar chart as donut alternative using waffle chart
-        const donutTotal = chartData.reduce((sum, d) => sum + d.value, 0);
-        const donutData = chartData.map((d, i) => ({
-          ...d,
-          percentage: ((d.value / donutTotal) * 100).toFixed(1),
-          color: i
-        }));
-
-        plot = Plot.plot({
-          ...baseConfig,
-          height: 400,
-          x: { label: null },
-          y: { label: null },
-          color: { scheme: 'category10' },
-          marks: [
-            // Create a waffle-like visualization
-            Plot.cell(donutData, {
-              x: (d, i) => i % 5,
-              y: (d, i) => Math.floor(i / 5),
-              fill: 'color',
-              stroke: 'white',
-              strokeWidth: 2,
-              title: d => `${d.label}: ${d.value} (${d.percentage}%)`
-            }),
-            // Add labels
-            Plot.text(donutData, {
-              x: (d, i) => i % 5,
-              y: (d, i) => Math.floor(i / 5),
-              text: d => `${d.percentage}%`,
-              fontSize: 10,
-              fontWeight: 'bold',
-              fill: 'white',
-              textAnchor: 'middle'
+        // Create a proper donut chart using D3.js
+        const donutContainer = document.createElement('div');
+        const width = 800;
+        const height = 400;
+        const margin = 40;
+        const radius = Math.min(width, height) / 2 - margin;
+        const innerRadius = radius * 0.6; // Create the donut hole
+        
+        // Import D3 dynamically
+        import('d3').then(d3 => {
+          const svg = d3.select(donutContainer)
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
+            .append('g')
+            .attr('transform', `translate(${width / 2}, ${height / 2})`);
+          
+          // Prepare data
+          const total = chartData.reduce((sum, d) => sum + d.value, 0);
+          const dataWithPercentage = chartData.map((d, i) => ({
+            ...d,
+            percentage: ((d.value / total) * 100).toFixed(1)
+          }));
+          
+          // Create color scale
+          const color = d3.scaleOrdinal(d3.schemeCategory10);
+          
+          // Create pie layout
+          const pie = d3.pie<any, typeof dataWithPercentage[0]>()
+            .value(d => d.value)
+            .sort(null); // Keep original order
+          
+          // Create arc generator
+          const arc = d3.arc<any, d3.PieArcDatum<typeof dataWithPercentage[0]>>()
+            .innerRadius(innerRadius)
+            .outerRadius(radius);
+          
+          // Create label arc for positioning labels
+          const labelArc = d3.arc<any, d3.PieArcDatum<typeof dataWithPercentage[0]>>()
+            .innerRadius(radius * 0.8)
+            .outerRadius(radius * 0.8);
+          
+          // Create arc paths
+          const arcs = svg.selectAll('arc')
+            .data(pie(dataWithPercentage))
+            .enter()
+            .append('g')
+            .attr('class', 'arc');
+          
+          // Add arc paths
+          arcs.append('path')
+            .attr('d', arc)
+            .attr('fill', (d, i) => color(i.toString()))
+            .attr('stroke', 'white')
+            .attr('stroke-width', 2)
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event, d) {
+              d3.select(this)
+                .transition()
+                .duration(200)
+                .attr('transform', () => {
+                  const [x, y] = arc.centroid(d);
+                  return `translate(${x * 0.1}, ${y * 0.1})`;
+                });
             })
-          ]
+            .on('mouseout', function(event, d) {
+              d3.select(this)
+                .transition()
+                .duration(200)
+                .attr('transform', 'translate(0, 0)');
+            });
+          
+          // Add tooltips
+          arcs.append('title')
+            .text(d => `${d.data.label}: ${d.data.value} (${d.data.percentage}%)`);
+          
+          // Add labels for segments > 5%
+          arcs.filter(d => parseFloat(d.data.percentage) > 5)
+            .append('text')
+            .attr('transform', d => `translate(${labelArc.centroid(d)})`)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .attr('fill', 'white')
+            .text(d => `${d.data.percentage}%`);
+          
+          // Add center text showing total
+          svg.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '24px')
+            .attr('font-weight', 'bold')
+            .attr('dy', '-0.5em')
+            .text(chartData.length);
+          
+          svg.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '14px')
+            .attr('fill', '#666')
+            .attr('dy', '1em')
+            .text('groups');
+          
+        }).catch(err => {
+          console.error('Failed to load D3:', err);
+          donutContainer.innerHTML = '<div class="text-red-500">Failed to render donut chart</div>';
         });
-        break;
+        
+        chartRef.current.appendChild(donutContainer);
+        return; // Exit early as we're handling the DOM directly
 
       case 'line':
         plot = Plot.plot({

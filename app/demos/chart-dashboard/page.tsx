@@ -10,7 +10,7 @@ import { normalizeEntities } from '@/lib/normalization';
 import { discoverEntityTypes } from '@/lib/charts/dynamicAnalyzer';
 import { ChartResult } from '@/lib/charts/chartDataExtractor';
 import { ChartBuilderState, SavedChart } from '@/lib/charts/types';
-import SimpleChart from "@/components/charts/SimpleChart";
+import ChartRenderer from "@/components/charts/ChartRenderer";
 import ChartBuilderModal from "@/components/charts/ChartBuilderModal";
 
 import sampleData from '@/data/aiid-converted.json';
@@ -172,9 +172,6 @@ export default function ChartDashboardPage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle className="text-lg">{chart.title}</CardTitle>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Created {chart.createdAt.toLocaleDateString()}
-                      </p>
                     </div>
                     <div className="flex gap-1">
                       <Button
@@ -198,7 +195,7 @@ export default function ChartDashboardPage() {
                 </CardHeader>
                 <CardContent className="flex-1">
                   <div className="bg-white dark:bg-gray-900 rounded-lg border p-4">
-                    <SimpleChart 
+                    <ChartRenderer 
                       data={chart.chartResult} 
                       chartType={chart.chartType}
                       className="dashboard-chart"
