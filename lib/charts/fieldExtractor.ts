@@ -1,4 +1,4 @@
-import { NormalizationResult, NormalizedEntity } from '@/lib/normalization';
+import { NormalizationResult } from '@/lib/normalization';
 
 export interface FieldInfo {
   key: string;
@@ -139,7 +139,6 @@ export function extractAvailableRelationships(
       
       if (refs.length === 0) return;
       
-      const targetIds = refs.map(r => r['@id']);
       relationshipCounts.set(relationName, (relationshipCounts.get(relationName) || 0) + 1);
       
       if (!relationshipTargets.has(relationName)) {

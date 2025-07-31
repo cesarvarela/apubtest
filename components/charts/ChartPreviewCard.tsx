@@ -92,9 +92,6 @@ export default function ChartPreviewCard({
               {chartResult.config.groupByLabelField && (
                 <div><strong>Label Field:</strong> {chartResult.config.groupByLabelField}</div>
               )}
-              {chartResult.config.relationshipPath && chartResult.config.relationshipPath.length > 0 && (
-                <div><strong>Relationship Path:</strong> {chartResult.config.relationshipPath.join(' → ')}</div>
-              )}
             </div>
           </div>
         </Collapsible>

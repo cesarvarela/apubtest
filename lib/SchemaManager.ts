@@ -133,7 +133,7 @@ export class SchemaManager {
             }
 
             const contexts = contextSchemas.map(schema => schema.content);
-            const merged = ContextMerger.mergeContexts(contexts, namespace);
+            const merged = ContextMerger.mergeContexts(contexts);
             
             return merged as SchemaObject;
 
@@ -325,7 +325,7 @@ export class SchemaManager {
                     this.validateCoreContext(context);
                 } else if (targetType) {
                     // Content-type-specific context validation
-                    this.validateContentTypeContext(context, namespace, targetType);
+                    this.validateContentTypeContext(context);
                 } else {
                     // Extended context validation: supports type-scoped contexts
                     this.validateExtendedContext(context, namespace);
@@ -439,7 +439,7 @@ export class SchemaManager {
         }
     }
 
-    private validateContentTypeContext(context: any, namespace: string, targetType: string): void {
+    private validateContentTypeContext(context: any): void {
         if (typeof context !== 'object' || context === null) {
             throw new Error('Content type context @context must be an object');
         }

@@ -16,8 +16,6 @@ interface ContentTypeContextEditorProps {
 
 export default function ContentTypeContextEditor({ 
     initialContext, 
-    targetType, 
-    namespace,
     onSave, 
     onCancel 
 }: ContentTypeContextEditorProps) {

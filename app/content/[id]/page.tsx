@@ -119,7 +119,7 @@ export default function ContentDetailPage({ params }: { params: Promise<{ id: st
         const err = await res.json();
         alert(`Update failed: ${err.error}`);
       }
-    } catch (error) {
+    } catch {
       alert('Update failed: Network error');
     }
     setSaving(false);
@@ -163,7 +163,7 @@ export default function ContentDetailPage({ params }: { params: Promise<{ id: st
         const err = await res.json();
         alert(`Update failed: ${err.error}`);
       }
-    } catch (error) {
+    } catch {
       alert('Update failed: Network error');
     }
     setSaving(false);

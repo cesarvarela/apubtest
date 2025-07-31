@@ -27,7 +27,7 @@ const rendererLabels = {
   'JSONLDValue': 'JSONLD'
 };
 
-export default function DebugWrapper({ children, rendererType, data }: DebugWrapperProps) {
+export default function DebugWrapper({ children, rendererType }: DebugWrapperProps) {
   const { debug } = useDebugContext();
   
   if (!debug) {

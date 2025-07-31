@@ -66,7 +66,7 @@ export async function GET(
 
             // Merge all contexts for this namespace using ContextMerger
             const contexts = contextSchemas.map(schema => schema.content);
-            const mergedContext = ContextMerger.mergeContexts(contexts, resolvedNamespace);
+            const mergedContext = ContextMerger.mergeContexts(contexts);
 
             // Set appropriate headers for JSON-LD content
             return NextResponse.json(mergedContext, {

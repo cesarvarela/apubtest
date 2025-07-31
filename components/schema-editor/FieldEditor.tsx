@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,6 @@ import { validateFieldName } from './utils';
 
 export default function FieldEditor({
   field,
-  namespace,
   availableTypes,
   onChange,
   existingFieldNames
@@ -620,7 +618,7 @@ function RelationshipValidation({
                 name="cardinality"
                 value="one"
                 checked={field.relationshipConfig?.cardinality === 'one'}
-                onChange={(e) => updateRelationshipConfig({ cardinality: 'one' })}
+                onChange={() => updateRelationshipConfig({ cardinality: 'one' })}
                 className="text-primary"
               />
               Single relationship
@@ -631,7 +629,7 @@ function RelationshipValidation({
                 name="cardinality"
                 value="many"
                 checked={field.relationshipConfig?.cardinality === 'many'}
-                onChange={(e) => updateRelationshipConfig({ cardinality: 'many' })}
+                onChange={() => updateRelationshipConfig({ cardinality: 'many' })}
                 className="text-primary"
               />
               Multiple relationships
@@ -672,19 +670,19 @@ function RelationshipValidation({
             <div className="mt-2 text-xs font-mono">
               {field.relationshipConfig.cardinality === 'one' ? (
                 <div>
-                  <div className="text-muted-foreground">// Single relationship</div>
-                  <div>"{field.name}": {`{`}</div>
-                  <div className="ml-2">"@id": "https://example.org/...",</div>
-                  <div className="ml-2">"@type": "{field.relationshipConfig.targetType}"</div>
+                  <div className="text-muted-foreground">{/* Single relationship */}</div>
+                  <div>&quot;{field.name}&quot;: {`{`}</div>
+                  <div className="ml-2">&quot;@id&quot;: &quot;https://example.org/...&quot;,</div>
+                  <div className="ml-2">&quot;@type&quot;: &quot;{field.relationshipConfig.targetType}&quot;</div>
                   <div>{`}`}</div>
                 </div>
               ) : (
                 <div>
-                  <div className="text-muted-foreground">// Multiple relationships</div>
-                  <div>"{field.name}": [</div>
+                  <div className="text-muted-foreground">{/* Multiple relationships */}</div>
+                  <div>&quot;{field.name}&quot;: [</div>
                   <div className="ml-2">{`{`}</div>
-                  <div className="ml-4">"@id": "https://example.org/...",</div>
-                  <div className="ml-4">"@type": "{field.relationshipConfig.targetType}"</div>
+                  <div className="ml-4">&quot;@id&quot;: &quot;https://example.org/...&quot;,</div>
+                  <div className="ml-4">&quot;@type&quot;: &quot;{field.relationshipConfig.targetType}&quot;</div>
                   <div className="ml-2">{`}`}</div>
                   <div>]</div>
                 </div>

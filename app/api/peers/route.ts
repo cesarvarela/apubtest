@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { Peer } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 
 export async function GET() {
   const peers = await db.select().from(Peer);

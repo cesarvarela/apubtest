@@ -9,7 +9,7 @@ interface SchemaPreviewProps {
     namespace: string;
 }
 
-export default function SchemaPreview({ schema, namespace }: SchemaPreviewProps) {
+export default function SchemaPreview({ schema }: SchemaPreviewProps) {
     const [showAllProperties, setShowAllProperties] = useState(false);
 
     if (!schema) {

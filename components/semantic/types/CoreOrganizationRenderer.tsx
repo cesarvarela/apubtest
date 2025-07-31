@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import DebugWrapper from '../debug/DebugWrapper';
 import type { TypeRendererProps } from './interfaces';
 
-export default function CoreOrganizationRenderer({ data, context }: TypeRendererProps) {
+export default function CoreOrganizationRenderer({ data }: TypeRendererProps) {
   // Extract properties - handle both compact and expanded forms
   const id = data['@id'] || data['https://www.w3.org/1999/02/22-rdf-syntax-ns#ID'];
   

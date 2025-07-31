@@ -48,7 +48,7 @@ export class FakeDataGenerator {
 
   private async generateFromSchemas(
     validationSchema: SchemaObject, 
-    contextSchema: any,
+    _contextSchema: any,
     entityType: string
   ): Promise<any> {
     const result: any = {};
@@ -197,7 +197,7 @@ export class FakeDataGenerator {
     }
     
     if (schema.type === 'number' || schema.type === 'integer') {
-      return this.generateNumber(schema);
+      return this.generateNumber();
     }
     
     if (schema.type === 'boolean') {
@@ -258,7 +258,7 @@ export class FakeDataGenerator {
     return faker.lorem.words({ min: 1, max: 4 });
   }
 
-  private generateNumber(schema: JsonSchema): number {
+  private generateNumber(): number {
     return faker.number.int({ min: 1, max: 1000 });
   }
 

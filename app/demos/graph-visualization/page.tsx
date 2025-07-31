@@ -102,7 +102,7 @@ import aiidFullPayload from '@/data/aiid-converted.json';
 
 export default function GraphVisualizationPage() {
   const [showRawData, setShowRawData] = useState(false);
-  const [payload, setPayload] = useState(aiidFullPayload);
+  const payload = aiidFullPayload;
 
   const { expandedData, loading, error } = useJsonLdExpansion({
     payload,

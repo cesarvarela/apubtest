@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -43,12 +43,7 @@ export default function RelationshipManager({ namespace }: RelationshipManagerPr
         metadata: {}
     });
 
-    useEffect(() => {
-        loadRelationships();
-        loadAvailableTypes();
-    }, [namespace]);
-
-    const loadRelationships = async () => {
+    const loadRelationships = useCallback(async () => {
         try {
             setLoading(true);
             const response = await fetch(`/api/relationships?namespace=${encodeURIComponent(namespace)}`);
@@ -59,14 +54,14 @@ export default function RelationshipManager({ namespace }: RelationshipManagerPr
             } else {
                 setError(data.message || 'Failed to load relationships');
             }
-        } catch (err) {
+        } catch {
             setError('Failed to load relationships');
         } finally {
             setLoading(false);
         }
-    };
+    }, [namespace]);
 
-    const loadAvailableTypes = async () => {
+    const loadAvailableTypes = useCallback(async () => {
         try {
             const response = await fetch(`/api/schemas/manage?namespace=${encodeURIComponent(namespace)}`, {
                 method: 'PUT'
@@ -76,10 +71,15 @@ export default function RelationshipManager({ namespace }: RelationshipManagerPr
             if (data.targetTypes) {
                 setAvailableTypes(data.targetTypes);
             }
-        } catch (err) {
-            console.error('Failed to load available types:', err);
+        } catch {
+            console.error('Failed to load available types');
         }
-    };
+    }, [namespace]);
+
+    useEffect(() => {
+        loadRelationships();
+        loadAvailableTypes();
+    }, [loadRelationships, loadAvailableTypes]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -113,7 +113,7 @@ export default function RelationshipManager({ namespace }: RelationshipManagerPr
             } else {
                 setError(data.message || 'Failed to save relationship');
             }
-        } catch (err) {
+        } catch {
             setError('Failed to save relationship');
         } finally {
             setLoading(false);
@@ -148,7 +148,7 @@ export default function RelationshipManager({ namespace }: RelationshipManagerPr
             } else {
                 setError(data.message || 'Failed to delete relationship');
             }
-        } catch (err) {
+        } catch {
             setError('Failed to delete relationship');
         } finally {
             setLoading(false);

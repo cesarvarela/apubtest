@@ -5,7 +5,7 @@ import { withTheme } from '@rjsf/core';
 import { Theme as ShadcnTheme } from '@rjsf/shadcn';
 import validator from '@rjsf/validator-ajv8';
 import { generateHiddenAtFieldsUiSchema } from '@/lib/helpers';
-import { LivePreviewProps, FieldDefinition } from './types';
+import { LivePreviewProps } from './types';
 import { AlertCircle } from 'lucide-react';
 
 const Form = withTheme(ShadcnTheme);

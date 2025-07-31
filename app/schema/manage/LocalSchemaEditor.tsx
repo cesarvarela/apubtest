@@ -141,14 +141,14 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
                     const error = await response.json();
                     errorMessage = error.message || error.error || errorMessage;
                 }
-                catch (parseError) {
+                catch {
 
                     try {
                         const errorText = await response.text();
 
                         errorMessage = errorText || `HTTP ${response.status}: ${response.statusText}`;
                     }
-                    catch (textError) {
+                    catch {
 
                         errorMessage = `HTTP ${response.status}: ${response.statusText}`;
                     }
@@ -157,7 +157,7 @@ export default function LocalSchemaEditor({ initialSchema, namespace, hasExistin
                 throw new Error(errorMessage);
             }
 
-            const result = await response.json();
+            await response.json();
             setSaveMessage('Validation schema saved successfully!');
 
             setTimeout(() => {
@@ -277,7 +277,7 @@ Example structure:
                     <li>The schema must have a <code className="bg-gray-100 px-1 rounded">$id</code> property with your namespace URL</li>
                     <li>Must use <code className="bg-gray-100 px-1 rounded">allOf</code> array with core schema <code className="bg-gray-100 px-1 rounded">$ref</code> as first element</li>
                     <li>The core schema reference must point to: <code className="bg-gray-100 px-1 rounded text-xs">https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-schema.json</code></li>
-                    <li>Second element defines local properties with <code className="bg-gray-100 px-1 rounded">type: "object"</code></li>
+                    <li>Second element defines local properties with <code className="bg-gray-100 px-1 rounded">type: &quot;object&quot;</code></li>
                     <li>Include <code className="bg-gray-100 px-1 rounded">required</code> array for mandatory fields</li>
                     <li>Use <code className="bg-gray-100 px-1 rounded">definitions</code> section for reusable schemas (referenced via <code className="bg-gray-100 px-1 rounded">#/definitions/</code>)</li>
                     <li>Set <code className="bg-gray-100 px-1 rounded">additionalProperties: true</code> to allow extensibility</li>

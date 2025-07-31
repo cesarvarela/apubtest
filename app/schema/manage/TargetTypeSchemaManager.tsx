@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit, Trash2, Database, FileCode, ChevronDown, ChevronUp } from 'lucide-react';
 import { SchemaObject } from 'ajv';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -24,7 +23,7 @@ interface TargetTypeSchema {
 }
 
 export default function TargetTypeSchemaManager({ namespace }: TargetTypeSchemaManagerProps) {
-    const [targetTypes, setTargetTypes] = useState<string[]>([]);
+    const [, setTargetTypes] = useState<string[]>([]);
     const [schemas, setSchemas] = useState<TargetTypeSchema[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -33,11 +32,7 @@ export default function TargetTypeSchemaManager({ namespace }: TargetTypeSchemaM
     const [newTargetType, setNewTargetType] = useState('');
     const [collapsedCards, setCollapsedCards] = useState<Set<string>>(new Set());
 
-    useEffect(() => {
-        loadTargetTypes();
-    }, [namespace]);
-
-    const loadTargetTypes = async () => {
+    const loadTargetTypes = useCallback(async () => {
         try {
             setIsLoading(true);
             const response = await fetch(`/api/schemas/manage?namespace=${namespace}`, {
@@ -68,7 +63,11 @@ export default function TargetTypeSchemaManager({ namespace }: TargetTypeSchemaM
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [namespace]);
+
+    useEffect(() => {
+        loadTargetTypes();
+    }, [loadTargetTypes]);
 
     const loadSchemaForTargetType = async (targetType: string): Promise<SchemaObject | null> => {
         try {

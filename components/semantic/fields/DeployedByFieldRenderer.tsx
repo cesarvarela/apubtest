@@ -5,7 +5,7 @@ import TypeDispatcher from '../TypeDispatcher';
 import DebugWrapper from '../debug/DebugWrapper';
 import type { FieldRendererProps } from '../types/interfaces';
 
-export default function DeployedByFieldRenderer({ data, label, fieldKey, context }: FieldRendererProps) {
+export default function DeployedByFieldRenderer({ data, label, context }: FieldRendererProps) {
   return (
     <DebugWrapper rendererType="DeployedByFieldRenderer" data={data}>
       <div className="text-sm">

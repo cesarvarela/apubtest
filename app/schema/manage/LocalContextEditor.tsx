@@ -110,19 +110,19 @@ export default function LocalContextEditor({ initialContext, namespace, hasExist
                 try {
                     const error = await response.json();
                     errorMessage = error.message || error.error || errorMessage;
-                } catch (parseError) {
+                } catch {
                     // If response is not JSON, try to get text
                     try {
                         const errorText = await response.text();
                         errorMessage = errorText || `HTTP ${response.status}: ${response.statusText}`;
-                    } catch (textError) {
+                    } catch {
                         errorMessage = `HTTP ${response.status}: ${response.statusText}`;
                     }
                 }
                 throw new Error(errorMessage);
             }
 
-            const result = await response.json();
+            await response.json();
             setSaveMessage('Context saved successfully!');
 
             setTimeout(() => {
@@ -227,7 +227,7 @@ Example structure:
                     <li>The context must have a <code className="bg-gray-100 px-1 rounded">@context</code> property that is an array</li>
                     <li>First element must reference the core context: <code className="bg-gray-100 px-1 rounded text-xs">https://github.com/ul-dsri/semantic-incident-db-prototype/blob/main/schemas/core-context.jsonld</code></li>
                     <li>Second element must be an object containing local semantic mappings</li>
-                    <li>Use schema.org vocabulary where possible (e.g., <code className="bg-gray-100 px-1 rounded">"schema:headline"</code>)</li>
+                    <li>Use schema.org vocabulary where possible (e.g., <code className="bg-gray-100 px-1 rounded">&quot;schema:headline&quot;</code>)</li>
                     <li>Define container types for arrays using <code className="bg-gray-100 px-1 rounded">@container</code></li>
                     <li>Specify data types using <code className="bg-gray-100 px-1 rounded">@type</code> when needed</li>
                 </ul>

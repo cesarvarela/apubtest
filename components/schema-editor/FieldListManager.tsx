@@ -12,8 +12,7 @@ export default function FieldListManager({
   selectedFieldId,
   onSelectField,
   onAddField,
-  onRemoveField,
-  onReorderFields
+  onRemoveField
 }: FieldListManagerProps) {
   
   const getFieldTypeColor = (type: string) => {
@@ -47,11 +46,11 @@ export default function FieldListManager({
           <div className="p-8 text-center text-muted-foreground">
             <AlertTriangle className="w-12 h-12 mx-auto mb-4 opacity-30" />
             <p className="text-sm font-medium mb-1">No fields defined</p>
-            <p className="text-xs">Click "Add Field" to get started</p>
+            <p className="text-xs">Click &quot;Add Field&quot; to get started</p>
           </div>
         ) : (
           <div className="p-2 space-y-2">
-            {fields.map((field, index) => (
+            {fields.map((field) => (
               <Card
                 key={field.id}
                 className={`cursor-pointer transition-all duration-200 hover:shadow-md ${

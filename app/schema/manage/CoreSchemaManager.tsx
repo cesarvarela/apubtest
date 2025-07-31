@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +22,7 @@ interface CoreSchemaType {
 }
 
 export default function CoreSchemaManager({ className }: CoreSchemaManagerProps) {
-    const [targetTypes, setTargetTypes] = useState<string[]>([]);
+    const [, setTargetTypes] = useState<string[]>([]);
     const [schemas, setSchemas] = useState<CoreSchemaType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -31,11 +31,7 @@ export default function CoreSchemaManager({ className }: CoreSchemaManagerProps)
     const [newSchemaJson, setNewSchemaJson] = useState('{\n  "@context": {\n    "@protected": true,\n    \n    "core": "https://example.org/core#",\n    "schema": "https://schema.org/",\n    "xsd": "http://www.w3.org/2001/XMLSchema#"\n    \n  }\n}');
     const [collapsedCards, setCollapsedCards] = useState<Set<string>>(new Set());
 
-    useEffect(() => {
-        loadTargetTypes();
-    }, []);
-
-    const loadTargetTypes = async () => {
+    const loadTargetTypes = useCallback(async () => {
         try {
             setIsLoading(true);
             
@@ -76,22 +72,12 @@ export default function CoreSchemaManager({ className }: CoreSchemaManagerProps)
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
-    const loadSchemaForTargetType = async (targetType: string): Promise<SchemaObject | null> => {
-        try {
-            const response = await fetch(`/api/schemas/manage?namespace=core&type=context&targetType=${encodeURIComponent(targetType)}`);
-            
-            if (response.ok) {
-                const data = await response.json();
-                return data.schema;
-            }
-            return null;
-        } catch (error) {
-            console.error(`Error loading core context for ${targetType}:`, error);
-            return null;
-        }
-    };
+    useEffect(() => {
+        loadTargetTypes();
+    }, [loadTargetTypes]);
+
 
     const loadContextForTargetType = async (targetType: string): Promise<SchemaObject | null> => {
         try {
@@ -286,7 +272,7 @@ export default function CoreSchemaManager({ className }: CoreSchemaManagerProps)
                         </div>
                     ) : (
                         <div className="grid gap-4">
-                            {schemas.map(({ targetType, schema, context }) => {
+                            {schemas.map(({ targetType, context }) => {
                                 const isCollapsed = collapsedCards.has(targetType);
                                 return (
                                 <Card key={targetType} className="border-l-4 border-l-purple-500">

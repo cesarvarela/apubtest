@@ -97,7 +97,7 @@ export default function ContentHeader() {
         const err = await res.json();
         alert(`Creation failed: ${err.error}`);
       }
-    } catch (error) {
+    } catch {
       alert('Creation failed: Network error');
     }
     setIsLoading(false);

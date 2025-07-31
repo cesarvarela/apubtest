@@ -414,7 +414,7 @@ const useRenderLoop = (
 
     contextRef.current = context;
     return context;
-  }, [width, height]);
+  }, [width, height, canvasRef]);
 
   // Request render - throttled to animation frame
   const requestRender = useCallback(() => {

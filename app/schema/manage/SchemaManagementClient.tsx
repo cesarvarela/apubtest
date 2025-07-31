@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileCode, Database, Link, ChevronDown, ChevronUp } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
+import { FileCode, Link, ChevronDown, ChevronUp } from 'lucide-react';
 import MergedContextView from './MergedContextView';
 import CoreContextView from './CoreContextView';
 import TargetTypeSchemaManager from './TargetTypeSchemaManager';

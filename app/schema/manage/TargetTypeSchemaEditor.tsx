@@ -99,7 +99,7 @@ export default function TargetTypeSchemaEditor({ initialSchema, onSave, onCancel
                 <h4 className="font-medium text-gray-900">Schema Guidelines:</h4>
                 <ul className="list-disc list-inside space-y-1 ml-4">
                     <li>The schema must have a <code className="bg-gray-100 px-1 rounded">$id</code> property</li>
-                    <li>Schema must have <code className="bg-gray-100 px-1 rounded">type: "object"</code></li>
+                    <li>Schema must have <code className="bg-gray-100 px-1 rounded">type: &quot;object&quot;</code></li>
                     <li>Include required properties and their validation rules</li>
                     <li>Use proper JSON Schema format with type definitions</li>
                 </ul>

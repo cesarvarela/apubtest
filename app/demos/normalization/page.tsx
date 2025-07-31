@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useJsonLdExpansion } from '@/hooks/useJsonLdExpansion';
 import {
   Accordion,
@@ -9,7 +9,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Link from 'next/link';
 import { normalizeEntities } from '@/lib/normalization';
 

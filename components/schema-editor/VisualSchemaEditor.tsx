@@ -10,9 +10,7 @@ import { Save, Eye, Code } from 'lucide-react';
 
 import { 
   SchemaEditorProps, 
-  FieldDefinition, 
-  ValidationSchema, 
-  ContextSchema 
+  FieldDefinition
 } from './types';
 import { 
   extractFieldsFromSchema, 
@@ -42,7 +40,7 @@ export default function VisualSchemaEditor({
   // Initialize fields from validation schema
   useEffect(() => {
     if (validationSchema) {
-      const extractedFields = extractFieldsFromSchema(validationSchema, namespace);
+      const extractedFields = extractFieldsFromSchema(validationSchema);
       setFields(extractedFields);
     }
   }, [validationSchema, namespace]);

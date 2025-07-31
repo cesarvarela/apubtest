@@ -14,13 +14,16 @@ export default function GraphVisualization({ expandedPayload, context }: GraphVi
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [connectedNodeIds, setConnectedNodeIds] = useState<Set<string>>(new Set());
 
+  const { nodes, edges } = useMemo(() => {
+    if (!expandedPayload) {
+      return { nodes: [], edges: [] };
+    }
+    return processGraphData(expandedPayload);
+  }, [expandedPayload]);
+
   if (!expandedPayload) {
     return <div>No data to visualize</div>;
   }
-
-  const { nodes, edges } = useMemo(() => {
-    return processGraphData(expandedPayload);
-  }, [expandedPayload]);
 
   if (nodes.length === 0) {
     return <div>No semantic entities found to visualize</div>;
@@ -126,7 +129,7 @@ export default function GraphVisualization({ expandedPayload, context }: GraphVi
                         {nodeName}
                       </div>
                       <div className="text-gray-600 dark:text-gray-400">
-                        {nodeType} • via "{relationshipType}"
+                        {nodeType} • via &quot;{relationshipType}&quot;
                       </div>
                     </div>
                   );

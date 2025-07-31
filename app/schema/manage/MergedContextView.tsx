@@ -7,7 +7,7 @@ export default function MergedContextView({ context, namespace }: MergedContextV
     if (!context) {
         return (
             <div className="text-center py-8 text-gray-500">
-                <p>No individual contexts found in namespace "{namespace}" to merge</p>
+                <p>No individual contexts found in namespace &quot;{namespace}&quot; to merge</p>
                 <p className="text-sm mt-2">Create content type schemas to see merged context here</p>
             </div>
         );
@@ -19,7 +19,7 @@ export default function MergedContextView({ context, namespace }: MergedContextV
                 <div className="bg-green-100 px-4 py-2 border-b">
                     <h3 className="font-medium text-gray-900">Merged Context Definition</h3>
                     <p className="text-sm text-gray-600 mt-1">
-                        Consolidated view of all individual context schemas in namespace "{namespace}"
+                        Consolidated view of all individual context schemas in namespace &quot;{namespace}&quot;
                     </p>
                 </div>
                 <div className="bg-gray-50">

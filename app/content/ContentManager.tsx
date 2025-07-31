@@ -126,7 +126,7 @@ export default function ContentManager() {
         const err = await res.json();
         alert(`Update failed: ${err.error}`);
       }
-    } catch (error) {
+    } catch {
       alert('Update failed: Network error');
     }
     setSaving(false);
@@ -169,7 +169,7 @@ export default function ContentManager() {
         const err = await res.json();
         alert(`Update failed: ${err.error}`);
       }
-    } catch (error) {
+    } catch {
       alert('Update failed: Network error');
     }
     setSaving(false);

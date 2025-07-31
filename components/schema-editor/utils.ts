@@ -1,6 +1,6 @@
 import { FieldDefinition, ValidationSchema, ContextSchema } from './types';
 
-export function extractFieldsFromSchema(schema: ValidationSchema, namespace: string): FieldDefinition[] {
+export function extractFieldsFromSchema(schema: ValidationSchema): FieldDefinition[] {
   if (!schema.properties) return [];
   
   return Object.entries(schema.properties)
@@ -236,5 +236,5 @@ export function validateFieldName(name: string, existingNames: string[]): string
 }
 
 export function generateFieldId(): string {
-  return `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `field-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 }

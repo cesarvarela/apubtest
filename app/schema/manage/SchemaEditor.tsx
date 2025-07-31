@@ -74,7 +74,7 @@ export default function SchemaEditor({ initialSchema, namespace, hasExistingSche
                 throw new Error(error.message || 'Failed to save schema');
             }
 
-            const result = await response.json();
+            await response.json();
             setSaveMessage('Schema saved successfully!');
 
             setTimeout(() => {
