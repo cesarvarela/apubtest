@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,10 @@ interface ChartBuilderModalProps {
   onSave: (chartResult: ChartResult, title: string, builderState: ChartBuilderState) => void;
   normalizedData: NormalizationResult;
   editingChart?: SavedChart | null;
+  importedConfig?: {
+    title: string;
+    builderState: Partial<ChartBuilderState>;
+  } | null;
 }
 
 export default function ChartBuilderModal({ 
@@ -27,7 +31,8 @@ export default function ChartBuilderModal({
   onClose, 
   onSave, 
   normalizedData,
-  editingChart 
+  editingChart,
+  importedConfig
 }: ChartBuilderModalProps) {
   const [chartState, setChartState] = useState<ChartBuilderState>({
     selectedEntityType: null,
@@ -41,11 +46,23 @@ export default function ChartBuilderModal({
   const [chartTitle, setChartTitle] = useState<string>('');
   const [chartResult, setChartResult] = useState<ChartResult | null>(null);
 
-  // Initialize state when editing a chart
+  // Initialize state when editing a chart or importing
   useEffect(() => {
     if (editingChart) {
       setChartState(editingChart.builderState);
       setChartTitle(editingChart.title);
+    } else if (importedConfig) {
+      // Merge imported config with defaults
+      setChartState({
+        selectedEntityType: importedConfig.builderState.selectedEntityType || null,
+        selectedGrouping: importedConfig.builderState.selectedGrouping || null,
+        selectedDisplayField: importedConfig.builderState.selectedDisplayField || null,
+        selectedAggregation: importedConfig.builderState.selectedAggregation || 'count',
+        selectedSort: importedConfig.builderState.selectedSort || 'count-desc',
+        selectedResultsLimit: importedConfig.builderState.selectedResultsLimit || 20,
+        selectedChartType: importedConfig.builderState.selectedChartType || 'bar'
+      });
+      setChartTitle(importedConfig.title);
     } else {
       // Reset to defaults when creating new chart
       setChartState({
@@ -59,11 +76,11 @@ export default function ChartBuilderModal({
       });
       setChartTitle('');
     }
-  }, [editingChart, isOpen]);
+  }, [editingChart, importedConfig, isOpen]);
 
-  // Auto-generate title when chart result is available (for new charts only)
+  // Auto-generate title when chart result is available (for new charts only, not imported)
   useEffect(() => {
-    if (chartResult && chartState.selectedEntityType && chartState.selectedGrouping && !editingChart) {
+    if (chartResult && chartState.selectedEntityType && chartState.selectedGrouping && !editingChart && !importedConfig) {
       const autoTitle = generateChartTitle(
         chartState.selectedEntityType, 
         chartState.selectedGrouping.fieldName, 
@@ -71,7 +88,7 @@ export default function ChartBuilderModal({
       );
       setChartTitle(autoTitle);
     }
-  }, [chartResult, chartState.selectedEntityType, chartState.selectedGrouping, editingChart]);
+  }, [chartResult, chartState.selectedEntityType, chartState.selectedGrouping, editingChart, importedConfig]);
 
   const handleSave = () => {
     if (chartResult && chartTitle.trim()) {
@@ -103,7 +120,7 @@ export default function ChartBuilderModal({
       <DialogContent className="max-w-7xl w-[90vw] max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
-            {editingChart ? 'Edit Chart' : 'Create New Chart'}
+            {editingChart ? 'Edit Chart' : importedConfig ? 'Import Chart' : 'Create New Chart'}
           </DialogTitle>
         </DialogHeader>
         

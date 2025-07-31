@@ -4,13 +4,17 @@ import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Edit } from "lucide-react";
+import { Plus, Trash2, Edit, Copy, Upload } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 import { normalizeEntities } from '@/lib/normalization';
 import { discoverEntityTypes } from '@/lib/charts/dynamicAnalyzer';
 import { ChartBuilderState, SavedChart, ChartResult } from '@/lib/charts/types';
+import { exportChartToJSON, copyToClipboard, ExportedChartConfig, importChartFromJSON } from '@/lib/charts/exportImport';
 import ChartRenderer from "@/components/charts/ChartRenderer";
 import ChartBuilderModal from "@/components/charts/ChartBuilderModal";
+import ChartImportModal from "@/components/charts/ChartImportModal";
 
 import sampleData from '@/data/aiid-converted.json';
 
@@ -20,6 +24,8 @@ export default function ChartDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingChart, setEditingChart] = useState<SavedChart | null>(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importedConfig, setImportedConfig] = useState<{ title: string; builderState: Partial<ChartBuilderState> } | null>(null);
 
   // Load saved charts from localStorage after mount
   useEffect(() => {
@@ -98,6 +104,29 @@ export default function ChartDashboardPage() {
     setIsModalOpen(true);
   };
 
+  const handleCopyJSON = async (chart: SavedChart) => {
+    const exportedChart = exportChartToJSON(chart);
+    const jsonString = JSON.stringify(exportedChart, null, 2);
+    
+    const success = await copyToClipboard(jsonString);
+    if (success) {
+      toast.success('Chart configuration copied to clipboard');
+    } else {
+      toast.error('Failed to copy to clipboard');
+    }
+  };
+
+  const handleImportConfig = (config: ExportedChartConfig) => {
+    const importedState = importChartFromJSON(config);
+    setImportedConfig({
+      title: config.title,
+      builderState: importedState
+    });
+    setIsImportModalOpen(false);
+    setIsModalOpen(true);
+  };
+
+
   return (
     <main className="flex min-h-screen flex-col items-start p-24">
       <div className="w-full max-w-7xl space-y-8">
@@ -120,13 +149,23 @@ export default function ChartDashboardPage() {
                 Create and manage multiple charts from JSON-LD data. Build a custom dashboard with your visualizations.
               </p>
             </div>
-            <Button 
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add Chart
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setIsImportModalOpen(true)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Upload className="w-4 h-4" />
+                Import Chart
+              </Button>
+              <Button 
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Chart
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -173,22 +212,53 @@ export default function ChartDashboardPage() {
                       <CardTitle className="text-lg">{chart.title}</CardTitle>
                     </div>
                     <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditChart(chart)}
-                        className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteChart(chart.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleCopyJSON(chart)}
+                              className="text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/20"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Copy JSON</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditChart(chart)}
+                              className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Edit</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteChart(chart.id)}
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Delete</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </div>
                 </CardHeader>
@@ -240,10 +310,19 @@ export default function ChartDashboardPage() {
         onClose={() => {
           setIsModalOpen(false);
           setEditingChart(null);
+          setImportedConfig(null);
         }}
         onSave={handleSaveChart}
         normalizedData={normalizedData}
         editingChart={editingChart}
+        importedConfig={importedConfig}
+      />
+
+      {/* Chart Import Modal */}
+      <ChartImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImport={handleImportConfig}
       />
     </main>
   );
