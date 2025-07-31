@@ -48,7 +48,7 @@ const corePersonContext: JsonLd = {
         "xsd": "http://www.w3.org/2001/XMLSchema#",
         
         // Type definition  
-        "Person": "core:Person",
+        "Person": { "@id": "core:Person", "@type": "@id" },
         
         // Person-specific properties
         "id": "@id",
@@ -104,12 +104,12 @@ const mergedCoreContext = ContextMerger.mergeContexts([
     coreIncidentContext,
     coreOrganizationContext,
     corePersonContext
-], 'core');
+]);
 
 const mergedAiidContext = ContextMerger.mergeContexts([
     aiidIncidentContext,
     aiidReportContext
-], 'aiid');
+]);
 
 // Example payload using the hybrid approach with merged contexts
 const hybridPayload = {
