@@ -84,8 +84,8 @@ export function analyzeEntityFields(entities: NormalizedEntity[]): FieldInfo[] {
   
   entities.forEach(entity => {
     Object.entries(entity).forEach(([fieldName, value]) => {
-      // Skip @type but allow @id and reverse relationships for field analysis
-      if (fieldName === '@type') return;
+      // Skip @type and reverse relationships, but allow @id for field analysis
+      if (fieldName === '@type' || fieldName.startsWith('reverse_')) return;
       
       if (!fieldStats[fieldName]) {
         fieldStats[fieldName] = {
@@ -319,10 +319,47 @@ export function getGroupingOptions(normalizedData: NormalizationResult, entityTy
   const entities = normalizedData.extracted[entityType];
   if (!entities || entities.length === 0) return [];
   
-  return analyzeEntityFields(entities).filter(field => {
-    // Filter out fields that are not suitable for grouping
-    return field.fieldName !== '@type';
+  // For charting, we want to include reverse relationships
+  const fieldStats: { [fieldName: string]: FieldInfo } = {};
+  
+  entities.forEach(entity => {
+    Object.entries(entity).forEach(([fieldName, value]) => {
+      // Skip @type but allow reverse relationships for charting
+      if (fieldName === '@type') return;
+      
+      if (!fieldStats[fieldName]) {
+        fieldStats[fieldName] = {
+          fieldName,
+          type: inferFieldType(fieldName, value),
+          frequency: 0,
+          totalCount: 0,
+          entityCount: entities.length,
+          sampleValues: [],
+          isCommon: false
+        };
+      }
+      
+      fieldStats[fieldName].totalCount++;
+      
+      // Collect sample values (up to 5)
+      if (fieldStats[fieldName].sampleValues.length < 5) {
+        const sampleValue = Array.isArray(value) ? `[${value.length} items]` : 
+                          typeof value === 'object' ? '[object]' : 
+                          String(value);
+        if (!fieldStats[fieldName].sampleValues.includes(sampleValue)) {
+          fieldStats[fieldName].sampleValues.push(sampleValue);
+        }
+      }
+    });
   });
+  
+  // Calculate frequencies and mark common fields
+  Object.values(fieldStats).forEach(field => {
+    field.frequency = field.totalCount / field.entityCount;
+    field.isCommon = field.frequency > 0.8;
+  });
+  
+  return Object.values(fieldStats).sort((a, b) => b.frequency - a.frequency);
 }
 
 /**

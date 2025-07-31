@@ -8,8 +8,7 @@ import { Plus, Trash2, Edit } from "lucide-react";
 
 import { normalizeEntities } from '@/lib/normalization';
 import { discoverEntityTypes } from '@/lib/charts/dynamicAnalyzer';
-import { ChartResult } from '@/lib/charts/chartDataExtractor';
-import { ChartBuilderState, SavedChart } from '@/lib/charts/types';
+import { ChartBuilderState, SavedChart, ChartResult } from '@/lib/charts/types';
 import ChartRenderer from "@/components/charts/ChartRenderer";
 import ChartBuilderModal from "@/components/charts/ChartBuilderModal";
 

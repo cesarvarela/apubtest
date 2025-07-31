@@ -81,6 +81,7 @@ export function extractChartData(
     
     switch (config.measure.aggregation) {
       case 'count':
+      case 'cumulative': // Will be processed after sorting
         value = groupEntities.length;
         break;
       case 'sum':
@@ -117,6 +118,42 @@ export function extractChartData(
       const bLabel = String(b[config.dimension.field]);
       return config.sortOrder === 'desc' ? bLabel.localeCompare(aLabel) : aLabel.localeCompare(bLabel);
     });
+  }
+
+  // Apply cumulative calculation if needed
+  if (config.measure.aggregation === 'cumulative') {
+    // Sort chronologically for cumulative calculation
+    const chronoSorted = [...chartData].sort((a, b) => {
+      const aLabel = String(a[config.dimension.field]);
+      const bLabel = String(b[config.dimension.field]);
+      
+      // Try to parse as dates
+      const dateA = new Date(aLabel);
+      const dateB = new Date(bLabel);
+      
+      // If both are valid dates, sort chronologically
+      if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+        return dateA.getTime() - dateB.getTime();
+      }
+      
+      // Otherwise sort alphabetically
+      return aLabel.localeCompare(bLabel);
+    });
+    
+    // Calculate cumulative values
+    let cumulativeValue = 0;
+    const cumulativeMap = new Map<string, number>();
+    
+    chronoSorted.forEach(dataPoint => {
+      cumulativeValue += dataPoint.count;
+      cumulativeMap.set(String(dataPoint[config.dimension.field]), cumulativeValue);
+    });
+    
+    // Apply cumulative values to original array (preserves user's sort order)
+    chartData = chartData.map(dataPoint => ({
+      ...dataPoint,
+      value: cumulativeMap.get(String(dataPoint[config.dimension.field])) || dataPoint.value
+    }));
   }
 
   // Apply top N limit

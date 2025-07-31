@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as Plot from '@observablehq/plot';
-import { ChartResult } from '@/lib/charts/chartDataExtractor';
-import { generateChartTitle, formatChartAxisLabel } from '@/lib/charts/labelGenerator';
-import { ChartType } from '@/lib/charts/types';
+import { formatChartAxisLabel } from '@/lib/charts/labelGenerator';
+import { ChartType, ChartResult } from '@/lib/charts/types';
 
 interface ChartRendererProps {
   data: ChartResult;
@@ -15,6 +14,27 @@ interface ChartRendererProps {
 
 export default function ChartRenderer({ data, chartType, resultsLimit = 20, className = '' }: ChartRendererProps) {
   const chartRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(640);
+
+  // Set up ResizeObserver to track container width
+  useEffect(() => {
+    if (!chartRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        const width = entry.contentRect.width;
+        // Only update if width changed significantly (avoid unnecessary re-renders)
+        setContainerWidth(prev => Math.abs(prev - width) > 10 ? Math.max(300, width) : prev);
+      }
+    });
+
+    resizeObserver.observe(chartRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (!chartRef.current || !data || data.data.length === 0) {
@@ -29,12 +49,7 @@ export default function ChartRenderer({ data, chartType, resultsLimit = 20, clas
 
     // Base configuration
     const baseConfig = {
-      width: 800,
-      title: generateChartTitle(
-        data.config.sourceType, 
-        data.config.groupBy, 
-        data.metadata.targetEntityType ? [data.metadata.targetEntityType] : []
-      ),
+      width: containerWidth,
       style: {
         fontSize: '14px',
         fontFamily: 'system-ui, -apple-system, sans-serif'
@@ -119,7 +134,7 @@ export default function ChartRenderer({ data, chartType, resultsLimit = 20, clas
 
         plot = Plot.plot({
           ...baseConfig,
-          height: 200,
+          height: 400,
           x: { 
             label: "Proportion",
             tickFormat: "%",
@@ -154,11 +169,12 @@ export default function ChartRenderer({ data, chartType, resultsLimit = 20, clas
       case 'donut':
         // Create a proper donut chart using D3.js
         const donutContainer = document.createElement('div');
-        const width = 800;
-        const height = 400;
-        const margin = 40;
+        donutContainer.style.position = 'relative'; // For tooltip positioning
+        const width = containerWidth;
+        const height = 400; // Standardized height to match other charts
+        const margin = Math.min(80, width * 0.15); // Adjusted margin for standard height
         const radius = Math.min(width, height) / 2 - margin;
-        const innerRadius = radius * 0.6; // Create the donut hole
+        const innerRadius = radius * 0.5; // Create the donut hole
         
         // Import D3 dynamically
         import('d3').then(d3 => {
@@ -167,7 +183,7 @@ export default function ChartRenderer({ data, chartType, resultsLimit = 20, clas
             .attr('width', width)
             .attr('height', height)
             .append('g')
-            .attr('transform', `translate(${width / 2}, ${height / 2})`);
+            .attr('transform', `translate(${width * 0.4}, ${height / 2})`);
           
           // Prepare data
           const total = chartData.reduce((sum, d) => sum + d.value, 0);
@@ -207,48 +223,170 @@ export default function ChartRenderer({ data, chartType, resultsLimit = 20, clas
             .attr('fill', (d, i) => color(i.toString()))
             .attr('stroke', 'white')
             .attr('stroke-width', 2)
-            .style('cursor', 'pointer')
-            .on('mouseover', function(event, d) {
-              d3.select(this)
-                .transition()
-                .duration(200)
-                .attr('transform', () => {
-                  const [x, y] = arc.centroid(d);
-                  return `translate(${x * 0.1}, ${y * 0.1})`;
-                });
-            })
-            .on('mouseout', function(event, d) {
-              d3.select(this)
-                .transition()
-                .duration(200)
-                .attr('transform', 'translate(0, 0)');
-            });
+            .style('cursor', 'pointer');
           
           // Add tooltips
           arcs.append('title')
             .text(d => `${d.data.label}: ${d.data.value} (${d.data.percentage}%)`);
           
-          // Add labels for segments > 5%
-          arcs.filter(d => parseFloat(d.data.percentage) > 5)
-            .append('text')
-            .attr('transform', d => `translate(${labelArc.centroid(d)})`)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('font-weight', 'bold')
-            .attr('fill', 'white')
-            .text(d => `${d.data.percentage}%`);
+          // Sort data by value to get top 5
+          const sortedData = [...dataWithPercentage].sort((a, b) => b.value - a.value);
+          const top5Labels = new Set(sortedData.slice(0, 5).map(d => d.label));
+          
+          // Add labels with polylines only for top 5
+          const labelRadius = radius * 1.25;
+          const outerArc = d3.arc<any, d3.PieArcDatum<typeof dataWithPercentage[0]>>()
+            .innerRadius(labelRadius)
+            .outerRadius(labelRadius);
+          
+          // Filter arcs for permanent labels (only top 5)
+          const labeledArcs = arcs.filter((d: any) => top5Labels.has(d.data.label));
+          
+          // Calculate label positions for top 5
+          const labelData: any[] = [];
+          labeledArcs.each((d: any) => {
+            const pos = outerArc.centroid(d);
+            const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+            const isRightSide = midangle < Math.PI;
+            pos[0] = labelRadius * 0.98 * (isRightSide ? 1 : -1);
+            
+            labelData.push({
+              data: d,
+              x: pos[0],
+              y: pos[1],
+              isRightSide,
+              midangle
+            });
+          });
+          
+          // Sort labels by y position
+          labelData.sort((a, b) => a.y - b.y);
+          
+          // Simple overlap prevention for top 5
+          const minLabelSpacing = 30;
+          for (let i = 1; i < labelData.length; i++) {
+            const current = labelData[i];
+            const previous = labelData[i - 1];
+            
+            if (current.isRightSide === previous.isRightSide) {
+              const yDiff = current.y - previous.y;
+              if (yDiff < minLabelSpacing) {
+                current.y = previous.y + minLabelSpacing;
+              }
+            }
+          }
+          
+          // Add polylines for top 5 labels
+          labeledArcs.append('polyline')
+            .attr('stroke', '#999')
+            .attr('stroke-width', 1)
+            .attr('fill', 'none')
+            .attr('opacity', 0.3)
+            .attr('points', (d: any) => {
+              const labelInfo = labelData.find(l => l.data === d);
+              const posA = arc.centroid(d);
+              const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+              const intermediateRadius = radius * 1.1;
+              const posB = [
+                Math.cos(midangle - Math.PI / 2) * intermediateRadius,
+                Math.sin(midangle - Math.PI / 2) * intermediateRadius
+              ];
+              const posC = [labelInfo.x * 0.9, labelInfo.y];
+              return [posA, posB, posC].map(p => p.join(',')).join(' ');
+            });
+          
+          // Add permanent labels for top 5
+          labeledArcs.append('text')
+            .attr('transform', (d: any) => {
+              const labelInfo = labelData.find(l => l.data === d);
+              return `translate(${labelInfo.x}, ${labelInfo.y})`;
+            })
+            .attr('text-anchor', (d: any) => {
+              const labelInfo = labelData.find(l => l.data === d);
+              return labelInfo.isRightSide ? 'start' : 'end';
+            })
+            .attr('font-size', '11px')
+            .attr('font-weight', 'normal')
+            .each(function(d: any) {
+              const text = d3.select(this);
+              text.append('tspan')
+                .attr('x', 0)
+                .attr('dy', '0')
+                .attr('font-weight', '600')
+                .text(d.data.label);
+              text.append('tspan')
+                .attr('x', 0)
+                .attr('dy', '1.1em')
+                .attr('fill', '#666')
+                .attr('font-size', '10px')
+                .text(`${d.data.percentage}%`);
+            });
+          
+          // Create hover tooltip for all segments
+          const tooltip = d3.select(donutContainer)
+            .append('div')
+            .style('position', 'absolute')
+            .style('background', 'rgba(0, 0, 0, 0.8)')
+            .style('color', 'white')
+            .style('padding', '8px 12px')
+            .style('border-radius', '4px')
+            .style('font-size', '12px')
+            .style('pointer-events', 'none')
+            .style('opacity', 0)
+            .style('z-index', 1000);
+          
+          // Update hover interactions to show tooltip for all segments
+          arcs.on('mouseover', function(event, d: any) {
+            // Highlight the segment
+            d3.select(this).select('path')
+              .transition()
+              .duration(200)
+              .attr('transform', () => {
+                const [x, y] = arc.centroid(d);
+                return `translate(${x * 0.1}, ${y * 0.1})`;
+              })
+              .style('filter', 'brightness(1.1)');
+            
+            // Show tooltip
+            tooltip
+              .html(`<strong>${d.data.label}</strong><br/>${d.data.value} (${d.data.percentage}%)`)
+              .transition()
+              .duration(200)
+              .style('opacity', 1);
+          })
+          .on('mousemove', function(event) {
+            // Position tooltip near cursor
+            const [mouseX, mouseY] = d3.pointer(event, donutContainer);
+            tooltip
+              .style('left', (mouseX + 10) + 'px')
+              .style('top', (mouseY - 10) + 'px');
+          })
+          .on('mouseout', function(event, d) {
+            // Reset segment
+            d3.select(this).select('path')
+              .transition()
+              .duration(200)
+              .attr('transform', 'translate(0, 0)')
+              .style('filter', 'none');
+            
+            // Hide tooltip
+            tooltip
+              .transition()
+              .duration(200)
+              .style('opacity', 0);
+          });
           
           // Add center text showing total
           svg.append('text')
             .attr('text-anchor', 'middle')
-            .attr('font-size', '24px')
+            .attr('font-size', `${Math.max(18, Math.min(24, width / 25))}px`)
             .attr('font-weight', 'bold')
             .attr('dy', '-0.5em')
             .text(chartData.length);
           
           svg.append('text')
             .attr('text-anchor', 'middle')
-            .attr('font-size', '14px')
+            .attr('font-size', `${Math.max(12, Math.min(14, width / 40))}px`)
             .attr('fill', '#666')
             .attr('dy', '1em')
             .text('groups');
@@ -262,38 +400,70 @@ export default function ChartRenderer({ data, chartType, resultsLimit = 20, clas
         return; // Exit early as we're handling the DOM directly
 
       case 'line':
-        plot = Plot.plot({
-          ...baseConfig,
-          height: 400,
-          x: { 
-            label: 'Group',
-            tickRotate: hasLongLabels ? -45 : 0
-          },
-          y: { label: formatChartAxisLabel(data.config.aggregation, data.config.sourceType) },
-          marks: [
-            Plot.line(chartData, {
-              x: 'label',
-              y: 'value',
-              stroke: 'steelblue',
-              strokeWidth: 3,
-              marker: 'circle'
-            }),
-            Plot.dot(chartData, {
-              x: 'label',
-              y: 'value',
-              fill: 'steelblue',
-              r: 4,
-              title: d => `${d.label}: ${d.value}`
-            }),
-            Plot.text(chartData, {
-              x: 'label',
+        // Check if data is date-based
+        const isDateData = data.config.groupByFieldType === 'date';
+        const tooManyPoints = chartData.length > 50;
+        
+        // Prepare data for temporal scale if needed
+        const processedData = isDateData ? chartData.map(d => ({
+          ...d,
+          date: new Date(d.label),
+          originalLabel: d.label
+        })) : chartData;
+        
+        // Configure x-axis based on data type
+        const xAxisConfig = isDateData ? {
+          label: 'Date',
+          type: 'time' as const,
+          tickFormat: chartData.length > 365 ? '%Y' : 
+                      chartData.length > 60 ? '%b %Y' : 
+                      chartData.length > 30 ? '%b %d' : '%Y-%m-%d',
+          ticks: Math.min(10, Math.ceil(chartData.length / 50)) // Adaptive tick count
+        } : {
+          label: 'Group',
+          tickRotate: hasLongLabels ? -45 : 0,
+          // For non-date data with many points, show fewer ticks
+          ticks: chartData.length > 30 ? Math.min(10, Math.ceil(chartData.length / 10)) : undefined
+        };
+        
+        const lineMarks = [
+          Plot.line(processedData, {
+            x: isDateData ? 'date' : 'label',
+            y: 'value',
+            stroke: 'steelblue',
+            strokeWidth: 3,
+            marker: 'circle'
+          }),
+          Plot.dot(processedData, {
+            x: isDateData ? 'date' : 'label',
+            y: 'value',
+            fill: 'steelblue',
+            r: 4,
+            title: d => `${d.originalLabel || d.label}: ${d.value}`
+          })
+        ];
+        
+        // Only add value labels if not too many points
+        if (!tooManyPoints) {
+          lineMarks.push(
+            Plot.text(processedData, {
+              x: isDateData ? 'date' : 'label',
               y: 'value',
               text: 'value',
               dy: -10,
               fontSize: 10,
               fill: 'black'
             })
-          ]
+          );
+        }
+        
+        plot = Plot.plot({
+          ...baseConfig,
+          height: 400,
+          marginBottom: hasLongLabels && !isDateData ? 100 : 60,
+          x: xAxisConfig,
+          y: { label: formatChartAxisLabel(data.config.aggregation, data.config.sourceType) },
+          marks: lineMarks
         });
         break;
 
@@ -314,7 +484,7 @@ export default function ChartRenderer({ data, chartType, resultsLimit = 20, clas
     if (plot) {
       chartRef.current.appendChild(plot);
     }
-  }, [data, chartType, resultsLimit]);
+  }, [data, chartType, resultsLimit, containerWidth]);
 
   if (!data || data.data.length === 0) {
     return (

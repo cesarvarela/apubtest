@@ -14,8 +14,7 @@ import {
   generateGroupingLabel,
   generateChartDescription
 } from '@/lib/charts/labelGenerator';
-import { ChartBuilderState, GroupingOption, DefaultOpenStates } from '@/lib/charts/types';
-import { ChartResult } from '@/lib/charts/chartDataExtractor';
+import { ChartBuilderState, GroupingOption, DefaultOpenStates, ChartResult } from '@/lib/charts/types';
 
 import EntityTypeCard from './EntityTypeCard';
 import GroupingCard from './GroupingCard';
@@ -152,8 +151,7 @@ export default function ChartBuilder({
       chartType,
       measure: {
         entity: state.selectedEntityType,
-        aggregation: state.selectedAggregation === 'cumulative' ? 'count' : 
-                     (state.selectedAggregation as 'count' | 'sum' | 'avg'),
+        aggregation: state.selectedAggregation as 'count' | 'sum' | 'avg' | 'cumulative',
       },
       dimension: {
         entity: state.selectedGrouping.targetTypes.length > 0 ? 

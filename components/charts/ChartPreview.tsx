@@ -3,9 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible } from "@/components/ui/collapsible";
 import ChartRenderer from "@/components/charts/ChartRenderer";
-import { ChartResult } from '@/lib/charts/chartDataExtractor';
 import { generateChartTitle, formatChartAxisLabel } from '@/lib/charts/labelGenerator';
-import { ChartType, GroupingOption } from '@/lib/charts/types';
+import { ChartType, GroupingOption, ChartResult } from '@/lib/charts/types';
 
 interface ChartPreviewProps {
   selectedEntityType: string;

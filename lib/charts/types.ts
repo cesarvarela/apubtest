@@ -1,8 +1,35 @@
 import { FieldInfo } from './dynamicAnalyzer';
-import { ChartResult } from './chartDataExtractor';
+import { EntityReference } from '../normalization';
 
 // Central chart type definition used by all components
 export type ChartType = 'bar' | 'horizontal-bar' | 'pie' | 'donut' | 'line';
+
+// Chart result types (moved from chartDataExtractor)
+export interface ChartDataPoint {
+  label: string;
+  value: number;
+  count: number; // Number of entities that contributed to this data point
+  entities: EntityReference[]; // References to contributing entities
+}
+
+export interface ChartResult {
+  data: ChartDataPoint[];
+  config: {
+    sourceType: string;
+    groupBy: string;
+    groupByFieldType?: 'string' | 'number' | 'boolean' | 'date' | 'array' | 'object' | 'reference';
+    aggregation: 'count' | 'sum' | 'avg' | 'min' | 'max' | 'cumulative';
+    groupByLabelField?: string;
+    targetTypeFilter?: string;
+    sortBy?: 'count-desc' | 'count-asc' | 'alpha-asc' | 'alpha-desc' | 'chrono-asc' | 'chrono-desc';
+  };
+  metadata: {
+    totalEntities: number;
+    uniqueGroups: number;
+    sourceEntityType: string;
+    targetEntityType?: string;
+  };
+}
 
 export interface GroupingOption {
   fieldName: string;

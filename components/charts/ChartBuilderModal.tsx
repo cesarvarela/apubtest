@@ -10,9 +10,8 @@ import { Separator } from "@/components/ui/separator";
 
 import { NormalizationResult } from '@/lib/normalization';
 import { formatEntityTypeLabel } from '@/lib/charts/dynamicAnalyzer';
-import { ChartResult } from '@/lib/charts/chartDataExtractor';
 import { generateChartTitle } from '@/lib/charts/labelGenerator';
-import { ChartBuilderState, SavedChart } from '@/lib/charts/types';
+import { ChartBuilderState, SavedChart, ChartResult } from '@/lib/charts/types';
 import ChartBuilder from './ChartBuilder';
 
 interface ChartBuilderModalProps {

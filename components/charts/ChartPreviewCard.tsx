@@ -2,9 +2,8 @@
 
 import { Collapsible } from "@/components/ui/collapsible";
 import ChartRenderer from "./ChartRenderer";
-import { ChartResult } from '@/lib/charts/chartDataExtractor';
 import { generateChartTitle, formatChartAxisLabel } from '@/lib/charts/labelGenerator';
-import { ChartBuilderState } from '@/lib/charts/types';
+import { ChartBuilderState, ChartResult } from '@/lib/charts/types';
 
 interface ChartPreviewCardProps {
   chartResult: ChartResult | null;
