@@ -319,5 +319,6 @@ export {
   generateIncidentUri,
   generateOrganizationUri,
   generatePersonUri,
-  generateReportUri
+  generateReportUri,
+  KNOWN_ORGANIZATIONS
 };

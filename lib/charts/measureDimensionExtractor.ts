@@ -8,6 +8,38 @@ import { NormalizationResult, NormalizedEntity } from '@/lib/normalization';
 import { formatFieldLabel, formatChartAxisLabel } from './labelGenerator';
 
 /**
+ * Helper function to resolve entity references to their display names
+ */
+function resolveEntityReference(
+  ref: any,
+  normalizedData: NormalizationResult
+): string {
+  // Check if this is an entity reference
+  if (!ref || typeof ref !== 'object' || !ref['@type'] || !ref['@id']) {
+    return String(ref);
+  }
+
+  // Try to find the entity in the normalized data
+  const entityType = ref['@type'];
+  const entityId = ref['@id'];
+  const entities = normalizedData.extracted[entityType];
+  
+  if (entities) {
+    const entity = entities.find(e => e['@id'] === entityId);
+    if (entity) {
+      // Look for common display name fields
+      if (entity.name) return String(entity.name);
+      if (entity.title) return String(entity.title);
+      if (entity.label) return String(entity.label);
+    }
+  }
+  
+  // Fallback to the @id (extract last part for readability)
+  const idParts = entityId.split('/');
+  return idParts[idParts.length - 1] || entityId;
+}
+
+/**
  * Extracts chart data using the measure/dimension model
  */
 export function extractChartData(
@@ -62,13 +94,13 @@ export function extractChartData(
     } else if (Array.isArray(dimensionValue)) {
       // Handle array values - create entry for each item
       dimensionValue.forEach(item => {
-        const key = String(item);
+        const key = resolveEntityReference(item, normalizedData);
         if (!groups[key]) groups[key] = [];
         groups[key].push(entity);
       });
       return;
     } else {
-      groupKey = String(dimensionValue);
+      groupKey = resolveEntityReference(dimensionValue, normalizedData);
     }
     
     if (!groups[groupKey]) groups[groupKey] = [];

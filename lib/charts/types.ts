@@ -58,6 +58,7 @@ export interface SavedChart {
   chartType: ChartType;
   createdAt: Date;
   builderState: ChartBuilderState;
+  datasetId?: string; // Optional for backward compatibility with existing saved charts
 }
 
 export interface DefaultOpenStates {

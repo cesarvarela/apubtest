@@ -4,11 +4,12 @@ import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Edit, Copy, Upload } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 
-import { normalizeEntities } from '@/lib/normalization';
+import { normalizeEntities, NormalizationResult } from '@/lib/normalization';
 import { discoverEntityTypes } from '@/lib/charts/dynamicAnalyzer';
 import { ChartBuilderState, SavedChart, ChartResult } from '@/lib/charts/types';
 import { exportChartToJSON, copyToClipboard, ExportedChartConfig, importChartFromJSON } from '@/lib/charts/exportImport';
@@ -16,7 +17,26 @@ import ChartRenderer from "@/components/charts/ChartRenderer";
 import ChartBuilderModal from "@/components/charts/ChartBuilderModal";
 import ChartImportModal from "@/components/charts/ChartImportModal";
 
-import sampleData from '@/data/aiid-converted.json';
+import aiidData from '@/data/aiid-converted.json';
+import oecdData from '@/data/oecd-converted.json';
+
+// Define available datasets
+const datasets = {
+  'aiid': {
+    id: 'aiid',
+    name: 'AIID Incidents',
+    description: 'AI Incident Database',
+    data: aiidData
+  },
+  'oecd': {
+    id: 'oecd',
+    name: 'OECD Incidents',
+    description: 'OECD AI Incidents',
+    data: oecdData
+  }
+} as const;
+
+export type DatasetId = keyof typeof datasets;
 
 export default function ChartDashboardPage() {
   // Initialize with empty state to avoid hydration mismatch
@@ -54,17 +74,35 @@ export default function ChartDashboardPage() {
     }
   }, [savedCharts, isLoading]);
 
-  // Normalize the sample data
-  const normalizedData = useMemo(() => {
-    return normalizeEntities(sampleData);
+  // Normalize all datasets for the data overview
+  const normalizedDatasets = useMemo(() => {
+    const normalized: Record<DatasetId, NormalizationResult> = {} as any;
+    Object.entries(datasets).forEach(([id, dataset]) => {
+      normalized[id as DatasetId] = normalizeEntities(dataset.data);
+    });
+    return normalized;
   }, []);
 
-  // Discover all available entity types for overview
-  const entityTypes = useMemo(() => {
-    return discoverEntityTypes(normalizedData);
-  }, [normalizedData]);
+  // Discover all available entity types across all datasets
+  const allEntityTypes = useMemo(() => {
+    const typesMap = new Map<string, { type: string; label: string; count: number }>();
+    
+    Object.values(normalizedDatasets).forEach(normalizedData => {
+      const types = discoverEntityTypes(normalizedData);
+      types.forEach(type => {
+        if (typesMap.has(type.type)) {
+          const existing = typesMap.get(type.type)!;
+          existing.count += type.count;
+        } else {
+          typesMap.set(type.type, { ...type });
+        }
+      });
+    });
+    
+    return Array.from(typesMap.values()).sort((a, b) => b.count - a.count);
+  }, [normalizedDatasets]);
 
-  const handleSaveChart = (chartResult: ChartResult, title: string, builderState: ChartBuilderState) => {
+  const handleSaveChart = (chartResult: ChartResult, title: string, builderState: ChartBuilderState, datasetId: string) => {
     if (editingChart) {
       // Update existing chart
       setSavedCharts(prev => prev.map(chart => 
@@ -74,7 +112,8 @@ export default function ChartDashboardPage() {
               title, 
               chartResult, 
               chartType: builderState.selectedChartType,
-              builderState 
+              builderState,
+              datasetId 
             }
           : chart
       ));
@@ -87,7 +126,8 @@ export default function ChartDashboardPage() {
         chartResult,
         chartType: builderState.selectedChartType,
         createdAt: new Date(),
-        builderState
+        builderState,
+        datasetId
       };
       setSavedCharts(prev => [...prev, newChart]);
     }
@@ -208,8 +248,14 @@ export default function ChartDashboardPage() {
               <Card key={chart.id} className="flex flex-col">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div>
+                    <div className="space-y-1">
                       <CardTitle className="text-lg">{chart.title}</CardTitle>
+                      <Badge variant="secondary" className="text-xs">
+                        {chart.datasetId && datasets[chart.datasetId] 
+                          ? datasets[chart.datasetId].name 
+                          : 'AIID Incidents' // Default for backward compatibility
+                        }
+                      </Badge>
                     </div>
                     <div className="flex gap-1">
                       <TooltipProvider>
@@ -285,20 +331,34 @@ export default function ChartDashboardPage() {
         {/* Data Overview Sidebar */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Data Overview</CardTitle>
+            <CardTitle className="text-lg">Data Overview - All Datasets</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {entityTypes.map((entityType) => (
-                <div key={entityType.type} className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {entityType.count}
+            <div className="space-y-6">
+              {Object.entries(datasets).map(([id, dataset]) => {
+                const normalizedData = normalizedDatasets[id as DatasetId];
+                const entityTypes = discoverEntityTypes(normalizedData);
+                
+                return (
+                  <div key={id}>
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      {dataset.name}
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {entityTypes.map((entityType) => (
+                        <div key={`${id}-${entityType.type}`} className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                          <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                            {entityType.count}
+                          </div>
+                          <div className="text-xs font-medium text-gray-900 dark:text-white">
+                            {entityType.label}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">
-                    {entityType.label}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -313,7 +373,8 @@ export default function ChartDashboardPage() {
           setImportedConfig(null);
         }}
         onSave={handleSaveChart}
-        normalizedData={normalizedData}
+        datasets={datasets}
+        normalizedDatasets={normalizedDatasets}
         editingChart={editingChart}
         importedConfig={importedConfig}
       />

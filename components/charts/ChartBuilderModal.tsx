@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { NormalizationResult } from '@/lib/normalization';
 import { formatEntityTypeLabel } from '@/lib/charts/dynamicAnalyzer';
@@ -14,11 +15,19 @@ import { generateChartTitle } from '@/lib/charts/labelGenerator';
 import { ChartBuilderState, SavedChart, ChartResult } from '@/lib/charts/types';
 import ChartBuilder from './ChartBuilder';
 
+interface Dataset {
+  id: string;
+  name: string;
+  description: string;
+  data: any;
+}
+
 interface ChartBuilderModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (chartResult: ChartResult, title: string, builderState: ChartBuilderState) => void;
-  normalizedData: NormalizationResult;
+  onSave: (chartResult: ChartResult, title: string, builderState: ChartBuilderState, datasetId: string) => void;
+  datasets: Record<string, Dataset>;
+  normalizedDatasets: Record<string, NormalizationResult>;
   editingChart?: SavedChart | null;
   importedConfig?: {
     title: string;
@@ -30,10 +39,14 @@ export default function ChartBuilderModal({
   isOpen, 
   onClose, 
   onSave, 
-  normalizedData,
+  datasets,
+  normalizedDatasets,
   editingChart,
   importedConfig
 }: ChartBuilderModalProps) {
+  // Default to the first dataset or the one from editing chart
+  const defaultDatasetId = editingChart?.datasetId || Object.keys(datasets)[0];
+  const [selectedDatasetId, setSelectedDatasetId] = useState<string>(defaultDatasetId);
   const [chartState, setChartState] = useState<ChartBuilderState>({
     selectedEntityType: null,
     selectedGrouping: null,
@@ -46,11 +59,17 @@ export default function ChartBuilderModal({
   const [chartTitle, setChartTitle] = useState<string>('');
   const [chartResult, setChartResult] = useState<ChartResult | null>(null);
 
+  // Get the normalized data for the selected dataset
+  const normalizedData = normalizedDatasets[selectedDatasetId];
+
   // Initialize state when editing a chart or importing
   useEffect(() => {
     if (editingChart) {
       setChartState(editingChart.builderState);
       setChartTitle(editingChart.title);
+      if (editingChart.datasetId) {
+        setSelectedDatasetId(editingChart.datasetId);
+      }
     } else if (importedConfig) {
       // Merge imported config with defaults
       setChartState({
@@ -75,8 +94,9 @@ export default function ChartBuilderModal({
         selectedChartType: 'bar'
       });
       setChartTitle('');
+      setSelectedDatasetId(Object.keys(datasets)[0]);
     }
-  }, [editingChart, importedConfig, isOpen]);
+  }, [editingChart, importedConfig, isOpen, datasets]);
 
   // Auto-generate title when chart result is available (for new charts only, not imported)
   useEffect(() => {
@@ -92,9 +112,24 @@ export default function ChartBuilderModal({
 
   const handleSave = () => {
     if (chartResult && chartTitle.trim()) {
-      onSave(chartResult, chartTitle.trim(), chartState);
+      onSave(chartResult, chartTitle.trim(), chartState, selectedDatasetId);
       handleClose();
     }
+  };
+
+  const handleDatasetChange = (newDatasetId: string) => {
+    setSelectedDatasetId(newDatasetId);
+    // Reset chart state when changing dataset
+    setChartState({
+      selectedEntityType: null,
+      selectedGrouping: null,
+      selectedDisplayField: null,
+      selectedAggregation: 'count',
+      selectedSort: 'count-desc',
+      selectedResultsLimit: 20,
+      selectedChartType: 'bar'
+    });
+    setChartResult(null);
   };
 
   const handleClose = () => {
@@ -125,6 +160,34 @@ export default function ChartBuilderModal({
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto">
+          {/* Dataset Selection - Only show when creating new chart */}
+          {!editingChart && (
+            <div className="mb-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Select Dataset</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Select value={selectedDatasetId} onValueChange={handleDatasetChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a dataset" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(datasets).map(([id, dataset]) => (
+                        <SelectItem key={id} value={id}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{dataset.name}</span>
+                            <span className="text-xs text-muted-foreground">{dataset.description}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Main Content - Chart Builder */}
             <div className="lg:col-span-3">
@@ -150,6 +213,13 @@ export default function ChartBuilderModal({
                   <CardTitle className="text-base">Configuration</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Dataset</label>
+                    <p className="mt-1">{datasets[selectedDatasetId].name}</p>
+                  </div>
+                  
+                  <Separator />
+                  
                   <div>
                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">What to Count</label>
                     <p className="mt-1">{chartState.selectedEntityType ? formatEntityTypeLabel(chartState.selectedEntityType) : 'Not selected'}</p>

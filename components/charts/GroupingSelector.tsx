@@ -40,7 +40,7 @@ export default function GroupingSelector({
           Choose how to group your {formatEntityTypeLabel(selectedEntityType).toLowerCase()}.
         </p>
         <div className="space-y-3">
-          {groupingOptions.slice(0, 8).map((option, index) => (
+          {groupingOptions.map((option, index) => (
             <div
               key={`${option.fieldName}-${option.targetTypes.join(',')}-${index}`}
               className={`p-4 border rounded-lg cursor-pointer transition-colors ${
