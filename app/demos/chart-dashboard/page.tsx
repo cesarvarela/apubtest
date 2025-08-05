@@ -102,7 +102,7 @@ export default function ChartDashboardPage() {
     return Array.from(typesMap.values()).sort((a, b) => b.count - a.count);
   }, [normalizedDatasets]);
 
-  const handleSaveChart = (chartResult: ChartResult, title: string, builderState: ChartBuilderState, datasetId: string) => {
+  const handleSaveChart = (chartResult: ChartResult, title: string, builderState: ChartBuilderState, datasetIds: string[]) => {
     if (editingChart) {
       // Update existing chart
       setSavedCharts(prev => prev.map(chart => 
@@ -113,7 +113,7 @@ export default function ChartDashboardPage() {
               chartResult, 
               chartType: builderState.selectedChartType,
               builderState,
-              datasetId 
+              datasetIds // Use new field
             }
           : chart
       ));
@@ -127,7 +127,7 @@ export default function ChartDashboardPage() {
         chartType: builderState.selectedChartType,
         createdAt: new Date(),
         builderState,
-        datasetId
+        datasetIds // Use new field
       };
       setSavedCharts(prev => [...prev, newChart]);
     }
@@ -250,12 +250,24 @@ export default function ChartDashboardPage() {
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <CardTitle className="text-lg">{chart.title}</CardTitle>
-                      <Badge variant="secondary" className="text-xs">
-                        {chart.datasetId && datasets[chart.datasetId] 
-                          ? datasets[chart.datasetId].name 
-                          : 'AIID Incidents' // Default for backward compatibility
-                        }
-                      </Badge>
+                      <div className="flex flex-wrap gap-1">
+                        {/* Handle both old datasetId and new datasetIds */}
+                        {chart.datasetIds ? (
+                          chart.datasetIds.map(id => (
+                            <Badge key={id} variant="secondary" className="text-xs">
+                              {datasets[id as DatasetId]?.name || id}
+                            </Badge>
+                          ))
+                        ) : chart.datasetId ? (
+                          <Badge variant="secondary" className="text-xs">
+                            {datasets[chart.datasetId as DatasetId]?.name || 'AIID Incidents'}
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="text-xs">
+                            AIID Incidents
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <div className="flex gap-1">
                       <TooltipProvider>

@@ -1,19 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 import { NormalizationResult } from '@/lib/normalization';
 import { formatEntityTypeLabel } from '@/lib/charts/dynamicAnalyzer';
 import { generateChartTitle } from '@/lib/charts/labelGenerator';
 import { ChartBuilderState, SavedChart, ChartResult } from '@/lib/charts/types';
+import { mergeNormalizedDatasets } from '@/lib/charts/datasetMerger';
 import ChartBuilder from './ChartBuilder';
+import DatasetMultiSelect from './DatasetMultiSelect';
 
 interface Dataset {
   id: string;
@@ -25,7 +27,7 @@ interface Dataset {
 interface ChartBuilderModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (chartResult: ChartResult, title: string, builderState: ChartBuilderState, datasetId: string) => void;
+  onSave: (chartResult: ChartResult, title: string, builderState: ChartBuilderState, datasetIds: string[]) => void;
   datasets: Record<string, Dataset>;
   normalizedDatasets: Record<string, NormalizationResult>;
   editingChart?: SavedChart | null;
@@ -44,9 +46,18 @@ export default function ChartBuilderModal({
   editingChart,
   importedConfig
 }: ChartBuilderModalProps) {
-  // Default to the first dataset or the one from editing chart
-  const defaultDatasetId = editingChart?.datasetId || Object.keys(datasets)[0];
-  const [selectedDatasetId, setSelectedDatasetId] = useState<string>(defaultDatasetId);
+  // Handle backward compatibility: convert old datasetId to datasetIds array
+  const getInitialDatasetIds = () => {
+    if (editingChart?.datasetIds) {
+      return editingChart.datasetIds;
+    } else if (editingChart?.datasetId) {
+      return [editingChart.datasetId];
+    } else {
+      return [Object.keys(datasets)[0]];
+    }
+  };
+
+  const [selectedDatasetIds, setSelectedDatasetIds] = useState<string[]>(getInitialDatasetIds());
   const [chartState, setChartState] = useState<ChartBuilderState>({
     selectedEntityType: null,
     selectedGrouping: null,
@@ -59,17 +70,18 @@ export default function ChartBuilderModal({
   const [chartTitle, setChartTitle] = useState<string>('');
   const [chartResult, setChartResult] = useState<ChartResult | null>(null);
 
-  // Get the normalized data for the selected dataset
-  const normalizedData = normalizedDatasets[selectedDatasetId];
+  // Merge the normalized data from selected datasets - memoized to prevent infinite loops
+  const normalizedData = useMemo(
+    () => mergeNormalizedDatasets(selectedDatasetIds, normalizedDatasets),
+    [selectedDatasetIds, normalizedDatasets]
+  );
 
   // Initialize state when editing a chart or importing
   useEffect(() => {
     if (editingChart) {
       setChartState(editingChart.builderState);
       setChartTitle(editingChart.title);
-      if (editingChart.datasetId) {
-        setSelectedDatasetId(editingChart.datasetId);
-      }
+      // Backward compatibility handled in getInitialDatasetIds
     } else if (importedConfig) {
       // Merge imported config with defaults
       setChartState({
@@ -94,7 +106,7 @@ export default function ChartBuilderModal({
         selectedChartType: 'bar'
       });
       setChartTitle('');
-      setSelectedDatasetId(Object.keys(datasets)[0]);
+      setSelectedDatasetIds([Object.keys(datasets)[0]]);
     }
   }, [editingChart, importedConfig, isOpen, datasets]);
 
@@ -111,15 +123,15 @@ export default function ChartBuilderModal({
   }, [chartResult, chartState.selectedEntityType, chartState.selectedGrouping, editingChart, importedConfig]);
 
   const handleSave = () => {
-    if (chartResult && chartTitle.trim()) {
-      onSave(chartResult, chartTitle.trim(), chartState, selectedDatasetId);
+    if (chartResult && chartTitle.trim() && selectedDatasetIds.length > 0) {
+      onSave(chartResult, chartTitle.trim(), chartState, selectedDatasetIds);
       handleClose();
     }
   };
 
-  const handleDatasetChange = (newDatasetId: string) => {
-    setSelectedDatasetId(newDatasetId);
-    // Reset chart state when changing dataset
+  const handleDatasetSelectionChange = (newDatasetIds: string[]) => {
+    setSelectedDatasetIds(newDatasetIds);
+    // Reset chart state when changing datasets
     setChartState({
       selectedEntityType: null,
       selectedGrouping: null,
@@ -148,7 +160,12 @@ export default function ChartBuilderModal({
     onClose();
   };
 
-  const canSave = chartResult && chartTitle.trim();
+  const canSave = chartResult && chartTitle.trim() && selectedDatasetIds.length > 0;
+
+  // Memoize the chart result handler to prevent infinite loops
+  const handleChartResult = useCallback((result: ChartResult | null) => {
+    setChartResult(result);
+  }, []);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -165,24 +182,15 @@ export default function ChartBuilderModal({
             <div className="mb-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Select Dataset</CardTitle>
+                  <CardTitle className="text-base">Select Datasets</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Select value={selectedDatasetId} onValueChange={handleDatasetChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a dataset" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(datasets).map(([id, dataset]) => (
-                        <SelectItem key={id} value={id}>
-                          <div className="flex flex-col">
-                            <span className="font-medium">{dataset.name}</span>
-                            <span className="text-xs text-muted-foreground">{dataset.description}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <DatasetMultiSelect
+                    datasets={datasets}
+                    normalizedDatasets={normalizedDatasets}
+                    selectedDatasetIds={selectedDatasetIds}
+                    onSelectionChange={handleDatasetSelectionChange}
+                  />
                 </CardContent>
               </Card>
             </div>
@@ -195,7 +203,7 @@ export default function ChartBuilderModal({
                 normalizedData={normalizedData}
                 state={chartState}
                 onStateChange={setChartState}
-                onChartResult={setChartResult}
+                onChartResult={handleChartResult}
                 defaultOpenStates={{
                   entityType: true,
                   grouping: true,
@@ -214,8 +222,14 @@ export default function ChartBuilderModal({
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   <div>
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Dataset</label>
-                    <p className="mt-1">{datasets[selectedDatasetId].name}</p>
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Datasets</label>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {selectedDatasetIds.map(id => (
+                        <Badge key={id} variant="secondary">
+                          {datasets[id]?.name || id}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                   
                   <Separator />

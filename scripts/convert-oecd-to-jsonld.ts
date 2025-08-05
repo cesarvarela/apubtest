@@ -216,10 +216,7 @@ function convertOecdIncidentToJsonLd(incident: OecdIncident) {
       }),
       "name": incident.organizations.developer
     },
-    "deployer": incident.organizations.deployer === "Various organizations" ? {
-      "@type": "oecd:VariousOrganizations",
-      "name": "Various organizations"
-    } : {
+    "deployer": {
       "@type": "core:Organization",
       "@id": generateOrganizationUri({ 
         entity_id: incident.organizations.deployer.toLowerCase().replace(/\s+/g, '-'), 

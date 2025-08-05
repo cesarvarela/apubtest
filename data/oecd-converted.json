@@ -179,7 +179,8 @@
       "name": "YouTube"
     },
     "deployer": {
-      "@type": "oecd:VariousOrganizations",
+      "@type": "core:Organization",
+      "@id": "https://en.wikipedia.org/wiki/Various_organizations",
       "name": "Various organizations"
     },
     "severity": "oecd:SeriousIncident",
@@ -3828,7 +3829,8 @@
       "name": "Google"
     },
     "deployer": {
-      "@type": "oecd:VariousOrganizations",
+      "@type": "core:Organization",
+      "@id": "https://en.wikipedia.org/wiki/Various_organizations",
       "name": "Various organizations"
     },
     "severity": "oecd:SeriousHazard",
@@ -5035,7 +5037,8 @@
       "name": "Google"
     },
     "deployer": {
-      "@type": "oecd:VariousOrganizations",
+      "@type": "core:Organization",
+      "@id": "https://en.wikipedia.org/wiki/Various_organizations",
       "name": "Various organizations"
     },
     "severity": "oecd:SeriousIncident",
@@ -5914,7 +5917,8 @@
       "name": "YouTube"
     },
     "deployer": {
-      "@type": "oecd:VariousOrganizations",
+      "@type": "core:Organization",
+      "@id": "https://en.wikipedia.org/wiki/Various_organizations",
       "name": "Various organizations"
     },
     "severity": "oecd:SeriousIncident",
@@ -6218,7 +6222,8 @@
       "name": "Volkswagen"
     },
     "deployer": {
-      "@type": "oecd:VariousOrganizations",
+      "@type": "core:Organization",
+      "@id": "https://en.wikipedia.org/wiki/Various_organizations",
       "name": "Various organizations"
     },
     "severity": "oecd:SeriousIncident",
@@ -7758,7 +7763,8 @@
       "name": "Frontier Development"
     },
     "deployer": {
-      "@type": "oecd:VariousOrganizations",
+      "@type": "core:Organization",
+      "@id": "https://en.wikipedia.org/wiki/Various_organizations",
       "name": "Various organizations"
     },
     "severity": "oecd:SeriousIncident",
@@ -8269,7 +8275,8 @@
       "name": "LinkedIn"
     },
     "deployer": {
-      "@type": "oecd:VariousOrganizations",
+      "@type": "core:Organization",
+      "@id": "https://en.wikipedia.org/wiki/Various_organizations",
       "name": "Various organizations"
     },
     "severity": "oecd:SeriousIncident",

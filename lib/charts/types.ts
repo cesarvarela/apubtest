@@ -58,7 +58,8 @@ export interface SavedChart {
   chartType: ChartType;
   createdAt: Date;
   builderState: ChartBuilderState;
-  datasetId?: string; // Optional for backward compatibility with existing saved charts
+  datasetId?: string; // Deprecated - use datasetIds instead
+  datasetIds?: string[]; // New field supporting multiple datasets
 }
 
 export interface DefaultOpenStates {

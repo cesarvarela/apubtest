@@ -203,7 +203,7 @@ export default function ChartBuilder({
     if (onChartResult) {
       onChartResult(chartResult);
     }
-  }, [chartResult]); // Removed onChartResult to prevent infinite loop
+  }, [chartResult, onChartResult]);
 
   return (
     <div className="space-y-6">
