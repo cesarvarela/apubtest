@@ -88,6 +88,21 @@ export default function DemosPage() {
               View Demo
             </Link>
           </div>
+
+          <div className="bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Multi-Dataset Graph
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Compare and explore relationships across multiple datasets with interactive graph visualization
+            </p>
+            <Link
+              href="/demos/multi-dataset-graph"
+              className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              View Demo
+            </Link>
+          </div>
         </div>
       </div>
     </main>

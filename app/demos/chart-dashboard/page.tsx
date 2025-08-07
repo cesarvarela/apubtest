@@ -19,6 +19,8 @@ import ChartImportModal from "@/components/charts/ChartImportModal";
 
 import aiidData from '@/data/aiid-converted.json';
 import oecdData from '@/data/oecd-converted.json';
+import ic3Data from '@/data/ic3-incidents.json';
+import teslaData from '@/data/tesla-incidents.json';
 
 // Define available datasets
 const datasets = {
@@ -33,6 +35,18 @@ const datasets = {
     name: 'OECD Incidents',
     description: 'OECD AI Incidents',
     data: oecdData
+  },
+  'ic3': {
+    id: 'ic3',
+    name: 'IC3 Incidents',
+    description: 'Internet Crime Complaint Center',
+    data: ic3Data
+  },
+  'tesla': {
+    id: 'tesla',
+    name: 'Tesla Deaths',
+    description: 'Tesla Vehicle Fatality Database',
+    data: teslaData
   }
 } as const;
 

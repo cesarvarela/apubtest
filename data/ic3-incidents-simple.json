@@ -1,0 +1,2948 @@
+{
+  "data": {
+    "incidents": [
+      {
+        "incidentId": "IC3-2024-000001",
+        "title": "Real Estate Fraud Campaign Targeting Legal Services Sector",
+        "type": "Real Estate Fraud",
+        "losses": 855850,
+        "victims": 68,
+        "date": "2024-01-01",
+        "techniques": [
+          "Wire fraud",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000002",
+        "title": "Business Email Compromise Campaign Targeting Manufacturing Sector",
+        "type": "Business Email Compromise",
+        "losses": 7036409,
+        "victims": 46,
+        "date": "2024-01-06",
+        "techniques": [
+          "Account compromise",
+          "False invoice schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000003",
+        "title": "Ransomware Campaign Targeting Government Sector",
+        "type": "Ransomware",
+        "losses": 11516667,
+        "victims": 89,
+        "date": "2024-01-06",
+        "techniques": [
+          "Double extortion",
+          "RaaS"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000004",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 186,
+        "date": "2024-01-07",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000005",
+        "title": "Phishing Campaign Targeting Technology Sector",
+        "type": "Phishing",
+        "losses": 214436,
+        "victims": 51,
+        "date": "2024-01-08",
+        "techniques": [
+          "Spear phishing",
+          "Whaling"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000006",
+        "title": "Identity Theft Campaign Targeting Government Sector",
+        "type": "Identity Theft",
+        "losses": 906407,
+        "victims": 70,
+        "date": "2024-01-09",
+        "techniques": [
+          "Synthetic identity",
+          "Tax fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000007",
+        "title": "Tech Support Scams Campaign Targeting Healthcare Sector",
+        "type": "Tech Support Scams",
+        "losses": 775207,
+        "victims": 50,
+        "date": "2024-01-10",
+        "techniques": [
+          "Fake refunds",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000008",
+        "title": "Ransomware Campaign Targeting Government Sector",
+        "type": "Ransomware",
+        "losses": 1728976,
+        "victims": 10,
+        "date": "2024-01-10",
+        "techniques": [
+          "Double extortion",
+          "File encryption"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000009",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 113,
+        "date": "2024-01-13",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000010",
+        "title": "Supply Chain Ransomware Attack",
+        "type": "Emerging Cyber Threat",
+        "losses": 45000000,
+        "victims": 247,
+        "date": "2024-01-14",
+        "techniques": [
+          "Supply chain attack",
+          "Ransomware",
+          "Living off the land"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000011",
+        "title": "Data Breach Campaign Targeting Government Sector",
+        "type": "Data Breach",
+        "losses": 8154608,
+        "victims": 67,
+        "date": "2024-01-15",
+        "techniques": [
+          "Phishing",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000012",
+        "title": "Romance Scams Campaign Targeting Real Estate Sector",
+        "type": "Romance Scams",
+        "losses": 6684076,
+        "victims": 76,
+        "date": "2024-01-15",
+        "techniques": [
+          "Catfishing",
+          "Money requests"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000013",
+        "title": "Romance Scams Campaign Targeting Retail Sector",
+        "type": "Romance Scams",
+        "losses": 358088,
+        "victims": 10,
+        "date": "2024-01-16",
+        "techniques": [
+          "Money requests",
+          "Catfishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000014",
+        "title": "Phishing Campaign Targeting Retail Sector",
+        "type": "Phishing",
+        "losses": 217306,
+        "victims": 62,
+        "date": "2024-01-16",
+        "techniques": [
+          "Smishing",
+          "Vishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000015",
+        "title": "Data Breach Campaign Targeting Education Sector",
+        "type": "Data Breach",
+        "losses": 6356605,
+        "victims": 78,
+        "date": "2024-01-20",
+        "techniques": [
+          "Ransomware",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000016",
+        "title": "Real Estate Fraud Campaign Targeting Financial Services Sector",
+        "type": "Real Estate Fraud",
+        "losses": 733088,
+        "victims": 38,
+        "date": "2024-01-20",
+        "techniques": [
+          "Wire fraud",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000017",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 170,
+        "date": "2024-01-21",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000018",
+        "title": "Identity Theft Campaign Targeting Healthcare Sector",
+        "type": "Identity Theft",
+        "losses": 315032,
+        "victims": 28,
+        "date": "2024-01-24",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000019",
+        "title": "Investment Fraud Campaign Targeting Education Sector",
+        "type": "Investment Fraud",
+        "losses": 11577116,
+        "victims": 68,
+        "date": "2024-01-26",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000020",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 44,
+        "date": "2024-01-27",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000021",
+        "title": "Real Estate Fraud Campaign Targeting Legal Services Sector",
+        "type": "Real Estate Fraud",
+        "losses": 607493,
+        "victims": 45,
+        "date": "2024-01-28",
+        "techniques": [
+          "Rental scams",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000022",
+        "title": "Investment Fraud Campaign Targeting Manufacturing Sector",
+        "type": "Investment Fraud",
+        "losses": 7881760,
+        "victims": 65,
+        "date": "2024-02-05",
+        "techniques": [
+          "Advance fee fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000023",
+        "title": "Data Breach Campaign Targeting Transportation Sector",
+        "type": "Data Breach",
+        "losses": 7170065,
+        "victims": 93,
+        "date": "2024-02-05",
+        "techniques": [
+          "Phishing",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000024",
+        "title": "Identity Theft Campaign Targeting Energy Sector",
+        "type": "Identity Theft",
+        "losses": 905051,
+        "victims": 59,
+        "date": "2024-02-09",
+        "techniques": [
+          "Tax fraud",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000025",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 330,
+        "date": "2024-02-09",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000026",
+        "title": "Romance Scams Campaign Targeting Non-Profit Sector",
+        "type": "Romance Scams",
+        "losses": 2612089,
+        "victims": 36,
+        "date": "2024-02-11",
+        "techniques": [
+          "Catfishing",
+          "Money requests"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000027",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 109,
+        "date": "2024-02-12",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000028",
+        "title": "Data Breach Campaign Targeting Healthcare Sector",
+        "type": "Data Breach",
+        "losses": 3592172,
+        "victims": 39,
+        "date": "2024-02-13",
+        "techniques": [
+          "Ransomware",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000029",
+        "title": "Supply Chain Ransomware Attack",
+        "type": "Emerging Cyber Threat",
+        "losses": 45000000,
+        "victims": 361,
+        "date": "2024-02-13",
+        "techniques": [
+          "Supply chain attack",
+          "Ransomware",
+          "Living off the land"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000030",
+        "title": "Cryptocurrency Investment Scam via Social Media",
+        "type": "Emerging Cyber Threat",
+        "losses": 15000000,
+        "victims": 257,
+        "date": "2024-02-14",
+        "techniques": [
+          "Pig butchering",
+          "Cryptocurrency fraud",
+          "Social media exploitation"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000031",
+        "title": "Government Impersonation Campaign Targeting Healthcare Sector",
+        "type": "Government Impersonation",
+        "losses": 2066131,
+        "victims": 74,
+        "date": "2024-02-20",
+        "techniques": [
+          "Law enforcement impersonation",
+          "Social Security fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000032",
+        "title": "Government Impersonation Campaign Targeting Retail Sector",
+        "type": "Government Impersonation",
+        "losses": 600187,
+        "victims": 23,
+        "date": "2024-02-21",
+        "techniques": [
+          "Law enforcement impersonation",
+          "Social Security fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000033",
+        "title": "Ransomware Campaign Targeting Government Sector",
+        "type": "Ransomware",
+        "losses": 7919667,
+        "victims": 38,
+        "date": "2024-02-22",
+        "techniques": [
+          "RaaS",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000034",
+        "title": "Government Impersonation Campaign Targeting Energy Sector",
+        "type": "Government Impersonation",
+        "losses": 1069205,
+        "victims": 52,
+        "date": "2024-02-23",
+        "techniques": [
+          "Tax scams",
+          "Law enforcement impersonation"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000035",
+        "title": "Phishing Campaign Targeting Manufacturing Sector",
+        "type": "Phishing",
+        "losses": 81836,
+        "victims": 20,
+        "date": "2024-02-26",
+        "techniques": [
+          "Vishing",
+          "Smishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000036",
+        "title": "Tech Support Scams Campaign Targeting Non-Profit Sector",
+        "type": "Tech Support Scams",
+        "losses": 37726,
+        "victims": 2,
+        "date": "2024-02-28",
+        "techniques": [
+          "Pop-up warnings",
+          "Fake refunds"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000037",
+        "title": "Business Email Compromise Campaign Targeting Government Sector",
+        "type": "Business Email Compromise",
+        "losses": 5813735,
+        "victims": 81,
+        "date": "2024-02-29",
+        "techniques": [
+          "False invoice schemes",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000038",
+        "title": "Phishing Campaign Targeting Government Sector",
+        "type": "Phishing",
+        "losses": 148397,
+        "victims": 41,
+        "date": "2024-02-29",
+        "techniques": [
+          "Smishing",
+          "Vishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000039",
+        "title": "Phishing Campaign Targeting Healthcare Sector",
+        "type": "Phishing",
+        "losses": 200607,
+        "victims": 48,
+        "date": "2024-03-01",
+        "techniques": [
+          "Smishing",
+          "Vishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000040",
+        "title": "Data Breach Campaign Targeting Manufacturing Sector",
+        "type": "Data Breach",
+        "losses": 2876680,
+        "victims": 49,
+        "date": "2024-03-02",
+        "techniques": [
+          "Ransomware",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000041",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 452,
+        "date": "2024-03-02",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000042",
+        "title": "Tech Support Scams Campaign Targeting Financial Services Sector",
+        "type": "Tech Support Scams",
+        "losses": 2829977,
+        "victims": 95,
+        "date": "2024-03-06",
+        "techniques": [
+          "Fake refunds",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000043",
+        "title": "Ransomware Campaign Targeting Education Sector",
+        "type": "Ransomware",
+        "losses": 10062520,
+        "victims": 62,
+        "date": "2024-03-07",
+        "techniques": [
+          "RaaS",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000044",
+        "title": "Business Email Compromise Campaign Targeting Legal Services Sector",
+        "type": "Business Email Compromise",
+        "losses": 11989313,
+        "victims": 93,
+        "date": "2024-03-08",
+        "techniques": [
+          "False invoice schemes",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000045",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 10,
+        "date": "2024-03-08",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000046",
+        "title": "Government Impersonation Campaign Targeting Energy Sector",
+        "type": "Government Impersonation",
+        "losses": 862869,
+        "victims": 35,
+        "date": "2024-03-10",
+        "techniques": [
+          "Tax scams",
+          "Social Security fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000047",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 472,
+        "date": "2024-03-10",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000048",
+        "title": "Real Estate Fraud Campaign Targeting Energy Sector",
+        "type": "Real Estate Fraud",
+        "losses": 480276,
+        "victims": 27,
+        "date": "2024-03-11",
+        "techniques": [
+          "Wire fraud",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000049",
+        "title": "Government Impersonation Campaign Targeting Non-Profit Sector",
+        "type": "Government Impersonation",
+        "losses": 905237,
+        "victims": 67,
+        "date": "2024-03-16",
+        "techniques": [
+          "Social Security fraud",
+          "Tax scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000050",
+        "title": "Identity Theft Campaign Targeting Legal Services Sector",
+        "type": "Identity Theft",
+        "losses": 456201,
+        "victims": 53,
+        "date": "2024-03-20",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000051",
+        "title": "Tech Support Scams Campaign Targeting Transportation Sector",
+        "type": "Tech Support Scams",
+        "losses": 1977115,
+        "victims": 66,
+        "date": "2024-03-21",
+        "techniques": [
+          "Remote access",
+          "Fake refunds"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000052",
+        "title": "Tech Support Scams Campaign Targeting Financial Services Sector",
+        "type": "Tech Support Scams",
+        "losses": 1125066,
+        "victims": 60,
+        "date": "2024-03-22",
+        "techniques": [
+          "Pop-up warnings",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000053",
+        "title": "Data Breach Campaign Targeting Energy Sector",
+        "type": "Data Breach",
+        "losses": 2612721,
+        "victims": 43,
+        "date": "2024-03-26",
+        "techniques": [
+          "Ransomware",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000054",
+        "title": "Real Estate Fraud Campaign Targeting Healthcare Sector",
+        "type": "Real Estate Fraud",
+        "losses": 158955,
+        "victims": 13,
+        "date": "2024-03-27",
+        "techniques": [
+          "Rental scams",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000055",
+        "title": "Real Estate Fraud Campaign Targeting Real Estate Sector",
+        "type": "Real Estate Fraud",
+        "losses": 112419,
+        "victims": 10,
+        "date": "2024-03-30",
+        "techniques": [
+          "Wire fraud",
+          "Rental scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000056",
+        "title": "Investment Fraud Campaign Targeting Healthcare Sector",
+        "type": "Investment Fraud",
+        "losses": 8608571,
+        "victims": 99,
+        "date": "2024-04-01",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000057",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 203,
+        "date": "2024-04-01",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000058",
+        "title": "Supply Chain Ransomware Attack",
+        "type": "Emerging Cyber Threat",
+        "losses": 45000000,
+        "victims": 275,
+        "date": "2024-04-04",
+        "techniques": [
+          "Supply chain attack",
+          "Ransomware",
+          "Living off the land"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000059",
+        "title": "Data Breach Campaign Targeting Technology Sector",
+        "type": "Data Breach",
+        "losses": 1735588,
+        "victims": 30,
+        "date": "2024-04-05",
+        "techniques": [
+          "Ransomware",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000060",
+        "title": "Business Email Compromise Campaign Targeting Retail Sector",
+        "type": "Business Email Compromise",
+        "losses": 6179230,
+        "victims": 34,
+        "date": "2024-04-06",
+        "techniques": [
+          "CEO fraud",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000061",
+        "title": "Tech Support Scams Campaign Targeting Education Sector",
+        "type": "Tech Support Scams",
+        "losses": 126249,
+        "victims": 4,
+        "date": "2024-04-06",
+        "techniques": [
+          "Fake refunds",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000062",
+        "title": "Data Breach Campaign Targeting Non-Profit Sector",
+        "type": "Data Breach",
+        "losses": 11962995,
+        "victims": 99,
+        "date": "2024-04-09",
+        "techniques": [
+          "Phishing",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000063",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 245,
+        "date": "2024-04-11",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000064",
+        "title": "Investment Fraud Campaign Targeting Retail Sector",
+        "type": "Investment Fraud",
+        "losses": 3348779,
+        "victims": 51,
+        "date": "2024-04-12",
+        "techniques": [
+          "Advance fee fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000065",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 61,
+        "date": "2024-04-13",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000066",
+        "title": "Romance Scams Campaign Targeting Healthcare Sector",
+        "type": "Romance Scams",
+        "losses": 3993389,
+        "victims": 82,
+        "date": "2024-04-14",
+        "techniques": [
+          "Money requests",
+          "Catfishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000067",
+        "title": "Ransomware Campaign Targeting Retail Sector",
+        "type": "Ransomware",
+        "losses": 21588223,
+        "victims": 78,
+        "date": "2024-04-14",
+        "techniques": [
+          "RaaS",
+          "File encryption"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000068",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 452,
+        "date": "2024-04-15",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000069",
+        "title": "Romance Scams Campaign Targeting Healthcare Sector",
+        "type": "Romance Scams",
+        "losses": 7956215,
+        "victims": 89,
+        "date": "2024-04-17",
+        "techniques": [
+          "Catfishing",
+          "Investment opportunities"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000070",
+        "title": "Real Estate Fraud Campaign Targeting Government Sector",
+        "type": "Real Estate Fraud",
+        "losses": 1218893,
+        "victims": 61,
+        "date": "2024-04-18",
+        "techniques": [
+          "Title fraud",
+          "Rental scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000071",
+        "title": "Phishing Campaign Targeting Financial Services Sector",
+        "type": "Phishing",
+        "losses": 87264,
+        "victims": 25,
+        "date": "2024-04-18",
+        "techniques": [
+          "Smishing",
+          "Whaling"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000072",
+        "title": "Government Impersonation Campaign Targeting Retail Sector",
+        "type": "Government Impersonation",
+        "losses": 2077212,
+        "victims": 71,
+        "date": "2024-04-20",
+        "techniques": [
+          "Social Security fraud",
+          "Tax scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000073",
+        "title": "Identity Theft Campaign Targeting Real Estate Sector",
+        "type": "Identity Theft",
+        "losses": 605416,
+        "victims": 98,
+        "date": "2024-04-26",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000074",
+        "title": "Investment Fraud Campaign Targeting Government Sector",
+        "type": "Investment Fraud",
+        "losses": 2501514,
+        "victims": 31,
+        "date": "2024-04-27",
+        "techniques": [
+          "Advance fee fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000075",
+        "title": "Romance Scams Campaign Targeting Retail Sector",
+        "type": "Romance Scams",
+        "losses": 6110076,
+        "victims": 61,
+        "date": "2024-04-27",
+        "techniques": [
+          "Catfishing",
+          "Money requests"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000076",
+        "title": "Business Email Compromise Campaign Targeting Government Sector",
+        "type": "Business Email Compromise",
+        "losses": 1505760,
+        "victims": 21,
+        "date": "2024-04-28",
+        "techniques": [
+          "False invoice schemes",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000077",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 448,
+        "date": "2024-04-29",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000078",
+        "title": "Ransomware Campaign Targeting Non-Profit Sector",
+        "type": "Ransomware",
+        "losses": 15082915,
+        "victims": 59,
+        "date": "2024-05-01",
+        "techniques": [
+          "File encryption",
+          "RaaS"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000079",
+        "title": "Government Impersonation Campaign Targeting Education Sector",
+        "type": "Government Impersonation",
+        "losses": 419817,
+        "victims": 22,
+        "date": "2024-05-01",
+        "techniques": [
+          "Social Security fraud",
+          "Tax scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000080",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 268,
+        "date": "2024-05-02",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000081",
+        "title": "Tech Support Scams Campaign Targeting Education Sector",
+        "type": "Tech Support Scams",
+        "losses": 2567099,
+        "victims": 87,
+        "date": "2024-05-03",
+        "techniques": [
+          "Pop-up warnings",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000082",
+        "title": "Real Estate Fraud Campaign Targeting Energy Sector",
+        "type": "Real Estate Fraud",
+        "losses": 519240,
+        "victims": 29,
+        "date": "2024-05-04",
+        "techniques": [
+          "Title fraud",
+          "Rental scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000083",
+        "title": "Romance Scams Campaign Targeting Legal Services Sector",
+        "type": "Romance Scams",
+        "losses": 954187,
+        "victims": 18,
+        "date": "2024-05-05",
+        "techniques": [
+          "Catfishing",
+          "Investment opportunities"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000084",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 212,
+        "date": "2024-05-07",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000085",
+        "title": "Phishing Campaign Targeting Transportation Sector",
+        "type": "Phishing",
+        "losses": 431861,
+        "victims": 83,
+        "date": "2024-05-08",
+        "techniques": [
+          "Spear phishing",
+          "Whaling"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000086",
+        "title": "Romance Scams Campaign Targeting Manufacturing Sector",
+        "type": "Romance Scams",
+        "losses": 3086288,
+        "victims": 73,
+        "date": "2024-05-09",
+        "techniques": [
+          "Investment opportunities",
+          "Money requests"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000087",
+        "title": "Government Impersonation Campaign Targeting Retail Sector",
+        "type": "Government Impersonation",
+        "losses": 257702,
+        "victims": 7,
+        "date": "2024-05-10",
+        "techniques": [
+          "Tax scams",
+          "Social Security fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000088",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 366,
+        "date": "2024-05-11",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000089",
+        "title": "Tech Support Scams Campaign Targeting Legal Services Sector",
+        "type": "Tech Support Scams",
+        "losses": 500278,
+        "victims": 18,
+        "date": "2024-05-13",
+        "techniques": [
+          "Remote access",
+          "Fake refunds"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000090",
+        "title": "Romance Scams Campaign Targeting Retail Sector",
+        "type": "Romance Scams",
+        "losses": 1506387,
+        "victims": 30,
+        "date": "2024-05-13",
+        "techniques": [
+          "Money requests",
+          "Catfishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000091",
+        "title": "Tech Support Scams Campaign Targeting Energy Sector",
+        "type": "Tech Support Scams",
+        "losses": 963932,
+        "victims": 40,
+        "date": "2024-05-16",
+        "techniques": [
+          "Fake refunds",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000092",
+        "title": "Phishing Campaign Targeting Technology Sector",
+        "type": "Phishing",
+        "losses": 234615,
+        "victims": 87,
+        "date": "2024-05-18",
+        "techniques": [
+          "Spear phishing",
+          "Whaling"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000093",
+        "title": "Supply Chain Ransomware Attack",
+        "type": "Emerging Cyber Threat",
+        "losses": 45000000,
+        "victims": 380,
+        "date": "2024-05-20",
+        "techniques": [
+          "Supply chain attack",
+          "Ransomware",
+          "Living off the land"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000094",
+        "title": "Investment Fraud Campaign Targeting Retail Sector",
+        "type": "Investment Fraud",
+        "losses": 1077747,
+        "victims": 13,
+        "date": "2024-05-21",
+        "techniques": [
+          "Advance fee fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000095",
+        "title": "Investment Fraud Campaign Targeting Education Sector",
+        "type": "Investment Fraud",
+        "losses": 6172798,
+        "victims": 69,
+        "date": "2024-05-22",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Advance fee fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000096",
+        "title": "Real Estate Fraud Campaign Targeting Healthcare Sector",
+        "type": "Real Estate Fraud",
+        "losses": 2076744,
+        "victims": 92,
+        "date": "2024-05-23",
+        "techniques": [
+          "Rental scams",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000097",
+        "title": "Ransomware Campaign Targeting Technology Sector",
+        "type": "Ransomware",
+        "losses": 2147780,
+        "victims": 8,
+        "date": "2024-05-24",
+        "techniques": [
+          "File encryption",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000098",
+        "title": "Identity Theft Campaign Targeting Retail Sector",
+        "type": "Identity Theft",
+        "losses": 156108,
+        "victims": 16,
+        "date": "2024-05-25",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000099",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 103,
+        "date": "2024-05-25",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000100",
+        "title": "Ransomware Campaign Targeting Healthcare Sector",
+        "type": "Ransomware",
+        "losses": 6789991,
+        "victims": 63,
+        "date": "2024-05-27",
+        "techniques": [
+          "File encryption",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000101",
+        "title": "Identity Theft Campaign Targeting Non-Profit Sector",
+        "type": "Identity Theft",
+        "losses": 33796,
+        "victims": 4,
+        "date": "2024-05-28",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000102",
+        "title": "Business Email Compromise Campaign Targeting Energy Sector",
+        "type": "Business Email Compromise",
+        "losses": 3961942,
+        "victims": 21,
+        "date": "2024-05-30",
+        "techniques": [
+          "CEO fraud",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000103",
+        "title": "Phishing Campaign Targeting Retail Sector",
+        "type": "Phishing",
+        "losses": 60858,
+        "victims": 24,
+        "date": "2024-05-30",
+        "techniques": [
+          "Smishing",
+          "Vishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000104",
+        "title": "Investment Fraud Campaign Targeting Manufacturing Sector",
+        "type": "Investment Fraud",
+        "losses": 4929565,
+        "victims": 70,
+        "date": "2024-06-02",
+        "techniques": [
+          "Advance fee fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000105",
+        "title": "Phishing Campaign Targeting Government Sector",
+        "type": "Phishing",
+        "losses": 95631,
+        "victims": 32,
+        "date": "2024-06-03",
+        "techniques": [
+          "Smishing",
+          "Vishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000106",
+        "title": "Identity Theft Campaign Targeting Technology Sector",
+        "type": "Identity Theft",
+        "losses": 97100,
+        "victims": 11,
+        "date": "2024-06-05",
+        "techniques": [
+          "Tax fraud",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000107",
+        "title": "Data Breach Campaign Targeting Non-Profit Sector",
+        "type": "Data Breach",
+        "losses": 4686680,
+        "victims": 60,
+        "date": "2024-06-07",
+        "techniques": [
+          "Phishing",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000108",
+        "title": "Data Breach Campaign Targeting Real Estate Sector",
+        "type": "Data Breach",
+        "losses": 1760263,
+        "victims": 19,
+        "date": "2024-06-08",
+        "techniques": [
+          "Ransomware",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000109",
+        "title": "Ransomware Campaign Targeting Non-Profit Sector",
+        "type": "Ransomware",
+        "losses": 8611520,
+        "victims": 32,
+        "date": "2024-06-09",
+        "techniques": [
+          "RaaS",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000110",
+        "title": "Real Estate Fraud Campaign Targeting Technology Sector",
+        "type": "Real Estate Fraud",
+        "losses": 806573,
+        "victims": 49,
+        "date": "2024-06-09",
+        "techniques": [
+          "Wire fraud",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000111",
+        "title": "Investment Fraud Campaign Targeting Retail Sector",
+        "type": "Investment Fraud",
+        "losses": 3020706,
+        "victims": 48,
+        "date": "2024-06-14",
+        "techniques": [
+          "Advance fee fraud",
+          "Cryptocurrency fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000112",
+        "title": "Ransomware Campaign Targeting Legal Services Sector",
+        "type": "Ransomware",
+        "losses": 21199059,
+        "victims": 72,
+        "date": "2024-06-14",
+        "techniques": [
+          "RaaS",
+          "File encryption"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000113",
+        "title": "Tech Support Scams Campaign Targeting Non-Profit Sector",
+        "type": "Tech Support Scams",
+        "losses": 1341843,
+        "victims": 64,
+        "date": "2024-06-22",
+        "techniques": [
+          "Pop-up warnings",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000114",
+        "title": "Data Breach Campaign Targeting Healthcare Sector",
+        "type": "Data Breach",
+        "losses": 4493164,
+        "victims": 38,
+        "date": "2024-06-23",
+        "techniques": [
+          "Phishing",
+          "Ransomware"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000115",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 114,
+        "date": "2024-06-23",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000116",
+        "title": "Romance Scams Campaign Targeting Energy Sector",
+        "type": "Romance Scams",
+        "losses": 3519411,
+        "victims": 48,
+        "date": "2024-06-24",
+        "techniques": [
+          "Catfishing",
+          "Money requests"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000117",
+        "title": "Identity Theft Campaign Targeting Financial Services Sector",
+        "type": "Identity Theft",
+        "losses": 54767,
+        "victims": 7,
+        "date": "2024-06-24",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000118",
+        "title": "Tech Support Scams Campaign Targeting Energy Sector",
+        "type": "Tech Support Scams",
+        "losses": 1470570,
+        "victims": 85,
+        "date": "2024-06-25",
+        "techniques": [
+          "Fake refunds",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000119",
+        "title": "Data Breach Campaign Targeting Technology Sector",
+        "type": "Data Breach",
+        "losses": 3223615,
+        "victims": 46,
+        "date": "2024-06-26",
+        "techniques": [
+          "SQL injection",
+          "Ransomware"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000120",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 326,
+        "date": "2024-06-26",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000121",
+        "title": "Investment Fraud Campaign Targeting Education Sector",
+        "type": "Investment Fraud",
+        "losses": 3804671,
+        "victims": 27,
+        "date": "2024-06-28",
+        "techniques": [
+          "Ponzi schemes",
+          "Cryptocurrency fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000122",
+        "title": "Ransomware Campaign Targeting Education Sector",
+        "type": "Ransomware",
+        "losses": 10566161,
+        "victims": 49,
+        "date": "2024-06-28",
+        "techniques": [
+          "File encryption",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000123",
+        "title": "Supply Chain Ransomware Attack",
+        "type": "Emerging Cyber Threat",
+        "losses": 45000000,
+        "victims": 113,
+        "date": "2024-06-29",
+        "techniques": [
+          "Supply chain attack",
+          "Ransomware",
+          "Living off the land"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000124",
+        "title": "Identity Theft Campaign Targeting Government Sector",
+        "type": "Identity Theft",
+        "losses": 808594,
+        "victims": 69,
+        "date": "2024-06-30",
+        "techniques": [
+          "Account takeover",
+          "Tax fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000125",
+        "title": "Government Impersonation Campaign Targeting Energy Sector",
+        "type": "Government Impersonation",
+        "losses": 461071,
+        "victims": 19,
+        "date": "2024-07-05",
+        "techniques": [
+          "Social Security fraud",
+          "Tax scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000126",
+        "title": "Data Breach Campaign Targeting Healthcare Sector",
+        "type": "Data Breach",
+        "losses": 145548,
+        "victims": 2,
+        "date": "2024-07-06",
+        "techniques": [
+          "Phishing",
+          "Ransomware"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000127",
+        "title": "Investment Fraud Campaign Targeting Legal Services Sector",
+        "type": "Investment Fraud",
+        "losses": 3007919,
+        "victims": 23,
+        "date": "2024-07-10",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000128",
+        "title": "Investment Fraud Campaign Targeting Manufacturing Sector",
+        "type": "Investment Fraud",
+        "losses": 9126321,
+        "victims": 75,
+        "date": "2024-07-10",
+        "techniques": [
+          "Ponzi schemes",
+          "Advance fee fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000129",
+        "title": "Ransomware Campaign Targeting Government Sector",
+        "type": "Ransomware",
+        "losses": 18185792,
+        "victims": 90,
+        "date": "2024-07-12",
+        "techniques": [
+          "RaaS",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000130",
+        "title": "Romance Scams Campaign Targeting Healthcare Sector",
+        "type": "Romance Scams",
+        "losses": 5462211,
+        "victims": 61,
+        "date": "2024-07-13",
+        "techniques": [
+          "Money requests",
+          "Catfishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000131",
+        "title": "Phishing Campaign Targeting Manufacturing Sector",
+        "type": "Phishing",
+        "losses": 249162,
+        "victims": 78,
+        "date": "2024-07-14",
+        "techniques": [
+          "Whaling",
+          "Spear phishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000132",
+        "title": "Ransomware Campaign Targeting Manufacturing Sector",
+        "type": "Ransomware",
+        "losses": 18695199,
+        "victims": 80,
+        "date": "2024-07-15",
+        "techniques": [
+          "File encryption",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000133",
+        "title": "Tech Support Scams Campaign Targeting Non-Profit Sector",
+        "type": "Tech Support Scams",
+        "losses": 1741590,
+        "victims": 79,
+        "date": "2024-07-16",
+        "techniques": [
+          "Pop-up warnings",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000134",
+        "title": "Tech Support Scams Campaign Targeting Manufacturing Sector",
+        "type": "Tech Support Scams",
+        "losses": 2072688,
+        "victims": 63,
+        "date": "2024-07-23",
+        "techniques": [
+          "Fake refunds",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000135",
+        "title": "Romance Scams Campaign Targeting Energy Sector",
+        "type": "Romance Scams",
+        "losses": 5017918,
+        "victims": 84,
+        "date": "2024-07-24",
+        "techniques": [
+          "Investment opportunities",
+          "Catfishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000136",
+        "title": "Real Estate Fraud Campaign Targeting Government Sector",
+        "type": "Real Estate Fraud",
+        "losses": 1330445,
+        "victims": 90,
+        "date": "2024-07-24",
+        "techniques": [
+          "Rental scams",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000137",
+        "title": "Supply Chain Ransomware Attack",
+        "type": "Emerging Cyber Threat",
+        "losses": 45000000,
+        "victims": 454,
+        "date": "2024-07-24",
+        "techniques": [
+          "Supply chain attack",
+          "Ransomware",
+          "Living off the land"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000138",
+        "title": "Government Impersonation Campaign Targeting Financial Services Sector",
+        "type": "Government Impersonation",
+        "losses": 498896,
+        "victims": 34,
+        "date": "2024-07-25",
+        "techniques": [
+          "Social Security fraud",
+          "Law enforcement impersonation"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000139",
+        "title": "Romance Scams Campaign Targeting Education Sector",
+        "type": "Romance Scams",
+        "losses": 498944,
+        "victims": 10,
+        "date": "2024-07-26",
+        "techniques": [
+          "Investment opportunities",
+          "Money requests"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000140",
+        "title": "Real Estate Fraud Campaign Targeting Energy Sector",
+        "type": "Real Estate Fraud",
+        "losses": 1170583,
+        "victims": 73,
+        "date": "2024-07-26",
+        "techniques": [
+          "Wire fraud",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000141",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 20,
+        "date": "2024-07-26",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000142",
+        "title": "Government Impersonation Campaign Targeting Technology Sector",
+        "type": "Government Impersonation",
+        "losses": 403309,
+        "victims": 14,
+        "date": "2024-07-28",
+        "techniques": [
+          "Tax scams",
+          "Law enforcement impersonation"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000143",
+        "title": "Data Breach Campaign Targeting Education Sector",
+        "type": "Data Breach",
+        "losses": 529148,
+        "victims": 6,
+        "date": "2024-07-29",
+        "techniques": [
+          "Phishing",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000144",
+        "title": "Identity Theft Campaign Targeting Healthcare Sector",
+        "type": "Identity Theft",
+        "losses": 786498,
+        "victims": 52,
+        "date": "2024-08-01",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000145",
+        "title": "Data Breach Campaign Targeting Technology Sector",
+        "type": "Data Breach",
+        "losses": 7750484,
+        "victims": 65,
+        "date": "2024-08-03",
+        "techniques": [
+          "Phishing",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000146",
+        "title": "Real Estate Fraud Campaign Targeting Transportation Sector",
+        "type": "Real Estate Fraud",
+        "losses": 261185,
+        "victims": 25,
+        "date": "2024-08-05",
+        "techniques": [
+          "Wire fraud",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000147",
+        "title": "Identity Theft Campaign Targeting Healthcare Sector",
+        "type": "Identity Theft",
+        "losses": 697311,
+        "victims": 95,
+        "date": "2024-08-05",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000148",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 72,
+        "date": "2024-08-07",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000149",
+        "title": "Real Estate Fraud Campaign Targeting Manufacturing Sector",
+        "type": "Real Estate Fraud",
+        "losses": 973678,
+        "victims": 81,
+        "date": "2024-08-10",
+        "techniques": [
+          "Wire fraud",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000150",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 159,
+        "date": "2024-08-10",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000151",
+        "title": "Business Email Compromise Campaign Targeting Non-Profit Sector",
+        "type": "Business Email Compromise",
+        "losses": 4049839,
+        "victims": 22,
+        "date": "2024-08-11",
+        "techniques": [
+          "Account compromise",
+          "CEO fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000152",
+        "title": "Tech Support Scams Campaign Targeting Education Sector",
+        "type": "Tech Support Scams",
+        "losses": 674160,
+        "victims": 20,
+        "date": "2024-08-11",
+        "techniques": [
+          "Pop-up warnings",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000153",
+        "title": "Tech Support Scams Campaign Targeting Technology Sector",
+        "type": "Tech Support Scams",
+        "losses": 1706795,
+        "victims": 47,
+        "date": "2024-08-12",
+        "techniques": [
+          "Fake refunds",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000154",
+        "title": "Investment Fraud Campaign Targeting Manufacturing Sector",
+        "type": "Investment Fraud",
+        "losses": 4364867,
+        "victims": 31,
+        "date": "2024-08-13",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000155",
+        "title": "Phishing Campaign Targeting Healthcare Sector",
+        "type": "Phishing",
+        "losses": 176771,
+        "victims": 82,
+        "date": "2024-08-14",
+        "techniques": [
+          "Smishing",
+          "Whaling"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000156",
+        "title": "Identity Theft Campaign Targeting Transportation Sector",
+        "type": "Identity Theft",
+        "losses": 284703,
+        "victims": 49,
+        "date": "2024-08-15",
+        "techniques": [
+          "Synthetic identity",
+          "Account takeover"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000157",
+        "title": "Investment Fraud Campaign Targeting Healthcare Sector",
+        "type": "Investment Fraud",
+        "losses": 12711476,
+        "victims": 94,
+        "date": "2024-08-17",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Advance fee fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000158",
+        "title": "Romance Scams Campaign Targeting Financial Services Sector",
+        "type": "Romance Scams",
+        "losses": 3468407,
+        "victims": 62,
+        "date": "2024-08-17",
+        "techniques": [
+          "Investment opportunities",
+          "Money requests"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000159",
+        "title": "Business Email Compromise Campaign Targeting Technology Sector",
+        "type": "Business Email Compromise",
+        "losses": 5771884,
+        "victims": 35,
+        "date": "2024-08-19",
+        "techniques": [
+          "False invoice schemes",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000160",
+        "title": "Investment Fraud Campaign Targeting Education Sector",
+        "type": "Investment Fraud",
+        "losses": 6679416,
+        "victims": 46,
+        "date": "2024-08-22",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000161",
+        "title": "Ransomware Campaign Targeting Transportation Sector",
+        "type": "Ransomware",
+        "losses": 28796549,
+        "victims": 94,
+        "date": "2024-08-22",
+        "techniques": [
+          "RaaS",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000162",
+        "title": "Real Estate Fraud Campaign Targeting Healthcare Sector",
+        "type": "Real Estate Fraud",
+        "losses": 1435626,
+        "victims": 68,
+        "date": "2024-08-25",
+        "techniques": [
+          "Rental scams",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000163",
+        "title": "Tech Support Scams Campaign Targeting Real Estate Sector",
+        "type": "Tech Support Scams",
+        "losses": 1834018,
+        "victims": 70,
+        "date": "2024-08-26",
+        "techniques": [
+          "Pop-up warnings",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000164",
+        "title": "Ransomware Campaign Targeting Manufacturing Sector",
+        "type": "Ransomware",
+        "losses": 11702629,
+        "victims": 59,
+        "date": "2024-08-27",
+        "techniques": [
+          "Double extortion",
+          "RaaS"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000165",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 300,
+        "date": "2024-08-29",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000166",
+        "title": "Investment Fraud Campaign Targeting Retail Sector",
+        "type": "Investment Fraud",
+        "losses": 13527482,
+        "victims": 96,
+        "date": "2024-08-30",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000167",
+        "title": "Business Email Compromise Campaign Targeting Manufacturing Sector",
+        "type": "Business Email Compromise",
+        "losses": 4794827,
+        "victims": 29,
+        "date": "2024-09-01",
+        "techniques": [
+          "Account compromise",
+          "CEO fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000168",
+        "title": "Real Estate Fraud Campaign Targeting Technology Sector",
+        "type": "Real Estate Fraud",
+        "losses": 127118,
+        "victims": 12,
+        "date": "2024-09-01",
+        "techniques": [
+          "Title fraud",
+          "Rental scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000169",
+        "title": "Identity Theft Campaign Targeting Financial Services Sector",
+        "type": "Identity Theft",
+        "losses": 633778,
+        "victims": 55,
+        "date": "2024-09-02",
+        "techniques": [
+          "Synthetic identity",
+          "Account takeover"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000170",
+        "title": "Identity Theft Campaign Targeting Healthcare Sector",
+        "type": "Identity Theft",
+        "losses": 370735,
+        "victims": 34,
+        "date": "2024-09-04",
+        "techniques": [
+          "Tax fraud",
+          "Account takeover"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000171",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 255,
+        "date": "2024-09-05",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000172",
+        "title": "Supply Chain Ransomware Attack",
+        "type": "Emerging Cyber Threat",
+        "losses": 45000000,
+        "victims": 410,
+        "date": "2024-09-05",
+        "techniques": [
+          "Supply chain attack",
+          "Ransomware",
+          "Living off the land"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000173",
+        "title": "Investment Fraud Campaign Targeting Healthcare Sector",
+        "type": "Investment Fraud",
+        "losses": 1904863,
+        "victims": 11,
+        "date": "2024-09-06",
+        "techniques": [
+          "Advance fee fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000174",
+        "title": "Business Email Compromise Campaign Targeting Legal Services Sector",
+        "type": "Business Email Compromise",
+        "losses": 6599746,
+        "victims": 74,
+        "date": "2024-09-10",
+        "techniques": [
+          "False invoice schemes",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000175",
+        "title": "Business Email Compromise Campaign Targeting Energy Sector",
+        "type": "Business Email Compromise",
+        "losses": 1069223,
+        "victims": 6,
+        "date": "2024-09-11",
+        "techniques": [
+          "Account compromise",
+          "CEO fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000176",
+        "title": "Phishing Campaign Targeting Retail Sector",
+        "type": "Phishing",
+        "losses": 282588,
+        "victims": 55,
+        "date": "2024-09-12",
+        "techniques": [
+          "Whaling",
+          "Smishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000177",
+        "title": "Phishing Campaign Targeting Technology Sector",
+        "type": "Phishing",
+        "losses": 287646,
+        "victims": 59,
+        "date": "2024-09-12",
+        "techniques": [
+          "Smishing",
+          "Spear phishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000178",
+        "title": "Romance Scams Campaign Targeting Healthcare Sector",
+        "type": "Romance Scams",
+        "losses": 7099961,
+        "victims": 82,
+        "date": "2024-09-21",
+        "techniques": [
+          "Investment opportunities",
+          "Catfishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000179",
+        "title": "Identity Theft Campaign Targeting Education Sector",
+        "type": "Identity Theft",
+        "losses": 21872,
+        "victims": 2,
+        "date": "2024-09-21",
+        "techniques": [
+          "Tax fraud",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000180",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 88,
+        "date": "2024-09-21",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000181",
+        "title": "Investment Fraud Campaign Targeting Non-Profit Sector",
+        "type": "Investment Fraud",
+        "losses": 9333321,
+        "victims": 93,
+        "date": "2024-09-22",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000182",
+        "title": "Investment Fraud Campaign Targeting Legal Services Sector",
+        "type": "Investment Fraud",
+        "losses": 65804,
+        "victims": 1,
+        "date": "2024-09-23",
+        "techniques": [
+          "Cryptocurrency fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000183",
+        "title": "Real Estate Fraud Campaign Targeting Financial Services Sector",
+        "type": "Real Estate Fraud",
+        "losses": 76249,
+        "victims": 5,
+        "date": "2024-09-25",
+        "techniques": [
+          "Title fraud",
+          "Wire fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000184",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 121,
+        "date": "2024-09-25",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000185",
+        "title": "Government Impersonation Campaign Targeting Healthcare Sector",
+        "type": "Government Impersonation",
+        "losses": 2753938,
+        "victims": 78,
+        "date": "2024-09-26",
+        "techniques": [
+          "Law enforcement impersonation",
+          "Social Security fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000186",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 439,
+        "date": "2024-09-27",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000187",
+        "title": "Government Impersonation Campaign Targeting Real Estate Sector",
+        "type": "Government Impersonation",
+        "losses": 107989,
+        "victims": 3,
+        "date": "2024-09-28",
+        "techniques": [
+          "Social Security fraud",
+          "Law enforcement impersonation"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000188",
+        "title": "Romance Scams Campaign Targeting Real Estate Sector",
+        "type": "Romance Scams",
+        "losses": 479595,
+        "victims": 6,
+        "date": "2024-09-29",
+        "techniques": [
+          "Investment opportunities",
+          "Money requests"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000189",
+        "title": "Data Breach Campaign Targeting Financial Services Sector",
+        "type": "Data Breach",
+        "losses": 4573843,
+        "victims": 70,
+        "date": "2024-09-30",
+        "techniques": [
+          "Phishing",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000190",
+        "title": "Real Estate Fraud Campaign Targeting Healthcare Sector",
+        "type": "Real Estate Fraud",
+        "losses": 250340,
+        "victims": 13,
+        "date": "2024-10-03",
+        "techniques": [
+          "Rental scams",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000191",
+        "title": "Cryptocurrency Investment Scam via Social Media",
+        "type": "Emerging Cyber Threat",
+        "losses": 15000000,
+        "victims": 386,
+        "date": "2024-10-06",
+        "techniques": [
+          "Pig butchering",
+          "Cryptocurrency fraud",
+          "Social media exploitation"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000192",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 446,
+        "date": "2024-10-07",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000193",
+        "title": "Data Breach Campaign Targeting Education Sector",
+        "type": "Data Breach",
+        "losses": 1509638,
+        "victims": 15,
+        "date": "2024-10-08",
+        "techniques": [
+          "Ransomware",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000194",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 436,
+        "date": "2024-10-13",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000195",
+        "title": "Identity Theft Campaign Targeting Real Estate Sector",
+        "type": "Identity Theft",
+        "losses": 1511095,
+        "victims": 99,
+        "date": "2024-10-16",
+        "techniques": [
+          "Synthetic identity",
+          "Tax fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000196",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 200,
+        "date": "2024-10-16",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000197",
+        "title": "Real Estate Fraud Campaign Targeting Education Sector",
+        "type": "Real Estate Fraud",
+        "losses": 960485,
+        "victims": 72,
+        "date": "2024-10-18",
+        "techniques": [
+          "Wire fraud",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000198",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 437,
+        "date": "2024-10-18",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000199",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 327,
+        "date": "2024-10-18",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000200",
+        "title": "Ransomware Campaign Targeting Energy Sector",
+        "type": "Ransomware",
+        "losses": 21435225,
+        "victims": 72,
+        "date": "2024-10-19",
+        "techniques": [
+          "RaaS",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000201",
+        "title": "Government Impersonation Campaign Targeting Technology Sector",
+        "type": "Government Impersonation",
+        "losses": 1692465,
+        "victims": 93,
+        "date": "2024-10-21",
+        "techniques": [
+          "Social Security fraud",
+          "Tax scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000202",
+        "title": "Ransomware Campaign Targeting Healthcare Sector",
+        "type": "Ransomware",
+        "losses": 18313603,
+        "victims": 86,
+        "date": "2024-10-23",
+        "techniques": [
+          "File encryption",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000203",
+        "title": "Ransomware Campaign Targeting Education Sector",
+        "type": "Ransomware",
+        "losses": 16745931,
+        "victims": 80,
+        "date": "2024-10-24",
+        "techniques": [
+          "File encryption",
+          "RaaS"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000204",
+        "title": "Government Impersonation Campaign Targeting Energy Sector",
+        "type": "Government Impersonation",
+        "losses": 1213908,
+        "victims": 40,
+        "date": "2024-10-26",
+        "techniques": [
+          "Social Security fraud",
+          "Tax scams"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000205",
+        "title": "Real Estate Fraud Campaign Targeting Energy Sector",
+        "type": "Real Estate Fraud",
+        "losses": 1230808,
+        "victims": 65,
+        "date": "2024-10-26",
+        "techniques": [
+          "Rental scams",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000206",
+        "title": "Identity Theft Campaign Targeting Technology Sector",
+        "type": "Identity Theft",
+        "losses": 217652,
+        "victims": 26,
+        "date": "2024-10-26",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000207",
+        "title": "Tech Support Scam Leading to Identity Theft",
+        "type": "Emerging Cyber Threat",
+        "losses": 3200000,
+        "victims": 178,
+        "date": "2024-10-26",
+        "techniques": [
+          "Tech support fraud",
+          "Remote access",
+          "Identity theft"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000208",
+        "title": "Data Breach Campaign Targeting Financial Services Sector",
+        "type": "Data Breach",
+        "losses": 8715976,
+        "victims": 73,
+        "date": "2024-10-29",
+        "techniques": [
+          "Ransomware",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000209",
+        "title": "Data Breach Campaign Targeting Government Sector",
+        "type": "Data Breach",
+        "losses": 8287103,
+        "victims": 86,
+        "date": "2024-10-31",
+        "techniques": [
+          "Phishing",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000210",
+        "title": "Data Breach Campaign Targeting Retail Sector",
+        "type": "Data Breach",
+        "losses": 2143077,
+        "victims": 49,
+        "date": "2024-11-02",
+        "techniques": [
+          "Phishing",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000211",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 216,
+        "date": "2024-11-02",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000212",
+        "title": "Phishing Campaign Targeting Non-Profit Sector",
+        "type": "Phishing",
+        "losses": 284287,
+        "victims": 88,
+        "date": "2024-11-06",
+        "techniques": [
+          "Vishing",
+          "Smishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000213",
+        "title": "Business Email Compromise Campaign Targeting Non-Profit Sector",
+        "type": "Business Email Compromise",
+        "losses": 6337380,
+        "victims": 91,
+        "date": "2024-11-08",
+        "techniques": [
+          "False invoice schemes",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000214",
+        "title": "Phishing Campaign Targeting Financial Services Sector",
+        "type": "Phishing",
+        "losses": 24280,
+        "victims": 5,
+        "date": "2024-11-08",
+        "techniques": [
+          "Smishing",
+          "Vishing"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000215",
+        "title": "Data Breach Campaign Targeting Non-Profit Sector",
+        "type": "Data Breach",
+        "losses": 3521409,
+        "victims": 44,
+        "date": "2024-11-12",
+        "techniques": [
+          "Ransomware",
+          "SQL injection"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000216",
+        "title": "Government Impersonation Campaign Targeting Manufacturing Sector",
+        "type": "Government Impersonation",
+        "losses": 198633,
+        "victims": 7,
+        "date": "2024-11-12",
+        "techniques": [
+          "Tax scams",
+          "Social Security fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000217",
+        "title": "Ransomware Campaign Targeting Government Sector",
+        "type": "Ransomware",
+        "losses": 20616640,
+        "victims": 100,
+        "date": "2024-11-21",
+        "techniques": [
+          "File encryption",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000218",
+        "title": "Investment Fraud Campaign Targeting Financial Services Sector",
+        "type": "Investment Fraud",
+        "losses": 11013455,
+        "victims": 92,
+        "date": "2024-11-23",
+        "techniques": [
+          "Advance fee fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000219",
+        "title": "Real Estate Fraud Campaign Targeting Non-Profit Sector",
+        "type": "Real Estate Fraud",
+        "losses": 371801,
+        "victims": 22,
+        "date": "2024-11-23",
+        "techniques": [
+          "Rental scams",
+          "Wire fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000220",
+        "title": "Government Impersonation Campaign Targeting Energy Sector",
+        "type": "Government Impersonation",
+        "losses": 707646,
+        "victims": 20,
+        "date": "2024-11-25",
+        "techniques": [
+          "Law enforcement impersonation",
+          "Social Security fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000221",
+        "title": "Investment Fraud Campaign Targeting Real Estate Sector",
+        "type": "Investment Fraud",
+        "losses": 2501790,
+        "victims": 34,
+        "date": "2024-11-26",
+        "techniques": [
+          "Advance fee fraud",
+          "Ponzi schemes"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000222",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 352,
+        "date": "2024-11-28",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000223",
+        "title": "Identity Theft Campaign Targeting Manufacturing Sector",
+        "type": "Identity Theft",
+        "losses": 866504,
+        "victims": 91,
+        "date": "2024-12-03",
+        "techniques": [
+          "Account takeover",
+          "Synthetic identity"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000224",
+        "title": "Combined BEC and Ransomware Campaign",
+        "type": "Emerging Cyber Threat",
+        "losses": 8500000,
+        "victims": 243,
+        "date": "2024-12-04",
+        "techniques": [
+          "Business email compromise",
+          "Ransomware",
+          "Data exfiltration"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000225",
+        "title": "Government Impersonation Campaign Targeting Energy Sector",
+        "type": "Government Impersonation",
+        "losses": 335523,
+        "victims": 13,
+        "date": "2024-12-06",
+        "techniques": [
+          "Law enforcement impersonation",
+          "Social Security fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000226",
+        "title": "Business Email Compromise Campaign Targeting Financial Services Sector",
+        "type": "Business Email Compromise",
+        "losses": 2134742,
+        "victims": 11,
+        "date": "2024-12-08",
+        "techniques": [
+          "CEO fraud",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000227",
+        "title": "Business Email Compromise Campaign Targeting Healthcare Sector",
+        "type": "Business Email Compromise",
+        "losses": 2059751,
+        "victims": 17,
+        "date": "2024-12-11",
+        "techniques": [
+          "False invoice schemes",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000228",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 377,
+        "date": "2024-12-13",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000229",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 278,
+        "date": "2024-12-13",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000230",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 95,
+        "date": "2024-12-15",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000231",
+        "title": "Business Email Compromise Campaign Targeting Healthcare Sector",
+        "type": "Business Email Compromise",
+        "losses": 504852,
+        "victims": 7,
+        "date": "2024-12-17",
+        "techniques": [
+          "CEO fraud",
+          "Account compromise"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000232",
+        "title": "Phishing Campaign Targeting Legal Services Sector",
+        "type": "Phishing",
+        "losses": 127339,
+        "victims": 54,
+        "date": "2024-12-17",
+        "techniques": [
+          "Spear phishing",
+          "Whaling"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000233",
+        "title": "Tech Support Scams Campaign Targeting Non-Profit Sector",
+        "type": "Tech Support Scams",
+        "losses": 345279,
+        "victims": 19,
+        "date": "2024-12-19",
+        "techniques": [
+          "Pop-up warnings",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000234",
+        "title": "Tech Support Scams Campaign Targeting Education Sector",
+        "type": "Tech Support Scams",
+        "losses": 2792379,
+        "victims": 80,
+        "date": "2024-12-20",
+        "techniques": [
+          "Fake refunds",
+          "Remote access"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000235",
+        "title": "Deepfake Audio Used in Executive Impersonation",
+        "type": "Emerging Cyber Threat",
+        "losses": 2500000,
+        "victims": 205,
+        "date": "2024-12-22",
+        "techniques": [
+          "Deepfake technology",
+          "Voice cloning",
+          "Social engineering"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000236",
+        "title": "Ransomware Campaign Targeting Retail Sector",
+        "type": "Ransomware",
+        "losses": 14083234,
+        "victims": 100,
+        "date": "2024-12-23",
+        "techniques": [
+          "RaaS",
+          "Double extortion"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000237",
+        "title": "Romance Scams Campaign Targeting Non-Profit Sector",
+        "type": "Romance Scams",
+        "losses": 1895088,
+        "victims": 23,
+        "date": "2024-12-24",
+        "techniques": [
+          "Money requests",
+          "Investment opportunities"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000238",
+        "title": "Ransomware Campaign Targeting Legal Services Sector",
+        "type": "Ransomware",
+        "losses": 6350435,
+        "victims": 33,
+        "date": "2024-12-26",
+        "techniques": [
+          "File encryption",
+          "RaaS"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000239",
+        "title": "Real Estate Fraud Campaign Targeting Legal Services Sector",
+        "type": "Real Estate Fraud",
+        "losses": 1830372,
+        "victims": 96,
+        "date": "2024-12-26",
+        "techniques": [
+          "Wire fraud",
+          "Title fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000240",
+        "title": "Investment Fraud Campaign Targeting Legal Services Sector",
+        "type": "Investment Fraud",
+        "losses": 5014058,
+        "victims": 47,
+        "date": "2024-12-28",
+        "techniques": [
+          "Ponzi schemes",
+          "Cryptocurrency fraud"
+        ]
+      },
+      {
+        "incidentId": "IC3-2024-000241",
+        "title": "Romance Scams Campaign Targeting Legal Services Sector",
+        "type": "Romance Scams",
+        "losses": 3066297,
+        "victims": 57,
+        "date": "2024-12-28",
+        "techniques": [
+          "Investment opportunities",
+          "Money requests"
+        ]
+      }
+    ]
+  }
+}

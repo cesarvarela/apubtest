@@ -81,7 +81,12 @@ export default function ChartBuilderModal({
     if (editingChart) {
       setChartState(editingChart.builderState);
       setChartTitle(editingChart.title);
-      // Backward compatibility handled in getInitialDatasetIds
+      // Set the dataset IDs from the editing chart
+      if (editingChart.datasetIds) {
+        setSelectedDatasetIds(editingChart.datasetIds);
+      } else if (editingChart.datasetId) {
+        setSelectedDatasetIds([editingChart.datasetId]);
+      }
     } else if (importedConfig) {
       // Merge imported config with defaults
       setChartState({
@@ -177,24 +182,22 @@ export default function ChartBuilderModal({
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto">
-          {/* Dataset Selection - Only show when creating new chart */}
-          {!editingChart && (
-            <div className="mb-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Select Datasets</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <DatasetMultiSelect
-                    datasets={datasets}
-                    normalizedDatasets={normalizedDatasets}
-                    selectedDatasetIds={selectedDatasetIds}
-                    onSelectionChange={handleDatasetSelectionChange}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          )}
+          {/* Dataset Selection */}
+          <div className="mb-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Select Datasets</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DatasetMultiSelect
+                  datasets={datasets}
+                  normalizedDatasets={normalizedDatasets}
+                  selectedDatasetIds={selectedDatasetIds}
+                  onSelectionChange={handleDatasetSelectionChange}
+                />
+              </CardContent>
+            </Card>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Main Content - Chart Builder */}
