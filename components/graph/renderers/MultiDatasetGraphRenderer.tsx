@@ -97,11 +97,25 @@ const renderMultiDatasetCanvas = (
   // Reset alpha
   ctx.globalAlpha = 1;
 
+  // Sort nodes to draw bridge nodes last (on top)
+  const sortedNodes = [...nodes].sort((a, b) => {
+    const aDatasets = a.datasets?.length || 1;
+    const bDatasets = b.datasets?.length || 1;
+    return aDatasets - bDatasets;
+  });
+
   // Draw nodes
-  nodes.forEach(node => {
+  sortedNodes.forEach(node => {
     if (!node.x || !node.y) return;
 
-    const radius = node.radius || 15;
+    const isBridgeNode = node.datasets && node.datasets.length > 1;
+    const datasetCount = node.datasets?.length || 1;
+    
+    // Scale radius based on number of datasets connected
+    const baseRadius = 15;
+    const radius = isBridgeNode 
+      ? baseRadius + (datasetCount - 1) * 8  // Much larger for bridge nodes (8px per additional dataset)
+      : node.radius || baseRadius;
     
     // Viewport culling for nodes
     if (node.x + radius < viewportLeft - margin || 
@@ -114,12 +128,37 @@ const renderMultiDatasetCanvas = (
     const isHovered = hoveredNode?.id === node.id;
     const isSelected = selectedNode?.id === node.id;
 
+    // Draw glow effect for bridge nodes
+    if (isBridgeNode) {
+      const glowRadius = radius + 15 + (datasetCount - 1) * 5;  // Proportionally larger glow
+      const gradient = ctx.createRadialGradient(node.x, node.y, radius, node.x, node.y, glowRadius);
+      
+      // Create pulsing effect with multiple datasets
+      const glowIntensity = 0.2 + (datasetCount - 1) * 0.08;  // Stronger glow
+      gradient.addColorStop(0, `rgba(139, 92, 246, 0)`);
+      gradient.addColorStop(0.6, `rgba(139, 92, 246, ${glowIntensity})`);
+      gradient.addColorStop(1, `rgba(139, 92, 246, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, glowRadius, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
     // Draw node circle
     ctx.beginPath();
     ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
     
-    // Set fill color based on dataset
-    ctx.fillStyle = getNodeColor(node);
+    // Set fill color based on dataset or bridge status
+    if (isBridgeNode) {
+      // Create gradient for bridge nodes
+      const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, radius);
+      gradient.addColorStop(0, '#f3f4f6');  // Light center
+      gradient.addColorStop(1, '#9ca3af');  // Darker edge
+      ctx.fillStyle = gradient;
+    } else {
+      ctx.fillStyle = getNodeColor(node);
+    }
     
     // Adjust opacity based on selection
     if (selectedNode && !isSelected) {
@@ -129,24 +168,29 @@ const renderMultiDatasetCanvas = (
         return (sourceId === selectedNode.id && targetId === node.id) ||
                (targetId === selectedNode.id && sourceId === node.id);
       });
-      ctx.globalAlpha = isConnected ? 0.8 : 0.2;
+      ctx.globalAlpha = isConnected ? 0.9 : (isBridgeNode ? 0.5 : 0.2);
     } else {
       ctx.globalAlpha = 1;
     }
     
     ctx.fill();
 
-    // Draw border
+    // Draw border with enhanced styling for bridge nodes
     if (isSelected) {
       ctx.strokeStyle = '#1f2937';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 4;
     } else if (isHovered) {
       ctx.strokeStyle = '#4b5563';
-      ctx.lineWidth = 2;
-    } else if (node.datasets && node.datasets.length > 1) {
-      ctx.strokeStyle = '#1f2937';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([5, 5]);
+      ctx.lineWidth = 3;
+    } else if (isBridgeNode) {
+      // Enhanced border for bridge nodes
+      ctx.strokeStyle = '#6b21a8';  // Purple border
+      ctx.lineWidth = 2.5 + (datasetCount - 2) * 0.5;  // Thicker with more datasets
+      
+      // Animated dashed pattern for bridge nodes
+      const dashLength = 8;
+      const gapLength = 4;
+      ctx.setLineDash([dashLength, gapLength]);
     } else {
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 1;
@@ -157,11 +201,11 @@ const renderMultiDatasetCanvas = (
 
     // Draw dataset badges for multi-dataset nodes
     if (node.datasets && node.datasets.length > 1 && node.x && node.y) {
-      const badgeRadius = 6;
+      const badgeRadius = 8;  // Slightly larger badges for better visibility
       node.datasets.forEach((datasetId, index) => {
         const angle = (index * 2 * Math.PI) / node.datasets!.length - Math.PI / 2;
-        const badgeX = node.x! + (radius + 8) * Math.cos(angle);
-        const badgeY = node.y! + (radius + 8) * Math.sin(angle);
+        const badgeX = node.x! + (radius + 12) * Math.cos(angle);  // Adjusted for larger radius
+        const badgeY = node.y! + (radius + 12) * Math.sin(angle);
         
         ctx.beginPath();
         ctx.arc(badgeX, badgeY, badgeRadius, 0, 2 * Math.PI);
@@ -286,21 +330,63 @@ export default function MultiDatasetGraphRenderer({
       simulationRef.current.stop();
     }
 
-    // Create new simulation
+    // Create new simulation with enhanced settings for bridge nodes
     const simulation = d3.forceSimulation<MultiDatasetGraphNode>(nodes)
       .force('link', d3.forceLink<MultiDatasetGraphNode, MultiDatasetGraphEdge>(edges)
         .id(d => d.id)
-        .distance(MULTI_DATASET_CONFIG.forces.linkDistance)
-        .strength(MULTI_DATASET_CONFIG.forces.linkStrength)
+        .distance(d => {
+          const source = d.source as MultiDatasetGraphNode;
+          const target = d.target as MultiDatasetGraphNode;
+          const sourceBridge = source.datasets && source.datasets.length > 1;
+          const targetBridge = target.datasets && target.datasets.length > 1;
+          
+          // Shorter distance for connections involving bridge nodes
+          if (sourceBridge || targetBridge) {
+            return MULTI_DATASET_CONFIG.forces.linkDistance * 0.8;
+          }
+          return MULTI_DATASET_CONFIG.forces.linkDistance;
+        })
+        .strength(d => {
+          const source = d.source as MultiDatasetGraphNode;
+          const target = d.target as MultiDatasetGraphNode;
+          const sourceBridge = source.datasets && source.datasets.length > 1;
+          const targetBridge = target.datasets && target.datasets.length > 1;
+          
+          // Stronger links for bridge nodes
+          if (sourceBridge || targetBridge) {
+            return MULTI_DATASET_CONFIG.forces.linkStrength * 1.5;
+          }
+          return MULTI_DATASET_CONFIG.forces.linkStrength;
+        })
       )
       .force('charge', d3.forceManyBody()
-        .strength(MULTI_DATASET_CONFIG.forces.chargeStrength)
+        .strength(d => {
+          const node = d as MultiDatasetGraphNode;
+          const isBridge = node.datasets && node.datasets.length > 1;
+          
+          // Stronger charge for bridge nodes to create more space around them
+          if (isBridge) {
+            return MULTI_DATASET_CONFIG.forces.chargeStrength * 1.5;
+          }
+          return MULTI_DATASET_CONFIG.forces.chargeStrength;
+        })
       )
       .force('center', d3.forceCenter(width / 2, height / 2)
         .strength(MULTI_DATASET_CONFIG.forces.centerStrength)
       )
       .force('collision', d3.forceCollide()
-        .radius(d => (d as MultiDatasetGraphNode).radius || MULTI_DATASET_CONFIG.forces.collisionRadius)
+        .radius(d => {
+          const node = d as MultiDatasetGraphNode;
+          const isBridge = node.datasets && node.datasets.length > 1;
+          const datasetCount = node.datasets?.length || 1;
+          
+          // Larger collision radius for bridge nodes matching their visual size
+          if (isBridge) {
+            const baseRadius = 15;
+            return baseRadius + (datasetCount - 1) * 8 + 8; // Match visual size + extra padding
+          }
+          return node.radius || MULTI_DATASET_CONFIG.forces.collisionRadius;
+        })
       )
       .force('x', d3.forceX(width / 2).strength(0.05))
       .force('y', d3.forceY(height / 2).strength(0.05))

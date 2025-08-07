@@ -274,7 +274,7 @@ export default function MultiDatasetGraphVisualization({ datasets }: MultiDatase
             <CardTitle className="text-lg">Graph Statistics</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div>
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {graphData.stats.totalNodes}
@@ -289,6 +289,12 @@ export default function MultiDatasetGraphVisualization({ datasets }: MultiDatase
               </div>
               <div>
                 <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {graphData.nodes.filter(n => n.datasets && n.datasets.length > 1).length}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Bridge Nodes</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                   {graphData.stats.crossDatasetLinks}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Cross-Dataset Links</div>
@@ -381,9 +387,12 @@ export default function MultiDatasetGraphVisualization({ datasets }: MultiDatase
                   </div>
                 ))}
                 <div className="flex items-center gap-2 pt-1 border-t border-gray-200 dark:border-zinc-700">
-                  <div className="w-3 h-3 rounded-full bg-gray-500" />
+                  <div className="relative">
+                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-gray-300 to-gray-500" />
+                    <div className="absolute inset-0 w-3 h-3 rounded-full border-2 border-purple-600 border-dashed" />
+                  </div>
                   <span className="text-xs text-gray-600 dark:text-gray-400">
-                    Cross-dataset
+                    Bridge node (multi-dataset)
                   </span>
                 </div>
               </div>

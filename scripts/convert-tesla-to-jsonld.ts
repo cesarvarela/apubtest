@@ -139,6 +139,14 @@ function convertTeslaIncident(row: TeslaIncidentRow, index: number): any {
     date: date,
     year: row['Year'] || new Date(date).getFullYear(),
     
+    deployedBy: [
+      {
+        "@type": "core:Organization",
+        "@id": "https://en.wikipedia.org/wiki/Tesla,_Inc.",
+        name: "Tesla"
+      }
+    ],
+    
     location: {
       "@type": "core:Location",
       country: {
@@ -178,6 +186,11 @@ function convertTeslaIncident(row: TeslaIncidentRow, index: number): any {
         "@type": "tesla:Vehicle",
         "@id": `https://en.wikipedia.org/wiki/Tesla_${normalizedModel.replace(/\s+/g, '_')}`,
         model: normalizedModel,
+        manufacturer: {
+          "@type": "core:Organization",
+          "@id": "https://en.wikipedia.org/wiki/Tesla,_Inc.",
+          name: "Tesla"
+        },
         autopilotStatus: parseAutopilotStatus(row['Autopilot claimed'])
       };
       
