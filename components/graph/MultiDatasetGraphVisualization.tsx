@@ -17,6 +17,7 @@ import MultiDatasetGraphRenderer from './renderers/MultiDatasetGraphRenderer';
 import { 
   DatasetConfig, 
   MultiDatasetGraphNode,
+  SortingAlgorithm,
   processMultiDatasetGraph,
   MULTI_DATASET_CONFIG 
 } from './utils/multiDatasetGraphUtils';
@@ -33,6 +34,7 @@ export default function MultiDatasetGraphVisualization({ datasets }: MultiDatase
   const [maxIncidents, setMaxIncidents] = useState(10);
   const [maxDepth, setMaxDepth] = useState(2);
   const [showStats, setShowStats] = useState(true);
+  const [sortingAlgorithm, setSortingAlgorithm] = useState<SortingAlgorithm>('connections');
 
   // Process graph data with enabled datasets
   const graphData = useMemo(() => {
@@ -45,14 +47,14 @@ export default function MultiDatasetGraphVisualization({ datasets }: MultiDatase
     MULTI_DATASET_CONFIG.maxIncidentsPerDataset = maxIncidents === -1 ? Number.MAX_SAFE_INTEGER : maxIncidents;
     MULTI_DATASET_CONFIG.maxDepth = maxDepth === -1 ? Number.MAX_SAFE_INTEGER : maxDepth;
     
-    const result = processMultiDatasetGraph(activeDatasets);
+    const result = processMultiDatasetGraph(activeDatasets, sortingAlgorithm);
     
     // Restore original config
     MULTI_DATASET_CONFIG.maxIncidentsPerDataset = originalMaxIncidents;
     MULTI_DATASET_CONFIG.maxDepth = originalMaxDepth;
     
     return result;
-  }, [datasets, enabledDatasets, maxIncidents, maxDepth]);
+  }, [datasets, enabledDatasets, maxIncidents, maxDepth, sortingAlgorithm]);
 
   const toggleDataset = (datasetId: string) => {
     setEnabledDatasets(prev => {
@@ -146,6 +148,27 @@ export default function MultiDatasetGraphVisualization({ datasets }: MultiDatase
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          {/* Sorting algorithm select */}
+          <div>
+            <Label className="text-sm font-medium mb-2 block">
+              Incident Sorting Algorithm
+            </Label>
+            <Select value={sortingAlgorithm} onValueChange={(value) => setSortingAlgorithm(value as SortingAlgorithm)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="connections">Total connections</SelectItem>
+                <SelectItem value="cross-dataset-connections">Cross-dataset connections</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {sortingAlgorithm === 'connections' 
+                ? 'Prioritizes incidents with the most total connections'
+                : 'Prioritizes incidents connected to entities in other datasets'}
+            </p>
           </div>
 
           {/* Show stats toggle */}

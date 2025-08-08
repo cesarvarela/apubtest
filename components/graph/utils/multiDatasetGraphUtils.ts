@@ -1,5 +1,7 @@
 import { NormalizationResult } from '@/lib/normalization';
 
+export type SortingAlgorithm = 'connections' | 'cross-dataset-connections';
+
 export interface MultiDatasetGraphNode {
   id: string;
   label: string;
@@ -92,15 +94,81 @@ function countIncidentConnections(normalizedData: NormalizationResult, incidentT
 }
 
 /**
- * Get top incidents by connection count
+ * Count connections to entities that exist in other datasets
+ */
+function countCrossDatasetConnections(
+  normalizedData: NormalizationResult, 
+  incidentType: string,
+  allDatasets: DatasetConfig[],
+  currentDatasetId: string
+): Map<string, number> {
+  const connectionCounts = new Map<string, number>();
+  
+  // Build a set of all entity IDs that exist in OTHER datasets
+  const entitiesInOtherDatasets = new Set<string>();
+  allDatasets.forEach(dataset => {
+    if (dataset.id === currentDatasetId) return;
+    
+    Object.values(dataset.data.extracted).forEach(entities => {
+      (entities as any[]).forEach(entity => {
+        if (entity['@id']) {
+          entitiesInOtherDatasets.add(entity['@id']);
+        }
+      });
+    });
+  });
+  
+  // Find all incidents of the specified type
+  const incidents = normalizedData.extracted[incidentType] || [];
+  
+  incidents.forEach(incident => {
+    let count = 0;
+    
+    // Count connections to entities that exist in other datasets
+    Object.entries(incident).forEach(([key, value]) => {
+      if (key.startsWith('@') || key.startsWith('ui:')) return;
+      
+      if (Array.isArray(value)) {
+        value.forEach((item: any) => {
+          if (item && typeof item === 'object' && item['@id']) {
+            if (entitiesInOtherDatasets.has(item['@id'])) {
+              count++;
+            }
+          }
+        });
+      } else if (value && typeof value === 'object' && (value as any)['@id']) {
+        if (entitiesInOtherDatasets.has((value as any)['@id'])) {
+          count++;
+        }
+      }
+    });
+    
+    connectionCounts.set(incident['@id'], count);
+  });
+  
+  return connectionCounts;
+}
+
+/**
+ * Get top incidents by connection count or cross-dataset connections
  */
 function getTopIncidents(
   normalizedData: NormalizationResult, 
   incidentType: string, 
-  limit: number
+  limit: number,
+  sortingAlgorithm: SortingAlgorithm = 'connections',
+  allDatasets?: DatasetConfig[],
+  currentDatasetId?: string
 ): any[] {
   const incidents = normalizedData.extracted[incidentType] || [];
-  const connectionCounts = countIncidentConnections(normalizedData, incidentType);
+  
+  let connectionCounts: Map<string, number>;
+  
+  if (sortingAlgorithm === 'cross-dataset-connections' && allDatasets && currentDatasetId) {
+    connectionCounts = countCrossDatasetConnections(normalizedData, incidentType, allDatasets, currentDatasetId);
+  } else {
+    connectionCounts = countIncidentConnections(normalizedData, incidentType);
+  }
   
   // Sort incidents by connection count
   const sortedIncidents = [...incidents].sort((a, b) => {
@@ -230,7 +298,10 @@ function extractIncidentGraph(
 /**
  * Process multiple datasets and create a unified graph
  */
-export function processMultiDatasetGraph(datasets: DatasetConfig[]): {
+export function processMultiDatasetGraph(
+  datasets: DatasetConfig[],
+  sortingAlgorithm: SortingAlgorithm = 'connections'
+): {
   nodes: MultiDatasetGraphNode[];
   edges: MultiDatasetGraphEdge[];
   stats: {
@@ -312,11 +383,14 @@ export function processMultiDatasetGraph(datasets: DatasetConfig[]): {
     incidentTypes.forEach(incidentType => {
       const allIncidents = dataset.data.extracted[incidentType] || [];
       
-      // Get top incidents by connection count
+      // Get top incidents by specified sorting algorithm
       const topIncidents = getTopIncidents(
         dataset.data, 
         incidentType, 
-        MULTI_DATASET_CONFIG.maxIncidentsPerDataset
+        MULTI_DATASET_CONFIG.maxIncidentsPerDataset,
+        sortingAlgorithm,
+        datasets,
+        dataset.id
       );
       
       // Track how many we're actually displaying
